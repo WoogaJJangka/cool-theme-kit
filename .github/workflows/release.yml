@@ -7,6 +7,8 @@ name: Release + Publish
 # named after the `name` of package.json: the releases 1.1.0 to 1.3.0 are those of the old id `cool-icon-vscode`) and
 # written only into the VSIX. The first release of the extension is the version of package.json (0.1.0).
 # An exact `version` can be given instead (e.g. to skip from 1.1.0 to 1.2.1): it must be greater than the latest release.
+# The version never takes a tag that is already there (the old releases and the tags of the original project): a
+# computed one skips to the next free version, an exact one stops the run.
 #
 # Publishing:
 #   Visual Studio Marketplace -> trusted publishing (GitHub OIDC, no stored token): the publisher has a policy for this
@@ -98,6 +100,25 @@ jobs:
               *) echo "Unknown version change: $VERSION_CHANGE"; exit 1 ;;
             esac
           fi
+          # The tag may already be there (v1.1.0 to v1.3.0 of the old id, v3.x to v5.x of the original project): the
+          # release step would then add the VSIX to that old tag and release. A computed version skips to the next free
+          # one of the same change, an exact version stops
+          tag_exists() {
+            [ -n "$(gh api "repos/$GITHUB_REPOSITORY/git/matching-refs/tags/v$1" --jq ".[] | select(.ref == \"refs/tags/v$1\") | .ref")" ]
+          }
+          while tag_exists "$VERSION"; do
+            if [ -n "$VERSION_INPUT" ] || [ "$FIRST" = true ]; then
+              echo "::error::The tag v$VERSION already exists (an old release or a tag of the original project): give another version"; exit 1
+            fi
+            IFS=. read -r MAJOR MINOR PATCH <<< "$VERSION"
+            case "$VERSION_CHANGE" in
+              major) NEXT="$((MAJOR + 1)).0.0" ;;
+              minor) NEXT="$MAJOR.$((MINOR + 1)).0" ;;
+              *) NEXT="$MAJOR.$MINOR.$((PATCH + 1))" ;;
+            esac
+            echo "The tag v$VERSION already exists, trying $NEXT"
+            VERSION=$NEXT
+          done
           echo "Previous version $BASE, next version $VERSION"
           echo VERSION=$VERSION >> $GITHUB_ENV
           echo NAME=$NAME >> $GITHUB_ENV
