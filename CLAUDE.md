@@ -149,7 +149,7 @@
   **IDE 와 비교는 서식 복사로**(`bun run compare:ide`, `test/colors/ide/<샘플>.<IDE>.<dark|light>.rtf`): IDE 에서 샘플을 열고 Edit > Select All → Edit > Copy
   (서식 있는 복사가 기본) → STA PowerShell 로 클립보드의 'Rich Text Format' 을 저장. 글자마다 정확한 색이 나온다(화면 픽셀은 ClearType 때문에 못 씀,
   검사(inspection) 색은 안 들어감). 사용자 PyCharm 에는 **무지개 괄호 플러그인**이 있어 괄호·`<>`·CDATA 표시가 깊이별 색이다(예전 화면 판단 "CDATA = 태그 색,
-  네임스페이스 접두사 = 이름 색"은 이것 때문에 틀렸다) → 기준 캡처는 플러그인 없는 WebStorm·PhpStorm·RubyMine 에서. 이 IDE 들은 계속 설치해 둔다(2026-11-22).
+  네임스페이스 접두사 = 이름 색"은 이것 때문에 틀렸다) → 기준 캡처는 플러그인 없는 WebStorm·PhpStorm·RubyMine 에서. 이 IDE 들은 캡처 뒤 지웠다(2026-11-22): 다시 캡처하려면 설치부터(체험판).
   IDE 띄우기: computer-use `open_application`(클릭 권한만: 메뉴는 햄버거 → Edit 위에 마우스 → 항목 클릭, 선택이 없으면 Select All 위치가 한 칸 위,
   항목 위치는 매번 스크린샷으로 확인). 열 프로젝트는 IDE 설정 `options/recentProjects.xml`(마지막 열린 것)·`trusted-paths.xml` 을 백업 후 고쳐서
   `D:\dev\sandbox\jetbrains-colors` 를 열고, 끝나면 백업으로 되돌린다. 밝은 테마는 Settings > Appearance > Theme = Islands Light(편집기 scheme 이름은 "Light"),
@@ -215,7 +215,8 @@
   `sonar.yml`(SonarQube Cloud CI 분석 + 커버리지 + 품질 게이트, `SONAR_TOKEN` 이 있을 때만), `sync-upstream.yml`(매주 iconGenerator 최신화 → PR,
   저장소 설정 "Allow GitHub Actions to create … pull requests" 필요), `release.yml`(수동, Marketplace 는 Trusted Publishing(`vsce --oidc`, environment `marketplace`), Open VSX 는 토큰 시크릿이 있을 때만 배포, `docs/MAINTENANCE.md` "Marketplace 배포"). main 이 보호돼 있어 커밋하지 않는다: 다음 버전은 이 저장소의
   마지막 GitHub Release 태그(없으면 package.json)에서 계산해 VSIX 안에만 넣고, package.json 버전은 그대로 둔다
-  (원본의 v5.x 태그는 릴리스가 아니라서 무시).
+  (원본의 v5.x 태그는 릴리스가 아니라서 무시). 이미 있는 태그(옛 `cool-icon-vscode` 의 v1.1.0~v1.3.0, 원본 v3~v5)는 쓰지 않는다:
+  계산한 버전은 같은 종류로 다음 빈 번호까지 건너뛰고(1.0.0 의 minor = 1.4.0), 직접 준 버전이면 멈춘다.
 - 테스트: `test/run-unit.js` 가 esbuild 로 묶으며 `vscode` 를 `test/mocks/vscode.ts` 로 바꿔 mocha 실행.
 - SonarQube Cloud(`WoogaJJangka_a-file-icon-vscode`)는 2026-11-21 부터 **CI 분석**(`sonar.yml`, secret `SONAR_TOKEN`, 커버리지 포함,
   게이트 실패 = 검사 실패)으로 돈다. Automatic Analysis 는 꺼 둔다(켜면 CI 스캔이 실패). 이전의 Automatic Analysis 는 실패 표시 없이
