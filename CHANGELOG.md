@@ -2,7 +2,10 @@
 
 All notable changes to this project will be documented in this file. Dates are displayed in UTC.
 
-#### Unreleased
+#### 1.0.0 (2026-11-22)
+
+The first stable release of Cool Theme Kit. Syntax colors compared character by character with WebStorm, PhpStorm, RubyMine and PyCharm, from the rich text the
+IDEs copy; Ruby and PHP now follow RubyMine and PhpStorm.
 
 - feat: Ruby and PHP look like RubyMine and PhpStorm (they followed the TextMate colors of PyCharm): constants and
   their declarations, symbols, parameters, local and instance variables, specific calls like `require`, method
