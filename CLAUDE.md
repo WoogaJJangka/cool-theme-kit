@@ -6,6 +6,8 @@
 - 이름 규칙: 확장·명령 분류·설정 제목·알림 = "Cool Theme Kit"(단 `package.json` `displayName` 은 임시로 "Cool Theme Kit (JetBrains Look)":
   Marketplace 가 지운 옛 확장의 표시 이름 "Cool Theme Kit" 을 계속 잡고 있어 2026-11-21 0.1.0 게시가 네 번 거부됨. 풀리면 되돌린다), 파일 아이콘 테마 = "Cool Icons", 색 = "Cool Islands Dark/Light",
   제품 아이콘 = "Cool Islands Icons"(id `cool-islands-product-icons`)·"Cool Material Icons". 테마 id·설정 id 는 바꾸지 않는다(사용자 설정이 가리킴).
+  그래서 옛 id 가 화면에 나오지 않게 한다: 테마 선택 목록은 `description`("Cool Theme Kit")이 없으면 id 를 보여 주고, 설정 화면은
+  설정 묶음 `id`(`a-file-icon-vscode.<종류>`)가 없으면 이름 앞에 "A-file-icon-vscode:" 를 붙인다(검색 결과·`@ext:` 에서는 VS Code 가 늘 붙임).
   `test/unit/packageIdentity.test.ts` 가 지킨다. 한국어 조사는 읽는 소리 기준: "Cool Theme Kit이/과", "Cool Icons가/와".
 
 ## 방향 (2026-11-19 전면 수정)
