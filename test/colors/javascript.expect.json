@@ -1,0 +1,27 @@
+{
+  "file": "javascript.js",
+  "scope": "source.js",
+  "tokens": [
+    { "line": 1, "text": "// 한글 주석", "key": "DEFAULT_LINE_COMMENT" },
+    { "line": 2, "text": "import", "key": "DEFAULT_KEYWORD" },
+    { "line": 2, "text": "'node:path'", "key": "DEFAULT_STRING" },
+    { "line": 4, "text": "/** Doc comment */", "key": "DEFAULT_DOC_COMMENT" },
+    { "line": 5, "text": "class", "key": "DEFAULT_KEYWORD" },
+    { "line": 5, "text": "Runner", "key": "DEFAULT_CLASS_NAME" },
+    { "line": 6, "text": "static", "key": "DEFAULT_KEYWORD" },
+    { "line": 6, "text": "LIMIT", "key": "DEFAULT_STATIC_FIELD", "todo": "only semantic tokens (the TypeScript server) know a static field" },
+    { "line": 6, "text": "3", "key": "DEFAULT_NUMBER" },
+    { "line": 7, "text": "label", "key": "DEFAULT_INSTANCE_FIELD" },
+    { "line": 9, "text": "run", "key": "JS.INSTANCE_MEMBER_FUNCTION" },
+    { "line": 9, "text": "input", "key": "TEXT" },
+    { "line": 10, "text": "const", "key": "DEFAULT_KEYWORD" },
+    { "line": 10, "text": "pattern", "key": "JS.LOCAL_VARIABLE" },
+    { "line": 10, "text": "/", "key": "JS.REGEXP" },
+    { "line": 11, "text": "console", "key": "JS.GLOBAL_VARIABLE", "todo": "the grammar gives a global of the standard library the scope of any object (the TypeScript server marks it defaultLibrary)" },
+    { "line": 11, "text": "pattern", "key": "JS.LOCAL_VARIABLE", "todo": "the use of a local variable has no scope of its own (the TypeScript server marks it local)" },
+    { "line": 12, "text": "this", "key": "DEFAULT_KEYWORD" },
+    { "line": 12, "text": "${", "key": "TEXT" },
+    { "line": 12, "text": "label", "key": "TEXT" },
+    { "line": 12, "text": "input", "key": "TEXT" }
+  ]
+}

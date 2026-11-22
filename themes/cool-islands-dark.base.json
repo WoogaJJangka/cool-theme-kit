@@ -576,6 +576,13 @@
       "underline": false,
       "foreground": "#bcbec4"
     },
+    "parameter.declaration.readonly:javascript": {
+      "bold": false,
+      "italic": false,
+      "strikethrough": false,
+      "underline": false,
+      "foreground": "#c77dbb"
+    },
     "property:javascript": {
       "bold": false,
       "italic": false,
@@ -583,7 +590,28 @@
       "underline": false,
       "foreground": "#bcbec4"
     },
+    "property.readonly:javascript": {
+      "bold": false,
+      "italic": false,
+      "strikethrough": false,
+      "underline": false,
+      "foreground": "#bcbec4"
+    },
+    "property.readonly.static:javascript": {
+      "bold": false,
+      "italic": true,
+      "strikethrough": false,
+      "underline": false,
+      "foreground": "#c77dbb"
+    },
     "property.declaration:javascript": {
+      "bold": false,
+      "italic": false,
+      "strikethrough": false,
+      "underline": false,
+      "foreground": "#c77dbb"
+    },
+    "property.declaration.readonly:javascript": {
       "bold": false,
       "italic": false,
       "strikethrough": false,
@@ -596,6 +624,20 @@
       "strikethrough": false,
       "underline": false,
       "foreground": "#c77dbb"
+    },
+    "property.declaration.readonly.static:javascript": {
+      "bold": false,
+      "italic": true,
+      "strikethrough": false,
+      "underline": false,
+      "foreground": "#c77dbb"
+    },
+    "method.declaration:javascript": {
+      "bold": false,
+      "italic": false,
+      "strikethrough": false,
+      "underline": false,
+      "foreground": "#56a8f5"
     },
     "typeParameter:javascript": {
       "bold": false,
@@ -618,6 +660,13 @@
       "underline": false,
       "foreground": "#bcbec4"
     },
+    "parameter.declaration.readonly:javascriptreact": {
+      "bold": false,
+      "italic": false,
+      "strikethrough": false,
+      "underline": false,
+      "foreground": "#c77dbb"
+    },
     "property:javascriptreact": {
       "bold": false,
       "italic": false,
@@ -625,7 +674,28 @@
       "underline": false,
       "foreground": "#bcbec4"
     },
+    "property.readonly:javascriptreact": {
+      "bold": false,
+      "italic": false,
+      "strikethrough": false,
+      "underline": false,
+      "foreground": "#bcbec4"
+    },
+    "property.readonly.static:javascriptreact": {
+      "bold": false,
+      "italic": true,
+      "strikethrough": false,
+      "underline": false,
+      "foreground": "#c77dbb"
+    },
     "property.declaration:javascriptreact": {
+      "bold": false,
+      "italic": false,
+      "strikethrough": false,
+      "underline": false,
+      "foreground": "#c77dbb"
+    },
+    "property.declaration.readonly:javascriptreact": {
       "bold": false,
       "italic": false,
       "strikethrough": false,
@@ -638,6 +708,20 @@
       "strikethrough": false,
       "underline": false,
       "foreground": "#c77dbb"
+    },
+    "property.declaration.readonly.static:javascriptreact": {
+      "bold": false,
+      "italic": true,
+      "strikethrough": false,
+      "underline": false,
+      "foreground": "#c77dbb"
+    },
+    "method.declaration:javascriptreact": {
+      "bold": false,
+      "italic": false,
+      "strikethrough": false,
+      "underline": false,
+      "foreground": "#56a8f5"
     },
     "typeParameter:javascriptreact": {
       "bold": false,
@@ -660,6 +744,13 @@
       "underline": false,
       "foreground": "#bcbec4"
     },
+    "parameter.declaration.readonly:typescript": {
+      "bold": false,
+      "italic": false,
+      "strikethrough": false,
+      "underline": false,
+      "foreground": "#c77dbb"
+    },
     "property:typescript": {
       "bold": false,
       "italic": false,
@@ -667,7 +758,28 @@
       "underline": false,
       "foreground": "#bcbec4"
     },
+    "property.readonly:typescript": {
+      "bold": false,
+      "italic": false,
+      "strikethrough": false,
+      "underline": false,
+      "foreground": "#bcbec4"
+    },
+    "property.readonly.static:typescript": {
+      "bold": false,
+      "italic": true,
+      "strikethrough": false,
+      "underline": false,
+      "foreground": "#c77dbb"
+    },
     "property.declaration:typescript": {
+      "bold": false,
+      "italic": false,
+      "strikethrough": false,
+      "underline": false,
+      "foreground": "#c77dbb"
+    },
+    "property.declaration.readonly:typescript": {
       "bold": false,
       "italic": false,
       "strikethrough": false,
@@ -680,6 +792,20 @@
       "strikethrough": false,
       "underline": false,
       "foreground": "#c77dbb"
+    },
+    "property.declaration.readonly.static:typescript": {
+      "bold": false,
+      "italic": true,
+      "strikethrough": false,
+      "underline": false,
+      "foreground": "#c77dbb"
+    },
+    "method.declaration:typescript": {
+      "bold": false,
+      "italic": false,
+      "strikethrough": false,
+      "underline": false,
+      "foreground": "#56a8f5"
     },
     "typeParameter:typescript": {
       "bold": false,
@@ -702,6 +828,13 @@
       "underline": false,
       "foreground": "#bcbec4"
     },
+    "parameter.declaration.readonly:typescriptreact": {
+      "bold": false,
+      "italic": false,
+      "strikethrough": false,
+      "underline": false,
+      "foreground": "#c77dbb"
+    },
     "property:typescriptreact": {
       "bold": false,
       "italic": false,
@@ -709,7 +842,28 @@
       "underline": false,
       "foreground": "#bcbec4"
     },
+    "property.readonly:typescriptreact": {
+      "bold": false,
+      "italic": false,
+      "strikethrough": false,
+      "underline": false,
+      "foreground": "#bcbec4"
+    },
+    "property.readonly.static:typescriptreact": {
+      "bold": false,
+      "italic": true,
+      "strikethrough": false,
+      "underline": false,
+      "foreground": "#c77dbb"
+    },
     "property.declaration:typescriptreact": {
+      "bold": false,
+      "italic": false,
+      "strikethrough": false,
+      "underline": false,
+      "foreground": "#c77dbb"
+    },
+    "property.declaration.readonly:typescriptreact": {
       "bold": false,
       "italic": false,
       "strikethrough": false,
@@ -722,6 +876,20 @@
       "strikethrough": false,
       "underline": false,
       "foreground": "#c77dbb"
+    },
+    "property.declaration.readonly.static:typescriptreact": {
+      "bold": false,
+      "italic": true,
+      "strikethrough": false,
+      "underline": false,
+      "foreground": "#c77dbb"
+    },
+    "method.declaration:typescriptreact": {
+      "bold": false,
+      "italic": false,
+      "strikethrough": false,
+      "underline": false,
+      "foreground": "#56a8f5"
     },
     "typeParameter:typescriptreact": {
       "bold": false,

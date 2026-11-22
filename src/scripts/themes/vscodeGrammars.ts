@@ -9,8 +9,10 @@ import { dirname, join } from 'node:path';
 import { createOnigScanner, createOnigString, loadWASM } from 'vscode-oniguruma';
 import { INITIAL, parseRawGrammar, Registry } from 'vscode-textmate';
 import { extensionRoot, THEMES_FOLDER } from 'src/themes/colorThemes';
+import { DEFAULT_RULES, SUPER_TYPES } from 'src/themes/semanticTokens';
 
 import type { LineToken } from 'src/themes/colorCheck';
+import type { DefaultRule } from 'src/themes/semanticTokens';
 import type { VsCodeColorTheme } from 'src/themes/convertJetbrainsTheme';
 import type { IGrammar, IRawGrammar } from 'vscode-textmate';
 
@@ -96,5 +98,32 @@ const loadVsCodeGrammars = async (version: string) => {
   return { contributions, registry };
 };
 
-export { VSCODE_VERSION, loadTheme, loadVsCodeGrammars, root, textMateTheme, tokenize };
+type SemanticContributions = {
+  semanticTokenScopes?: Array<{ language?: string; scopes: Record<string, string[]> }>;
+  semanticTokenTypes?: Array<{ id: string; superType?: string }>;
+};
+
+/**
+ * What the extensions built into VS Code `version` add to semantic highlighting (`TokenClassificationExtensionPoint`):
+ * default rules (`semanticTokenScopes`, with their language) after the ones of VS Code, and super types of new token types
+ */
+const loadSemanticContributions = async (version: string) => {
+  const extensions = findExtensionsFolder(await downloadAndUnzipVSCode(version));
+  const defaults: DefaultRule[] = [...DEFAULT_RULES];
+  const superTypes: Record<string, string> = { ...SUPER_TYPES };
+  for (const name of readdirSync(extensions).sort()) {
+    const manifest = join(extensions, name, 'package.json');
+    if (!existsSync(manifest)) continue;
+    const contributes = (JSON.parse(readFileSync(manifest, 'utf8')) as { contributes?: SemanticContributions }).contributes ?? {};
+    for (const type of contributes.semanticTokenTypes ?? []) if (type.superType) superTypes[type.id] = type.superType;
+    for (const { language, scopes } of contributes.semanticTokenScopes ?? []) {
+      for (const [selector, probes] of Object.entries(scopes)) {
+        defaults.push({ scopesToProbe: probes.map((probe) => probe.split(' ')), selector: language && !selector.includes(':') ? `${selector}:${language}` : selector });
+      }
+    }
+  }
+  return { defaults, superTypes };
+};
+
+export { VSCODE_VERSION, loadSemanticContributions, loadTheme, loadVsCodeGrammars, root, textMateTheme, tokenize };
 export type { Contribution };

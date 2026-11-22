@@ -489,11 +489,19 @@ export const SEMANTIC_RULES: Record<string, string[]> = {
   ...Object.fromEntries(
     JS_LANGUAGES.flatMap((language) => [
       // WebStorm (captured 2026-11-22): a parameter and a property access are text, a declaration a field; locals and type
-      // parameters have their keys
+      // parameters have their keys. A selector scores 100 a modifier and 10 its language (check:semantic), so the
+      // modifiers of the general rules (`property.readonly`, `method.declaration`) are repeated here: `this.options` of a
+      // readonly property is text, a readonly parameter (a parameter property) a field, a method declaration a member
       [`parameter:${language}`, ['TEXT']],
+      [`parameter.declaration.readonly:${language}`, ['DEFAULT_INSTANCE_FIELD']],
       [`property:${language}`, ['TEXT']],
+      [`property.readonly:${language}`, ['TEXT']],
+      [`property.readonly.static:${language}`, ['DEFAULT_STATIC_FIELD', 'DEFAULT_INSTANCE_FIELD']],
       [`property.declaration:${language}`, ['DEFAULT_INSTANCE_FIELD']],
+      [`property.declaration.readonly:${language}`, ['DEFAULT_INSTANCE_FIELD']],
       [`property.declaration.static:${language}`, ['DEFAULT_STATIC_FIELD', 'DEFAULT_INSTANCE_FIELD']],
+      [`property.declaration.readonly.static:${language}`, ['DEFAULT_STATIC_FIELD', 'DEFAULT_INSTANCE_FIELD']],
+      [`method.declaration:${language}`, JS_MEMBER_FUNCTION],
       [`typeParameter:${language}`, JS_TYPE_PARAMETER],
       [`variable.local:${language}`, ['JS.LOCAL_VARIABLE', 'DEFAULT_LOCAL_VARIABLE']],
     ]),

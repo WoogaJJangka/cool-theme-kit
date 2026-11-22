@@ -62,6 +62,11 @@ export type Expectation = {
   text: string;
   /** A known difference, still to be fixed: reported, not a failure */
   todo?: string;
+  /**
+   * A difference that stays with the semantic tokens of the language server built into VS Code (`check:semantic`), and
+   * why; `todo` is the one of the TextMate colors alone
+   */
+  semantic?: string;
   /** The key of the layer the highlighter puts under it, which shows when `key` has no color (a reST literal: a string) */
   under?: string;
 };

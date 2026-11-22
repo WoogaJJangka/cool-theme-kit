@@ -1,0 +1,10 @@
+{
+  "name": "semantic-tokens-dump",
+  "description": "Empty extension the semantic token dump of test/semantic runs its tests with",
+  "version": "0.0.0",
+  "publisher": "test",
+  "private": true,
+  "engines": {
+    "vscode": "^1.95.0"
+  }
+}

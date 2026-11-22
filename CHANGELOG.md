@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file. Dates are d
 
 #### Unreleased
 
+- fix: with the TypeScript server built into VS Code, `this.options` of a readonly property has the text color, a
+  readonly parameter of a constructor (a parameter property) the field color, and a method declaration the member
+  color of WebStorm in Cool Islands Light: the general semantic rules (`property.readonly`, `method.declaration`) won
+  over the ones of TypeScript and JavaScript. `bun run check:semantic` checks the colors of the TypeScript and
+  JavaScript samples with the semantic tokens of a real VS Code.
+
 - feat: F#, VB.NET, HLSL, ShaderLab, CoffeeScript, LaTeX and BibTeX get the colors PyCharm gives them with the same
   TextMate grammars as VS Code, and C the colors of CLion. Every TextMate language (Lua, Swift, PowerShell, Dart,
   Julia, Clojure, Objective-C, batch files…) is now compared character by character with a PyCharm without plugins.
