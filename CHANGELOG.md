@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. Dates are displayed in UTC.
 
+#### Unreleased
+
+- feat: `iconThemeByName` takes the id of Cool Icons itself, `cool-theme-kit-icons`: the name gets back the icon of
+  Cool Icons as it is before the layers, over an `override` layer (the original Atom Material Icons first, with the
+  icons of Cool Icons you prefer for some names). The Mix Themes page offers Cool Icons in its "By name" list.
+
 #### 1.4.0 (2026-11-22)
 
 Cool Icons next to the original Atom Material Icons (its own theme id, the original as a layer), more languages

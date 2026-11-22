@@ -70,14 +70,14 @@ export const parseNameKey = (key: string): NameTarget | undefined => {
   return name ? { kind: 'file', name } : undefined;
 };
 
-/** The valid entries of `iconThemeByName`, with their theme id trimmed */
+/** The valid entries of `iconThemeByName`, with their theme id trimmed (the id of this theme gives a name its own icon back) */
 export const normalizeByName = (byName: unknown): Array<{ target: NameTarget; theme: string }> => {
   if (!byName || typeof byName !== 'object') return [];
 
   return Object.entries(byName as Record<string, unknown>).flatMap(([key, theme]) => {
     const target = parseNameKey(key);
     const id = typeof theme === 'string' ? theme.trim() : '';
-    return target && id && id !== ICON_THEME_ID ? [{ target, theme: id }] : [];
+    return target && id ? [{ target, theme: id }] : [];
   });
 };
 
@@ -90,12 +90,12 @@ export const pinnedTheme = (byName: Array<{ key: string; theme: string }>, sampl
   return byName.find((entry) => normalizeName(entry.key.trim()) === name)?.theme;
 };
 
-/** Ids of the installed themes the settings mix with this theme */
+/** Ids of the other installed themes the settings mix with this theme (not this theme, which a name can be pinned to) */
 export const usedThemeIds = (config: Pick<AtomConfig, 'iconThemeByName' | 'iconThemeLayers'>): string[] => {
   const ids = normalizeLayers(config.iconThemeLayers)
     .filter((layer) => layer.files !== 'off' || layer.folders !== 'off')
     .map((layer) => layer.theme);
-  for (const { theme } of normalizeByName(config.iconThemeByName)) ids.push(theme);
+  for (const { theme } of normalizeByName(config.iconThemeByName)) if (theme !== ICON_THEME_ID) ids.push(theme);
   return [...new Set(ids)].sort(compareCodeUnits);
 };
 

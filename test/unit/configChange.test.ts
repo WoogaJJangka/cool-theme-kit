@@ -711,6 +711,40 @@ describe('ConfigChangeDetector', () => {
       assert.ok(theme.layerThemes?.includes(`test.${EXTENSION_KEY}@`), theme.layerThemes);
     });
 
+    it('gives a name pinned to this theme its own icon back, over an override layer', () => {
+      const own = ownTheme();
+      const extension = Object.keys(own.light?.fileExtensions ?? {}).find((key) => !key.includes('.'));
+      assert.ok(extension, 'no light variant in this theme');
+      installTheme('material-icon-theme', {
+        ...fallbackTheme,
+        file: 'fb-file',
+        fileExtensions: { ...fallbackTheme.fileExtensions, [extension]: 'fb-python' },
+        folder: 'fb-folder',
+      });
+      applySettings({
+        iconThemeByName: {
+          [`*.${extension}`]: ICON_THEME_ID,
+          'package.json': ICON_THEME_ID,
+          'src/': ICON_THEME_ID,
+          'zz-unknown': ICON_THEME_ID,
+        },
+        iconThemeLayers: [{ files: 'override', folders: 'override', theme: 'material-icon-theme' }],
+      });
+      const theme = readTheme();
+
+      // the layer wins for the other names
+      assert.ok(theme.fileExtensions?.py?.startsWith('layer-'), theme.fileExtensions?.py);
+      assert.ok(theme.file?.startsWith('layer-'));
+      // the pinned ones are this theme again, with its light variant
+      assert.equal(theme.fileExtensions?.[extension], own.fileExtensions?.[extension]);
+      assert.equal(theme.light?.fileExtensions?.[extension], own.light?.fileExtensions?.[extension]);
+      assert.equal(theme.fileNames?.['package.json'], own.fileNames?.['package.json']);
+      assert.equal(theme.folderNames?.src, own.folderNames?.src);
+      assert.equal(theme.folderNamesExpanded?.src, own.folderNamesExpanded?.src);
+      // a name this theme does not know gets its default icon, not the one of the layer
+      assert.equal(theme.fileNames?.['zz-unknown'], own.file);
+    });
+
     it('gives the folder icons of an override layer, its default ones too', () => {
       installTheme('material-icon-theme', { ...fallbackTheme, folder: 'fb-folder', folderExpanded: 'fb-folder-open' });
       applySettings({ iconThemeLayers: [{ files: 'off', folders: 'override', theme: 'material-icon-theme' }] });
