@@ -36,7 +36,7 @@
 ## 명령
 | 목적 | 명령 |
 |---|---|
-| 빌드 (webpack dev + 테마 json 생성 + 아이콘 점검) | `bun run build` |
+| 빌드 (webpack dev + 테마 json 생성) | `bun run build` |
 | 단위 테스트 (빌드된 `dist` 필요) | `bun run test:unit` (`-- <파일 이름 일부>` 로 골라 돌림) |
 | 실제 VS Code 스모크 (빌드 필요, VS Code 를 `.vscode-test` 에 받음) | `bun run test:smoke -- 1.95.0` / `bun run test:smoke` (stable) / `-- stable --with-extensions` (다른 테마 확장과 함께) |
 | README 스크린샷 다시 찍기 (격리 VS Code, `docs/screenshots/`, 기본 섞기 층 Material Icon Theme 을 받아 설치) | `bun run screenshots -- --vsix <경로>.vsix` (`--vsix` 없으면 개발 모드라 제목 줄에 표시가 남음) |
