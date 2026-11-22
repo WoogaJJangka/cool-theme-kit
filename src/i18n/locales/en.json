@@ -162,6 +162,11 @@
   "productIcons": {
     "reload": "Cool Islands Icons changed with the product icon themes mixed in. Reload the window to see them."
   },
+  "profiles": {
+    "conflict": "Cool Theme Kit generated its theme files again for this profile: another VS Code profile had generated them with other values of {{settings}}. All the profiles share the theme files of the extension, so profiles with other values overwrite each other's theme at every start.",
+    "share": "Use This Profile's Settings in All Profiles",
+    "shared": "The theme settings of Cool Theme Kit are now shared by all the profiles (workbench.settings.applyToAllProfiles), with the values of this profile."
+  },
   "readChangelog": "Read changelog",
   "readOnly": {
     "message": "Cool Theme Kit cannot write in its own folder ({{folder}}). The default themes keep working, but the settings that change them (icon settings, accent color, mixed themes) are not applied while the folder is read-only."

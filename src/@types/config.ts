@@ -181,3 +181,20 @@ export const ICON_SETTING_KEYS = [
 ] as const;
 
 export type IconSettings = Pick<AtomConfig, (typeof ICON_SETTING_KEYS)[number]>;
+
+/**
+ * Every setting that changes a generated theme file: the file icons, the product icons and the Cool Islands colors.
+ * The files are in the extension folder, which all the VS Code profiles share: these are the settings to share across
+ * the profiles (`workbench.settings.applyToAllProfiles`, services/ProfileConflictService). Every setting of
+ * package.json but the `show…Message` ones (test/unit/profileConflict.test.ts).
+ */
+export const THEME_SETTING_KEYS = [
+  ...ICON_SETTING_KEYS,
+  'accentColor',
+  'accentTargets',
+  'arrowTheme',
+  'colorThemeByKey',
+  'colorThemeLayers',
+  'productIconByName',
+  'productIconThemeLayers',
+] as const;

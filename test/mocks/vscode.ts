@@ -13,6 +13,12 @@ export const testState: {
    * keys carry their section (`editor.fontFamily`): two of them can then hold the same key.
    */
   config: Record<string, unknown>;
+  /**
+   * The settings of the Default profile when the window is in another profile (unset: the window is in the Default
+   * profile). The settings listed in its `workbench.settings.applyToAllProfiles` (that one included) are read from and
+   * written to it, as VS Code does; only for the sections in `sections`, whose keys carry their section.
+   */
+  defaultProfile?: Record<string, unknown>;
   /** sections whose settings are kept apart and reported by `inspect` as user settings (the other sections inspect nothing) */
   sections: Set<string>;
   extensionPath: string;
@@ -61,6 +67,16 @@ const show =
 const isKeptApart = (section: string | undefined): section is string => section !== undefined && testState.sections.has(section);
 
 const settingKey = (section: string | undefined, key: string) => (isKeptApart(section) ? `${section}.${key}` : key);
+
+const APPLY_TO_ALL_PROFILES = 'workbench.settings.applyToAllProfiles';
+
+/** The settings that hold a key: the Default profile's for a setting shared across the profiles */
+const storeOf = (key: string): Record<string, unknown> => {
+  const profile = testState.defaultProfile;
+  if (!profile) return testState.config;
+  const shared = profile[APPLY_TO_ALL_PROFILES];
+  return key === APPLY_TO_ALL_PROFILES || (Array.isArray(shared) && shared.includes(key)) ? profile : testState.config;
+};
 
 export enum ConfigurationTarget {
   Global = 1,
@@ -163,14 +179,14 @@ export class TestQuickPick {
 
 export const workspace = {
   getConfiguration: (section?: string) => ({
-    get: <T>(key: string): T | undefined => (section ? testState.config[settingKey(section, key)] : undefined) as T | undefined,
+    get: <T>(key: string): T | undefined => (section ? storeOf(settingKey(section, key))[settingKey(section, key)] : undefined) as T | undefined,
     inspect: <T>(key: string) => {
       if (!isKeptApart(section)) return undefined;
-      const value = testState.config[settingKey(section, key)] as T | undefined;
+      const value = storeOf(settingKey(section, key))[settingKey(section, key)] as T | undefined;
       return value === undefined ? undefined : { globalValue: value, key: settingKey(section, key) };
     },
     update: async (key: string, value: unknown, target?: number) => {
-      testState.config[settingKey(section, key)] = value;
+      storeOf(settingKey(section, key))[settingKey(section, key)] = value;
       testState.lastTarget = target;
     },
   }),

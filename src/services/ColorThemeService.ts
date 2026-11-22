@@ -137,16 +137,18 @@ export class ColorThemeService {
     };
   }
 
-  regenerate(): void {
+  /** Write the color themes whose content changed; returns whether one was written */
+  regenerate(): boolean {
     const extensionPath = getExtensionPath();
-    if (!extensionPath) return;
+    if (!extensionPath) return false;
     const generator = new ColorThemeGenerator({ dist: join(extensionPath, 'dist'), themes: join(extensionPath, THEMES_FOLDER) });
     const written = generator.createJsonThemes(this.mix());
-    if (written.length === 0) return;
+    if (written.length === 0) return false;
     logger.info(`Color themes written: ${written.join(', ')}`);
 
     const selected = workspace.getConfiguration('workbench').get<string>('colorTheme');
     if (selected && written.includes(selected)) offerReload(i18next.t('colors.reload', { theme: selected }));
+    return true;
   }
 }
 

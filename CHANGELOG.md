@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file. Dates are d
 
 #### Unreleased
 
+- fix: VS Code profiles with other Cool Theme Kit settings no longer overwrite each other's theme in silence. All the
+  profiles share the theme files of the extension, so a window of one profile generated them again over the theme of
+  the other one at every start (icons and colors switching, a reload notice each time). The window that does it now
+  names the settings in a notice, once per profile, and in the output channel each time; **Use This Profile's Settings
+  in All Profiles** lists the theme settings in `workbench.settings.applyToAllProfiles` with the values of the current
+  profile. Shared settings, workspace values and a change just made in the window are not counted. The README lists
+  the settings to share by hand ("VS Code profiles").
 - fix: the theme pickers say "Cool Theme Kit" next to Cool Icons, Cool Islands Icons and Cool Material Icons instead of
   their ids (`a-file-icon-vscode`, `a-file-icon-vscode-product-icon-theme`), and the settings of the kit no longer
   start with "A-file-icon-vscode:" when you browse them in the Settings editor. The ids stay, so your settings keep

@@ -133,6 +133,8 @@ Cool Theme Kit 을 고칠 때 지키는 규칙과, 그 규칙을 지키는지 �
    `workbench.colorTheme`·`iconTheme`·`productIconTheme` 은 사용자가 고를 때만 쓴다: walkthrough 버튼(`useTheme`)과 테마 조합
    (`choosePreset`, 미리보기 동안 쓰고 Esc 면 열 때의 값으로 되돌림, 고른 뒤의 되돌리기는 `undoPreset`). 조합이 다른 확장을 쓰면
    모달로 물은 뒤에만 설치한다.
+   `workbench.settings.applyToAllProfiles` 는 프로필 충돌 알림(규칙 10)의 버튼을 사용자가 누를 때만, 우리 설정 id 를 **덧붙이기만** 한다
+   (있던 항목은 그대로, 같은 id 두 번 없음).
 3. **남의 파일은 읽기만**: 다른 확장의 폴더에 쓰지 않는다. 필요한 것은 `dist/layers/` 로 복사한다.
 4. **섞기가 실패해도 기본 테마는 남는다**: 테마 하나를 못 읽으면 그 테마만 빠지고 출력 채널에 한 줄 남는다
    (`ColorThemeService`·`ProductIconService` 의 테마별 `try`). 사용자에게는 `reportThemeFailure` 로만 알린다.
@@ -143,6 +145,12 @@ Cool Theme Kit 을 고칠 때 지키는 규칙과, 그 규칙을 지키는지 �
 8. **엔진 하한** `^1.95.0`: VS Code 1.95 의 Node 는 20 이라 Node 22 이후 API 는 쓰지 않는다. 새 VS Code API 가 필요하면
    하한을 올릴지 먼저 정하고 `@types/vscode`·`engines`·스모크 버전을 같이 바꾼다.
 9. **원격·웹**: `extensionKind` 는 `ui`·`workspace`, 웹 진입점(`src/web/extension.ts`)은 빈 stub 이다. 지원 범위를 바꾸면 README 와 이 문서를 고친다.
+10. **VS Code 프로필**: 확장 폴더(그 안의 `dist/` 테마 파일)는 모든 프로필이 같이 쓰고, 설정·globalState 는 프로필마다 따로다.
+    테마 `contributes` 경로는 고정이라 프로필마다 다른 파일을 줄 수 없다. 값이 다른 프로필끼리는 창을 열 때마다 서로의 테마를 다시 만든다
+    (2026-11-22 격리 VS Code 1.147 로 재현). 그래서 `.state.json` 의 `writer` 에 마지막으로 쓴 프로필(그 프로필 globalState 의 무작위 `profileId`. `globalStorageUri` 는 모든 프로필이 같은 폴더라 못 씀)과 그때의
+    테마 설정을 남기고, `services/ProfileConflictService` 가 다른 프로필의 파일을 다시 쓴 창에서 다른 설정을 출력 채널에 매번, 알림으로 한 번
+    (프로필·설정 묶음마다) 알린다. 공유된 설정(`applyToAllProfiles`), 워크스페이스 값, 이 창에서 방금 바꾼 값은 충돌로 치지 않는다.
+    테마를 바꾸는 설정을 새로 만들면 `THEME_SETTING_KEYS`(`@types/config.ts`)와 README "VS Code profiles" 목록에 넣는다(`profileConflict.test.ts` 가 지킴).
 
 ### 함께 확인하는 확장
 

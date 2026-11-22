@@ -696,6 +696,48 @@ Some options of the JetBrains plugin cannot be built with the VS Code icon theme
 | VS Code for the Web (vscode.dev)        | The themes as they are built: Cool Icons, Cool Islands Dark/Light, the product icons. The settings that change them (icon settings, accent color, mixed themes) are not applied: the extension cannot write its theme files there. |
 | A read-only install (system-wide install, read-only folder) | The same as the web: the default themes work. A notice says once (per version) that the settings are not applied, instead of an error at every change. |
 | An untrusted folder (Restricted Mode)   | Everything, except the `filesAssociations`, `foldersAssociations` and `languagesAssociations` of the folder's settings, which may point to SVG files: only those of your user settings apply until you trust the folder. |
+| Several VS Code profiles                | Everything, with the same theme settings in every profile. With other values, the profiles overwrite each other's theme: see [VS Code profiles](#vs-code-profiles). |
+
+### VS Code profiles
+
+All your [VS Code profiles](https://code.visualstudio.com/docs/configure/profiles) use one copy of the extension, and
+so one set of the theme files it generates from its settings. The settings themselves are per profile. When two
+profiles have other values (an accent color set in one profile only, another `iconThemeLayers`), each window
+generates the theme again for its own profile when it starts, over the theme of the other profile: the icons and
+colors switch, and VS Code asks to reload the window.
+
+When a window overwrites the theme of another profile, Cool Theme Kit says so once (per profile and per set of
+settings), names the settings, and logs it each time in its output channel. **Use This Profile's Settings in All
+Profiles** adds the theme settings to `workbench.settings.applyToAllProfiles` and writes the values of the current
+profile there: VS Code then keeps one value of each, in the settings of the Default profile, for every profile. Your
+other settings stay per profile. To do it by hand, add this to the user settings of the Default profile:
+
+```jsonc
+"workbench.settings.applyToAllProfiles": [
+  "a-file-icon-vscode.activeIconPacks",
+  "a-file-icon-vscode.filesAssociations",
+  "a-file-icon-vscode.folderColor",
+  "a-file-icon-vscode.folderTheme",
+  "a-file-icon-vscode.foldersAssociations",
+  "a-file-icon-vscode.hideFileIcons",
+  "a-file-icon-vscode.iconThemeByName",
+  "a-file-icon-vscode.iconThemeLayers",
+  "a-file-icon-vscode.languagesAssociations",
+  "a-file-icon-vscode.monochrome",
+  "a-file-icon-vscode.monochromeColor",
+  "a-file-icon-vscode.opacity",
+  "a-file-icon-vscode.saturation",
+  "a-file-icon-vscode.accentColor",
+  "a-file-icon-vscode.accentTargets",
+  "a-file-icon-vscode.arrowTheme",
+  "a-file-icon-vscode.colorThemeByKey",
+  "a-file-icon-vscode.colorThemeLayers",
+  "a-file-icon-vscode.productIconByName",
+  "a-file-icon-vscode.productIconThemeLayers"
+]
+```
+
+The values a workspace sets (`.vscode/settings.json`) are not part of it: they depend on the folder, not on the profile.
 
 ## Reporting a problem
 

@@ -14,6 +14,7 @@ import { logger } from 'src/services/LoggingService';
 import { forgetInstalledProductThemes, productIconService } from 'src/services/ProductIconService';
 import { ThemeMixerPanel } from 'src/panels/ThemeMixerPanel';
 import { presetService } from 'src/services/PresetService';
+import { profileConflictService } from 'src/services/ProfileConflictService';
 import { notificationsService } from 'src/services/NotificationsService';
 import { offerToUninstallOldExtension } from 'src/services/OldExtensionService';
 import { initThemeFailure, reportThemeFailure } from 'src/services/themeFailure';
@@ -55,17 +56,20 @@ const affectsTheme = (event: ConfigurationChangeEvent) =>
  */
 const regenerateTheme = () => {
   const started = performance.now();
+  let written = false;
   try {
-    configChangeDetector.listenForChanges();
+    written = configChangeDetector.listenForChanges();
   } catch (error) {
     reportThemeFailure(error);
   }
   try {
-    colorThemeService.regenerate();
-    productIconService.regenerate();
+    if (colorThemeService.regenerate()) written = true;
+    if (productIconService.regenerate()) written = true;
   } catch (error) {
     reportThemeFailure(error);
   }
+  // all the profiles share the theme files: said when this window overwrote the ones of another profile
+  profileConflictService.regenerated(written).catch((error: unknown) => logger.error(String(error)));
   watchLayerThemes();
   // the theme mixer previews the regenerated theme
   ThemeMixerPanel.refresh();
@@ -120,6 +124,7 @@ export const activate = async (context: ExtensionContext) => {
     logger.debug('Checking for new updates...');
     const status = await updatesService.checkUpdateStatus(context.globalState);
     initThemeFailure(context.globalState, updatesService.getPluginVersion());
+    profileConflictService.init(context);
 
     // Start notification
     notificationsService.showStartMessages(status);
