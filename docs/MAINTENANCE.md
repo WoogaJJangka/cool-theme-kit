@@ -153,7 +153,8 @@ Cool Theme Kit 을 고칠 때 지키는 규칙과, 그 규칙을 지키는지 �
     테마를 바꾸는 설정을 새로 만들면 `THEME_SETTING_KEYS`(`@types/config.ts`)와 README "VS Code profiles" 목록에 넣는다(`profileConflict.test.ts` 가 지킴).
 11. **원본 Atom Material Icons(`AtomMaterial.a-file-icon-vscode`)와 같이 설치될 때**(2026-11-22 사용자 PC 에서 확인): 원본은 파일 아이콘
     테마 id `a-file-icon-vscode`·제품 아이콘 테마 id `a-file-icon-vscode-product-icon-theme`·설정 `a-file-icon-vscode.*` 12개를 우리와 같은
-    이름으로 기여한다. VS Code 는 확장을 폴더 이름순(`atommaterial…` < `woogajjangka…`)으로 등록해서 같은 테마 id 는 원본 것을 고르고
+    이름으로 기여하고, 명령 7개(`changeArrowTheme`·`changeFolderColor`·`changeFolderTheme`·`changeOpacity`·`changeSaturation`·
+    `toggleIconPacks`·`restoreDefaultConfig`)를 같은 id 로 먼저 등록한다. VS Code 는 확장을 폴더 이름순(`atommaterial…` < `woogajjangka…`)으로 등록해서 같은 테마 id 는 원본 것을 고르고
     (`findThemeBySettingsId` 는 첫 번째), 같은 설정은 원본 스키마(기본값)를 남긴다. 그래서:
     - 우리 파일 아이콘 테마는 겹치지 않는 id `cool-theme-kit-icons`(`ICON_THEME_ID`)로 고른다. `useTheme`·프리셋·`activateIcons` 는 이 id 를
       쓰고, 옛 id 는 예전 설정을 위해 두 번째 항목("for earlier settings")으로 남긴다. "우리 테마가 선택됐나"는 `isOwnIconTheme` 으로만 본다
@@ -162,6 +163,8 @@ Cool Theme Kit 을 고칠 때 지키는 규칙과, 그 규칙을 지키는지 �
     - 설정 getter 는 사용자가 정한 값(`inspect` 의 폴더·워크스페이스·사용자 값)만 읽고, 없으면 `getDefaultConfig()` 를 쓴다. `get()` 은 원본이
       등록한 기본값(`activeIconPacks` = angular·rails)을 돌려준다. 그래서 `package.json` 기본값과 `getDefaultConfig()` 는 같아야 한다
       (`atomMaterialIcons.test.ts`).
+    - 명령은 하나씩 등록한다(`registerCommands`): 이미 있는 id 는 출력 채널에 경고만 남기고 넘어간다(그 id 는 원본 명령이 같은 설정을
+      고친다). 한꺼번에 등록하면 첫 충돌에서 나머지 명령과 활성화(첫 테마 생성)까지 멈췄다(2026-11-22 스모크가 찾음).
     - 제품 아이콘 테마 Cool Material Icons 는 아직 원본과 id 가 같다(원본이 설치돼 있으면 그 id 는 원본 것).
 
 ### 함께 확인하는 확장

@@ -19,6 +19,8 @@ export const testState: {
    * reports it as the default
    */
   registeredDefaults: Record<string, unknown>;
+  /** the command ids another extension registered first: registering one of them throws, as in VS Code */
+  foreignCommands: string[];
   /**
    * The settings of the Default profile when the window is in another profile (unset: the window is in the Default
    * profile). The settings listed in its `workbench.settings.applyToAllProfiles` (that one included) are read from and
@@ -53,6 +55,7 @@ export const testState: {
   clipboard: '',
   config: {},
   registeredDefaults: {},
+  foreignCommands: [],
   executed: [],
   extensionPath: '',
   extensions: [],
@@ -253,6 +256,7 @@ export const commands = {
     testState.executed.push(parameters);
   },
   registerCommand: (id: string, callback: (...parameters: unknown[]) => unknown) => {
+    if (testState.foreignCommands.includes(id)) throw new Error(`command '${id}' already exists`);
     registeredCommands.set(id, callback);
     return disposable;
   },

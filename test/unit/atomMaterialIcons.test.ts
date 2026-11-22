@@ -2,16 +2,19 @@ import * as assert from 'node:assert/strict';
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { registerCommands } from 'src/commands/commands';
 import { EXTENSION_ID, EXTENSION_KEY, ICON_THEME_ID, OLD_EXTENSION_ID } from 'src/helpers/constants';
 import { normalizeByName, normalizeLayers, usedThemeIds } from 'src/helpers/themeLayers';
+import { compareCodeUnits } from 'src/helpers/utils';
 import { findIconTheme, isOwnIconTheme, listIconThemes } from 'src/helpers/vscodeUtils';
 import { initI18next } from 'src/i18n/i18next';
 import { getDefaultConfig } from 'src/icons/configUtils';
 import { configService } from 'src/services/ConfigService';
 
-import { testState } from '../mocks/vscode';
+import { registeredCommands, testState } from '../mocks/vscode';
 
 import type { AtomConfig } from 'src/@types/config';
+import type { ExtensionContext } from 'vscode';
 import type { TestExtension } from '../mocks/vscode';
 
 /**
@@ -121,6 +124,29 @@ describe('next to the original Atom Material Icons', () => {
         EXTENSION_KEY,
         'material-icon-theme',
       ]);
+    });
+  });
+
+  describe('the commands', () => {
+    afterEach(() => {
+      testState.foreignCommands = [];
+      registeredCommands.clear();
+    });
+
+    it('are registered except the ids the original registered first', () => {
+      const ids = (JSON.parse(readFileSync(join(__dirname, '..', '..', 'package.json'), 'utf8')) as {
+        contributes: { commands: Array<{ command: string }> };
+      }).contributes.commands.map((item) => item.command);
+      const shared = [`${EXTENSION_KEY}.changeArrowTheme`, `${EXTENSION_KEY}.changeFolderColor`];
+      testState.foreignCommands = shared;
+      registeredCommands.clear();
+
+      const disposables = registerCommands({} as ExtensionContext);
+      assert.equal(disposables.length, ids.length - shared.length);
+      assert.deepEqual(
+        [...registeredCommands.keys()].sort(compareCodeUnits),
+        ids.filter((id) => !shared.includes(id)).sort(compareCodeUnits),
+      );
     });
   });
 

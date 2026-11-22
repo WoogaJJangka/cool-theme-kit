@@ -150,16 +150,21 @@ const extensionCommands: Record<string, (...parameters: unknown[]) => Promise<vo
 };
 
 /**
- * Register the commands of package.json
+ * Register the commands of package.json, each on its own: the original Atom Material Icons registers some of the same
+ * ids first (changeArrowTheme, changeFolderColor…), and VS Code then refuses ours. Its command runs instead, on the same
+ * settings; the other commands, and the rest of the activation, must not stop there.
  * @returns their disposables
  */
 export const registerCommands = (context: ExtensionContext) => {
   extensionContext = context;
-  return Object.keys(extensionCommands).map((commandName) => {
+  return Object.keys(extensionCommands).flatMap((commandName) => {
+    const id = `${EXTENSION_KEY}.${commandName}`;
     const callCommand = (...parameters: unknown[]) => extensionCommands[commandName](...parameters);
-    return commands.registerCommand(
-      `${EXTENSION_KEY}.${commandName}`,
-      callCommand,
-    );
+    try {
+      return [commands.registerCommand(id, callCommand)];
+    } catch (error) {
+      logger.warn(`The command ${id} is registered by another extension: ${error instanceof Error ? error.message : String(error)}`);
+      return [];
+    }
   });
 };

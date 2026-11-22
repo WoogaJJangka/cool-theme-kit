@@ -14,6 +14,9 @@ compared character by character with the JetBrains IDEs, and the colors of the T
   "override", "folders": "override" }` shows its icons first and Cool Icons for the names it does not know.
 - fix: next to the original Atom Material Icons, the settings you leave unset keep the defaults of Cool Theme Kit
   (VS Code kept the defaults of the original, whose icon packs are only Angular and Rails).
+- fix: next to the original Atom Material Icons, which registers some of the same commands first, the other commands
+  (Mix Themes, Use a Theme of the Kit…) are registered and the theme is generated: activation stopped at the first
+  command VS Code refused.
 
 - fix: with the TypeScript server built into VS Code, `this.options` of a readonly property has the text color, a
   readonly parameter of a constructor (a parameter property) the field color, and a method declaration the member

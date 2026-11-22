@@ -490,7 +490,9 @@ other, by its id. To show its icons first and Cool Icons for the names it does n
 ```
 
 The two extensions also read the same `a-file-icon-vscode.*` settings. Cool Theme Kit uses its own defaults for the ones
-you leave unset (the original has other default icon packs).
+you leave unset (the original has other default icon packs). Seven commands have the same ids in both (Change Arrow
+Theme, Change Folder Color, Change Folder Theme, Change Opacity, Change Saturation, Toggle Icon Packs, Restore Default
+Config): VS Code runs the ones of the original, which change the same settings.
 
 ### One name from another theme
 
