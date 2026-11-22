@@ -103,16 +103,18 @@ export class ProductIconService {
     };
   }
 
-  regenerate(): void {
+  /** Write Cool Islands Icons when its content changed; returns whether it was written */
+  regenerate(): boolean {
     const extensionPath = getExtensionPath();
-    if (!extensionPath) return;
+    if (!extensionPath) return false;
     const generator = new ProductIconGenerator({ dist: join(extensionPath, 'dist'), productIcons: join(extensionPath, 'productIcons') });
-    if (!generator.createJsonTheme(this.mix())) return;
+    if (!generator.createJsonTheme(this.mix())) return false;
     logger.info('Product icon theme written: Cool Islands Icons');
 
     if (workspace.getConfiguration('workbench').get<string>('productIconTheme') === ISLANDS_PRODUCT_THEME_ID) {
       offerReload(i18next.t('productIcons.reload'));
     }
+    return true;
   }
 }
 

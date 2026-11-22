@@ -191,6 +191,13 @@
 - 시작 때 설정과 생성된 테마를 비교하느라 테마 json(아이콘 735 KB + 제품 180 KB)을 통째로 파싱하지 않는다: `helpers/themeState.ts` 가
   `dist/.state.json`(테마 파일의 크기·수정 시각 + 그 파일을 만든 설정·층 지문)을 같이 쓰고, `ConfigChangeDetector` 는 파일이 상태와 같을 때만
   상태를 믿는다(다르거나 없으면 예전처럼 파일을 읽는다). 상태는 `.vscodeignore` 로 VSIX 에서 뺀다(런타임에 생김).
+- VS Code 프로필은 확장 폴더(`dist/`)를 같이 쓰고 설정은 따로라, 값이 다른 프로필끼리 창을 열 때마다 서로의 테마를 다시 만든다(2026-11-22 재현).
+  `.state.json` 의 `writer`(마지막으로 쓴 프로필 = 그 프로필 globalState 의 무작위 `profileId`, 그때의 `THEME_SETTING_KEYS` 값, 워크스페이스 값인 키)를 보고
+  `services/ProfileConflictService.regenerated(written)`(`regenerateTheme` 끝에서 부름)이 다른 설정을 출력 채널에 매번, 알림으로 한 번 알리고,
+  버튼은 `workbench.settings.applyToAllProfiles` 에 우리 키를 덧붙인 뒤 이 프로필 값을 비교 없이 20개 모두 쓴다(공유 직후 확장 호스트가
+  잠깐 이 프로필 값을 돌려줘서 비교하면 쓰기를 건너뜀, 1.147 확인). 판단은 `helpers/profileConflict.ts`(순수 함수).
+  테마를 바꾸는 설정을 추가하면 `THEME_SETTING_KEYS` 와 README "VS Code profiles" 목록도 고친다(`profileConflict.test.ts`).
+  격리 VS Code 로 프로필 확인: `Code.exe … --profile B <폴더>` 로 한 번 열어 프로필을 만든 뒤 `code.cmd … --profile B --install-extension <vsix>`.
 - 설치된 색·제품 아이콘 테마 목록은 `extensions.onDidChange` 때만 다시 읽고(`forgetInstalled*Themes`), 섞을 테마가 없으면 읽지 않는다.
   섞기 화면은 `retainContextWhenHidden: false`: 숨기면 VS Code 가 페이지를 버리고 다시 열 때 `ready` 로 상태를 받는다. 탭·스크롤은
   `media/themeMixer.js` 의 `setState`, 요청된 탭은 `ThemeMixerPanel.tabPending`. 숨겨진 패널은 `refresh()` 에서 상태를 만들지 않는다.

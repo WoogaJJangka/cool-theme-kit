@@ -19,18 +19,20 @@ type GeneratedProduct = { atomConfig?: Partial<AtomConfig> };
  * updating the icon theme accordingly.
  */
 class ConfigChangeDetector {
-  listenForChanges() {
+  /** Generate the icon and product icon themes again when the settings changed; returns whether a theme file was written */
+  listenForChanges(): boolean {
     const distribution = join(getExtensionPath(), 'dist');
     const state = readThemeState(distribution);
     const remember: ThemeState = {};
 
-    this.updateIcons(distribution, state, remember);
-    this.updateProductIcons(distribution, state, remember);
+    const icons = this.updateIcons(distribution, state, remember);
+    const product = this.updateProductIcons(distribution, state, remember);
 
     if (remember.icon || remember.product) writeThemeState(distribution, remember);
+    return icons || product;
   }
 
-  private updateIcons(distribution: string, state: ThemeState, remember: ThemeState) {
+  private updateIcons(distribution: string, state: ThemeState, remember: ThemeState): boolean {
     const path = join(distribution, JSON_FILE_NAME);
     const known = currentState(state.icon, path);
     // the theme file (some 700 KB of json) is read only when the state does not know it
@@ -48,13 +50,16 @@ class ConfigChangeDetector {
       iconThemeGenerator.createJsonTheme();
       const stamp = stampOf(path);
       if (stamp) remember.icon = { ...stamp, atomConfig: iconThemeGenerator.iconConfig.atomConfig, layerThemes: iconThemeGenerator.iconConfig.layerThemes };
-    } else if (!known) {
+      return true;
+    }
+    if (!known) {
       const stamp = stampOf(path);
       if (stamp) remember.icon = { ...stamp, atomConfig: oldConfig.atomConfig, layerThemes: oldConfig.layerThemes };
     }
+    return false;
   }
 
-  private updateProductIcons(distribution: string, state: ThemeState, remember: ThemeState) {
+  private updateProductIcons(distribution: string, state: ThemeState, remember: ThemeState): boolean {
     const path = join(distribution, JSON_PRODUCT_FILE_NAME);
     const known = currentState(state.product, path);
     const oldConfig: GeneratedProduct = known ?? getProductThemeFile();
@@ -65,10 +70,13 @@ class ConfigChangeDetector {
       productThemeGenerator.createJsonTheme();
       const stamp = stampOf(path);
       if (stamp) remember.product = { ...stamp, atomConfig: { arrowTheme: productThemeGenerator.atomConfig.arrowTheme } };
-    } else if (!known) {
+      return true;
+    }
+    if (!known) {
       const stamp = stampOf(path);
       if (stamp) remember.product = { ...stamp, atomConfig: { arrowTheme: oldConfig.atomConfig?.arrowTheme } };
     }
+    return false;
   }
 }
 

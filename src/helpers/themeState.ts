@@ -11,7 +11,8 @@ import type { ArrowTheme, AtomConfig } from 'src/@types/config';
  *
  * A theme file is only trusted through this state when it is still the file the state was written for (same size and
  * modification time); in any other case the theme file itself is read, as before. Nothing in this file is needed to
- * generate a theme: deleting it only makes the next start read the theme files once.
+ * generate a theme: deleting it only makes the next start read the theme files once (and forget which profile wrote
+ * them, `writer`).
  */
 const THEME_STATE_FILE = '.state.json';
 
@@ -21,7 +22,13 @@ type FileStamp = { mtimeMs: number; size: number };
 type IconThemeState = FileStamp & { atomConfig?: Partial<AtomConfig>; layerThemes?: string };
 type ProductThemeState = FileStamp & { atomConfig?: { arrowTheme?: ArrowTheme } };
 
-type ThemeState = { icon?: IconThemeState; product?: ProductThemeState };
+/**
+ * The window that wrote the theme files last (services/ProfileConflictService): the id of its profile, the value of
+ * each theme setting it generated them with (`null` when unset) and the settings a workspace of that window set.
+ */
+type ThemeWriter = { profile: string; settings: Record<string, unknown>; workspace: string[] };
+
+type ThemeState = { icon?: IconThemeState; product?: ProductThemeState; writer?: ThemeWriter };
 
 /** Size and modification time of a file, `undefined` when it cannot be read */
 const stampOf = (path: string): FileStamp | undefined => {
@@ -60,4 +67,4 @@ const currentState = <T extends FileStamp>(state: T | undefined, path: string): 
 };
 
 export { currentState, readThemeState, stampOf, THEME_STATE_FILE, writeThemeState };
-export type { FileStamp, IconThemeState, ProductThemeState, ThemeState };
+export type { FileStamp, IconThemeState, ProductThemeState, ThemeState, ThemeWriter };
