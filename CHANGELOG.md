@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. Dates are displayed in UTC.
 
-#### Unreleased
+#### 1.6.0 (2026-11-22)
 
 - feat: Cool Material Icons has its own product icon theme id, `cool-material-product-icons`. The earlier id
   `a-file-icon-vscode-product-icon-theme` still selects it ("for earlier settings" in the picker), but the original
