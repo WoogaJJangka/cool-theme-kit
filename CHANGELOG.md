@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. Dates are displayed in UTC.
 
+#### Unreleased
+
+- fix: the theme pickers say "Cool Theme Kit" next to Cool Icons, Cool Islands Icons and Cool Material Icons instead of
+  their ids (`a-file-icon-vscode`, `a-file-icon-vscode-product-icon-theme`), and the settings of the kit no longer
+  start with "A-file-icon-vscode:" when you browse them in the Settings editor. The ids stay, so your settings keep
+  working; a search in the Settings editor still shows the key of each setting.
+
 #### 1.0.0 (2026-11-22)
 
 The first stable release of Cool Theme Kit. Syntax colors compared character by character with WebStorm, PhpStorm, RubyMine and PyCharm, from the rich text the

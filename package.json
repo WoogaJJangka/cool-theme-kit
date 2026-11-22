@@ -349,6 +349,7 @@
     ],
     "configuration": [
       {
+        "id": "a-file-icon-vscode.general",
         "title": "%configuration.title%",
         "order": 0,
         "properties": {
@@ -370,6 +371,7 @@
         }
       },
       {
+        "id": "a-file-icon-vscode.icons",
         "title": "%configuration.title.icons%",
         "order": 1,
         "properties": {
@@ -545,6 +547,7 @@
         }
       },
       {
+        "id": "a-file-icon-vscode.colors",
         "title": "%configuration.title.colors%",
         "order": 2,
         "properties": {
@@ -665,6 +668,7 @@
         }
       },
       {
+        "id": "a-file-icon-vscode.product",
         "title": "%configuration.title.product%",
         "order": 3,
         "properties": {
@@ -739,6 +743,7 @@
         }
       },
       {
+        "id": "a-file-icon-vscode.fonts",
         "title": "%configuration.title.fonts%",
         "order": 4,
         "properties": {
@@ -753,6 +758,7 @@
     "iconThemes": [
       {
         "_watch": true,
+        "description": "Cool Theme Kit",
         "id": "a-file-icon-vscode",
         "label": "Cool Icons",
         "path": "./dist/a-file-icon-vscode-icon-theme.json"
@@ -760,11 +766,13 @@
     ],
     "productIconThemes": [
       {
+        "description": "Cool Theme Kit",
         "id": "cool-islands-product-icons",
         "label": "Cool Islands Icons",
         "path": "./dist/cool-islands-product-icon-theme.json"
       },
       {
+        "description": "Cool Theme Kit",
         "id": "a-file-icon-vscode-product-icon-theme",
         "label": "Cool Material Icons",
         "path": "./dist/a-file-icon-vscode-product-icon-theme.json"

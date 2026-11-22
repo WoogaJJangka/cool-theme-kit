@@ -6,12 +6,12 @@ import { EXTENSION_ID, EXTENSION_KEY, JSON_FILE_NAME, JSON_PRODUCT_FILE_NAME, PA
 const root = join(__dirname, '..', '..');
 const read = (file: string) => readFileSync(join(root, file), 'utf8');
 
-type Theme = { id: string; label: string; path: string };
+type Theme = { description?: string; id: string; label: string; path: string };
 const packageJson = JSON.parse(read('package.json')) as {
   capabilities: { untrustedWorkspaces: { description?: string; restrictedConfigurations?: string[]; supported: boolean | string } };
   contributes: {
     commands: Array<{ category?: string; command: string }>;
-    configuration: Array<{ properties: Record<string, unknown>; title: string }>;
+    configuration: Array<{ id?: string; properties: Record<string, unknown>; title: string }>;
     walkthroughs: Array<{ description: string; steps: Array<{ completionEvents: string[]; description: string; id: string; title: string }>; title: string }>;
     iconThemes: Theme[];
     productIconThemes: Theme[];
@@ -66,6 +66,22 @@ describe('package identity', () => {
         { id: `${EXTENSION_KEY}-product-icon-theme`, label: 'Cool Material Icons', path: `./dist/${JSON_PRODUCT_FILE_NAME}` },
       ],
     );
+    // the pickers show the description next to the label, and the id when there is none ("Cool Icons a-file-icon-vscode")
+    for (const theme of [...packageJson.contributes.iconThemes, ...packageJson.contributes.productIconThemes]) {
+      assert.equal(theme.description, DISPLAY_NAME, theme.id);
+    }
+  });
+
+  // The Settings editor puts the key before a setting's name ("A-file-icon-vscode: Folder Color") unless the id of its
+  // group starts with that key (settingKeyToDisplayFormat). Without an id, a group is named by its title. A search
+  // (`@ext:`) shows the key in any case: only new setting ids would take it away
+  it('names the settings without the old key in the Settings editor', () => {
+    const ids = packageJson.contributes.configuration.map((group) => group.id);
+    assert.equal(new Set(ids).size, ids.length, 'two groups with one id');
+    for (const group of packageJson.contributes.configuration) {
+      assert.match(group.id ?? '', new RegExp(`^${EXTENSION_KEY}\\.[a-z]+$`), group.title);
+      for (const key of Object.keys(group.properties)) assert.match(key, new RegExp(`^${EXTENSION_KEY}\\.\\w+$`), key);
+    }
   });
 
   it('leaves no old name in the user-facing texts', () => {
