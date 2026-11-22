@@ -203,7 +203,7 @@
     "applying": "적용 중…",
     "base": "Cool Islands",
     "byName": "이름별 지정",
-    "byNameHint": "파일 이름, 확장자(*.ext), 폴더(name/)의 아이콘을 가져올 테마입니다. 층보다 우선합니다. 미리보기에서 아이콘을 눌러도 지정됩니다.",
+    "byNameHint": "파일 이름, 확장자(*.ext), 폴더(name/)의 아이콘을 가져올 테마입니다. 층보다 우선합니다. Cool Icons를 고르면 override 층 대신 Cool Icons 자신의 아이콘으로 돌아갑니다. 미리보기에서 아이콘을 눌러도 지정됩니다.",
     "colorByKey": "키별 지정",
     "colorByKeyHint": "층보다 우선해서 한 테마에서 가져올 색입니다: 워크벤치 색 id나 그 glob(terminal.*), scope:<TextMate scope>, semantic:<selector>. 뒤에 있는 키가 앞의 키를 이깁니다.",
     "colorInactive": "지금 색 테마가 Cool Islands가 아닙니다. 결과 열은 이 테마를 선택했을 때의 모습입니다(기본 설정: 색 테마).",

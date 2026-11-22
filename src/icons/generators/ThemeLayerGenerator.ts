@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import { existsSync, readdirSync, readFileSync, rmSync } from 'node:fs';
 import { extname, join } from 'node:path';
 import { FolderTheme } from 'src/@types/config';
-import { RELATIVE_DIST, WILDCARD_PATTERN } from 'src/helpers/constants';
+import { ICON_THEME_ID, RELATIVE_DIST, WILDCARD_PATTERN } from 'src/helpers/constants';
 import { writeFileAtomic } from 'src/helpers/fsUtils';
 import { layerStamp, normalizeByName, normalizeLayers } from 'src/helpers/themeLayers';
 import { resolveThemePath } from 'src/helpers/themePaths';
@@ -87,6 +87,15 @@ const lastSegment = (name: string) => name.slice(name.lastIndexOf('/') + 1);
 /** The lower case names of the user's associations, without the `*.` and `**.` of the extensions */
 const names = (associations?: Record<string, string>) =>
   new Set(Object.keys(associations ?? {}).map((key) => normalizeName(key).replace(WILDCARD_PATTERN, '')));
+
+/** The maps and default icons of a section, each map copied: the layers change the maps of this theme in place */
+const copySection = (section?: Section): Section => {
+  const result: Section = {};
+  if (!section) return result;
+  for (const map of [...MAPS.files, ...MAPS.folders]) if (section[map]) result[map] = { ...section[map] };
+  for (const key of [...DEFAULTS.files, ...DEFAULTS.folders]) if (section[key]) result[key] = section[key];
+  return result;
+};
 
 /** A section with lower case names, as VS Code compares them */
 const lowerSection = (section?: Section): Section => {
@@ -218,7 +227,7 @@ export class LayerReader {
 /**
  * Mixes other installed file icon themes with this theme (`iconThemeLayers`, `iconThemeByName`).
  * From the strongest to the weakest:
- * 1. `iconThemeByName`: the icon a theme shows for that name;
+ * 1. `iconThemeByName`: the icon a theme shows for that name (this theme too: its own icon, as before the layers);
  * 2. `override` layers (the first listed wins): their icon for every name they give an icon to, except the names
  *    of the user's own associations;
  * 3. this theme;
@@ -235,6 +244,8 @@ export class ThemeLayerGenerator {
   /** theme id + font id -> its copy */
   private readonly fonts = new Map<string, CopiedFont>();
   private readonly readers = new Map<string, LayerReader | undefined>();
+  /** This theme as it is before the layers, for the names `iconThemeByName` gives back to it */
+  private own: LayerReader | undefined;
   private readonly written = new Set<string>();
 
   constructor(
@@ -270,6 +281,9 @@ export class ThemeLayerGenerator {
   apply(): string {
     // read them all, so the fingerprint does not depend on what is used
     for (const theme of this.themes) this.reader(theme.id);
+
+    const pinsOwn = normalizeByName(this.atomConfig.iconThemeByName).some((entry) => entry.theme === ICON_THEME_ID);
+    if (pinsOwn) this.own = this.ownReader();
 
     const layers = normalizeLayers(this.atomConfig.iconThemeLayers);
     for (const category of this.categories()) {
@@ -355,7 +369,7 @@ export class ThemeLayerGenerator {
     const categories = new Set(this.categories());
 
     for (const { target, theme } of normalizeByName(this.atomConfig.iconThemeByName)) {
-      const reader = this.reader(theme);
+      const reader = theme === ICON_THEME_ID ? this.own : this.reader(theme);
       if (!reader) continue;
 
       switch (target.kind) {
@@ -450,6 +464,10 @@ export class ThemeLayerGenerator {
    * Nothing changes when the other theme has no usable svg for it.
    */
   private set(reader: LayerReader, map: MapKey, key: string, hit: Hit | undefined) {
+    if (reader === this.own) {
+      this.setOwn(reader, map, key, hit);
+      return;
+    }
     const base = hit && this.definition(reader, reader.lookup('base', hit));
     if (!base) return;
 
@@ -466,6 +484,35 @@ export class ThemeLayerGenerator {
         delete this.iconConfig[variant]?.[map]?.[key];
       }
     }
+  }
+
+  /** Map the name back to the icon of this theme, its own definitions (nothing to copy), with its variants for that entry */
+  private setOwn(reader: LayerReader, map: MapKey, key: string, hit: Hit | undefined) {
+    const base = hit && reader.lookup('base', hit);
+    if (!hit || !base) return;
+
+    this.iconConfig[map] ??= {};
+    this.iconConfig[map][key] = base;
+    for (const variant of VARIANTS) {
+      const definition = reader.lookup(variant, hit);
+      if (definition) {
+        this.iconConfig[variant] ??= {};
+        this.iconConfig[variant][map] ??= {};
+        this.iconConfig[variant][map][key] = definition;
+      } else {
+        delete this.iconConfig[variant]?.[map]?.[key];
+      }
+    }
+  }
+
+  /** This theme before the layers change it: its maps and default icons, and those of its light and high contrast variants */
+  private ownReader(): LayerReader {
+    const json: ThemeJson = {
+      ...copySection(this.iconConfig as Section),
+      highContrast: copySection(this.iconConfig.highContrast as Section | undefined),
+      light: copySection(this.iconConfig.light as Section | undefined),
+    };
+    return new LayerReader({ extensionPath: '', id: ICON_THEME_ID, path: '', stamp: '' }, json, this.languages);
   }
 
   private setDefault(reader: LayerReader, key: DefaultKey) {

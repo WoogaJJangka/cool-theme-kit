@@ -203,7 +203,7 @@
     "applying": "Applying…",
     "base": "Cool Islands",
     "byName": "By name",
-    "byNameHint": "The theme giving the icon of a file name, an extension (*.ext) or a folder (name/). It wins over the layers. Click an icon in the preview to set one.",
+    "byNameHint": "The theme giving the icon of a file name, an extension (*.ext) or a folder (name/). It wins over the layers. Cool Icons gives a name its own icon back, over an override layer. Click an icon in the preview to set one.",
     "colorByKey": "By key",
     "colorByKeyHint": "Single colors from a theme, over the layers: a workbench color id or a glob of them (terminal.*), scope:<TextMate scope> or semantic:<selector>. A later key wins over an earlier one.",
     "colorInactive": "Cool Islands is not the current color theme: the result is what it shows once selected (Preferences: Color Theme).",

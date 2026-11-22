@@ -50,7 +50,7 @@
   "configuration.colorThemeLayers.syntax": "How the theme mixes for the syntax colors (token and semantic colors).",
   "configuration.colorThemeLayers.theme": "Id of an installed color theme, as in `workbench.colorTheme`.",
   "configuration.colorThemeLayers.ui": "How the theme mixes for the workbench colors.",
-  "configuration.iconThemeByName": "File name, `*.ext` or `folder/` -> id of the installed file icon theme giving its icon. Wins over everything else.",
+  "configuration.iconThemeByName": "File name, `*.ext` or `folder/` -> id of the installed file icon theme giving its icon. Wins over everything else. `cool-theme-kit-icons` gives back the icon of Cool Icons itself (as before the layers).",
   "configuration.iconThemeLayers": "Other installed file icon themes mixed with this theme, the first listed wins. An entry is a theme id (as in `workbench.iconTheme`, e.g. `material-icon-theme`), or an object with that id and how the theme mixes for files and for folders. Empty to use this theme only.",
   "configuration.iconThemeLayers.files": "How the theme mixes with this theme for files.",
   "configuration.iconThemeLayers.folders": "How the theme mixes with this theme for folders.",
