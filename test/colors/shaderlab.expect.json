@@ -1,0 +1,11 @@
+{
+  "file": "shaderlab.shader",
+  "scope": "source.shaderlab",
+  "tokens": [
+    { "line": 1, "text": "//", "key": "DEFAULT_LINE_COMMENT" },
+    { "line": 2, "text": "Shader", "key": "DEFAULT_KEYWORD" },
+    { "line": 2, "text": "Custom/Demo", "key": "DEFAULT_STRING" },
+    { "line": 6, "text": "2D", "key": "DEFAULT_PREDEFINED_SYMBOL" },
+    { "line": 7, "text": "1", "key": "DEFAULT_NUMBER", "layers": ["DEFAULT_CONSTANT"] }
+  ]
+}

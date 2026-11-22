@@ -1,0 +1,16 @@
+{
+  "file": "r.r",
+  "scope": "source.r",
+  "tokens": [
+    { "line": 1, "text": "한글 주석", "key": "DEFAULT_LINE_COMMENT" },
+    { "line": 2, "text": "<-", "key": "DEFAULT_OPERATION_SIGN", "layers": ["DEFAULT_KEYWORD"] },
+    { "line": 2, "text": "10L", "key": "DEFAULT_NUMBER", "layers": ["DEFAULT_CONSTANT"] },
+    { "line": 3, "text": "c", "key": "DEFAULT_FUNCTION_CALL" },
+    { "line": 3, "text": "하나", "key": "DEFAULT_STRING" },
+    { "line": 5, "text": "greet", "key": "DEFAULT_FUNCTION_DECLARATION", "layers": ["DEFAULT_CLASS_NAME", "DEFAULT_IDENTIFIER"] },
+    { "line": 5, "text": "function", "key": "DEFAULT_KEYWORD" },
+    { "line": 5, "text": "name", "key": "DEFAULT_PARAMETER", "layers": ["DEFAULT_LOCAL_VARIABLE"] },
+    { "line": 7, "text": "NULL", "key": "DEFAULT_CONSTANT" },
+    { "line": 9, "text": "\\n", "key": "DEFAULT_VALID_STRING_ESCAPE", "layers": ["DEFAULT_CONSTANT", "DEFAULT_STRING"] }
+  ]
+}

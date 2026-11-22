@@ -2,11 +2,12 @@
   "file": "makefile.mk",
   "scope": "source.makefile",
   "tokens": [
-    { "line": 1, "text": "# 한글 주석", "key": "DEFAULT_LINE_COMMENT" },
+    { "line": 1, "text": "#", "key": "DEFAULT_DOT", "layers": ["DEFAULT_LINE_COMMENT"] },
+    { "line": 1, "text": "한글 주석", "key": "DEFAULT_LINE_COMMENT" },
     { "line": 2, "text": "CC", "key": "DEFAULT_LOCAL_VARIABLE" },
     { "line": 5, "text": ".PHONY", "key": "DEFAULT_FUNCTION_CALL" },
     { "line": 7, "text": "all", "key": "DEFAULT_FUNCTION_DECLARATION", "layers": ["DEFAULT_CLASS_NAME","DEFAULT_IDENTIFIER"] },
-    { "line": 10, "text": "$(", "key": "DEFAULT_DOT", "layers": ["DEFAULT_STRING"], "todo": "PyCharm draws `$(` in the text color (the punctuation layer, not written: see textMateTheme.ts)" },
+    { "line": 10, "text": "$(", "key": "DEFAULT_DOT", "layers": ["DEFAULT_STRING"] },
     { "line": 10, "text": "CC", "key": "DEFAULT_LOCAL_VARIABLE" },
     { "line": 12, "text": "%", "key": "DEFAULT_CONSTANT" },
     { "line": 13, "text": "@", "key": "DEFAULT_KEYWORD" }

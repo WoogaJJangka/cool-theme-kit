@@ -1,0 +1,140 @@
+{\rtf1\ansi\deff0{\colortbl;\red188\green190\blue196;\red25\green26\blue28;\red122\green126\blue133;\red207\green142\blue109;\red106\green171\blue115;\red42\green172\blue184;}
+{\fonttbl{\f1\fmodern JetBrains Mono;}{\f2\fmodern Courier New;}}
+
+\s0\box\cbpat2\cb2\cf1\fs20
+\cf3
+\f1
+\i0\b0
+
+// \f2
+
+\u54620?\u44544? \u51452?\u49437?\line
+\cf4
+\f1
+
+Shader \cf5
+
+"Custom/Demo"\line
+\cf1
+
+\{\line
+
+    \cf4
+
+Properties\line
+\cf1
+
+    \{\line
+
+        _MainTex (\cf5
+
+"Texture"\cf1
+
+, 2D) = \cf5
+
+"white"\cf1
+
+ \{\}\line
+
+        _Color (\cf5
+
+"Color"\cf1
+
+, Color) = (\cf6
+\i\b0
+
+1\cf1
+\i0\b0
+
+, \cf6
+\i\b0
+
+1\cf1
+\i0\b0
+
+, \cf6
+\i\b0
+
+1\cf1
+\i0\b0
+
+, \cf6
+\i\b0
+
+1\cf1
+\i0\b0
+
+)\line
+
+    \}\line
+
+    \cf4
+
+SubShader\line
+\cf1
+
+    \{\line
+
+        Tags \{ \cf5
+
+"RenderType"\cf1
+
+=\cf5
+
+"Opaque"\cf1
+
+ \}\line
+
+        LOD \cf6
+\i\b0
+
+100\line
+
+        \cf1
+\i0\b0
+
+Cull Off\line
+
+        ZWrite On\line
+
+        Blend SrcAlpha OneMinusSrcAlpha\line
+
+\line
+
+        \cf4
+
+Pass\line
+\cf1
+
+        \{\line
+
+            \cf4
+
+CGPROGRAM\line
+
+            #pragma\cf1
+
+ vertex vert\line
+
+            \cf4
+
+fixed4\cf1
+
+ _Color;\line
+
+            \cf4
+
+ENDCG\line
+\cf1
+
+        \}\line
+
+    \}\line
+
+    FallBack \cf5
+
+"Diffuse"\line
+\cf1
+
+\}\line
+\par}

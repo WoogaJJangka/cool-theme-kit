@@ -145,8 +145,11 @@
   TextMate 문법으로 칠한다: `TEXTMATE_RULES` = intellij-community `TextMateDefaultColorsProvider` + `TextMateTheme`(선택자 → 키). 맞는 선택자가 전부 층이 되고
   (구체적인 것이 위) 색은 위 층, 글꼴 모양은 모두 합친다(`TextAttributes.merge`: Ruby 숫자 = 상수 기울임 + 숫자 청록). 생성기는 언어 루트마다
   `source.ruby constant.numeric` 처럼 합친 스타일을 쓰고, 색이 없으면 글자색을 명시한다(부모 scope 규칙은 같은 scope 일반 규칙의 빈 값을 물려받음).
-  기대값은 `layers`(밑 층 키, 가까운 것부터). 구두점 층(DEFAULT_DOT)은 따라 하지 않는다: 화면에서 문자열 따옴표는 문자열 색인데 `/**`·Makefile `$(` 는
-  글자색이라 공개 소스의 가중치로 설명되지 않음(todo). .env 는 intellij-community `env-files-support`(키 = 키워드, 값 = 문자열, `export` = 주석),
+  기대값은 `layers`(밑 층 키, 가까운 것부터). 구두점(`punctuation` → DEFAULT_DOT)도 층이다: 문자열 따옴표·주석 표시·LaTeX `\` 는 글자색
+  (플러그인 없는 PyCharm 서식 복사 2026-11-22, 예전 화면 판단 "따옴표 = 문자열 색"은 틀렸음). 주석 표시는 늘 주석 안이라 `IMPLIED_PARENTS` 로 주석 층
+  (밝은 테마 기울임)을 같이 쓴다: vscode-textmate 는 같은 scope 의 두 규칙을 가까운 부모 이름 길이로 가려 `source.lua X` 가 `source.lua comment X` 를 이긴다.
+  다른 겹침은 `NESTED_SCOPES`. 새 TextMate 언어는 격리 PyCharm 서식 복사로 정말 TextMate 인지 본다(diff 는 비교 화면이라 텍스트에 색 없음, Perl 은 다른
+  하이라이터, R 은 색 없음). 기대값 초안은 TextMate 층으로 뽑고(토큰마다 층 조합 하나) 캡처로 확인한다. .env 는 intellij-community `env-files-support`(키 = 키워드, 값 = 문자열, `export` = 주석),
   CSS·SQL(닫힌 플러그인)은 WebStorm 서식 복사 색의 공개 키(선택자·함수 = HTML 태그 이름, 속성 이름 = HTML 속성 이름, 값 키워드·단위 = 문자열, SQL 함수 = 정적 메서드).
   **IDE 와 비교는 서식 복사로**(`bun run compare:ide`, `test/colors/ide/<샘플>.<IDE>.<dark|light>.rtf`): IDE 에서 샘플을 열고 Edit > Select All → Edit > Copy
   (서식 있는 복사가 기본) → STA PowerShell 로 클립보드의 'Rich Text Format' 을 저장. 글자마다 정확한 색이 나온다(화면 픽셀은 ClearType 때문에 못 씀,

@@ -1,0 +1,21 @@
+{
+  "file": "objcpp.mm",
+  "scope": "source.objcpp",
+  "tokens": [
+    { "line": 1, "text": "//", "key": "DEFAULT_DOT", "layers": ["DEFAULT_LINE_COMMENT"] },
+    { "line": 1, "text": "한글 주석", "key": "DEFAULT_LINE_COMMENT" },
+    { "line": 2, "text": "import", "key": "DEFAULT_KEYWORD" },
+    { "line": 2, "text": "Foundation/Foundation.h", "key": "DEFAULT_STRING" },
+    { "line": 5, "text": "demo", "key": "DEFAULT_CLASS_NAME", "layers": ["DEFAULT_IDENTIFIER"] },
+    { "line": 6, "text": "kMaxSize", "key": "DEFAULT_CONSTANT" },
+    { "line": 6, "text": "10", "key": "DEFAULT_NUMBER", "layers": ["DEFAULT_CONSTANT"] },
+    { "line": 9, "text": "NSObject", "key": "DEFAULT_IDENTIFIER" },
+    { "line": 10, "text": "greet", "key": "DEFAULT_FUNCTION_DECLARATION", "layers": ["DEFAULT_CLASS_NAME", "DEFAULT_IDENTIFIER"] },
+    { "line": 10, "text": "NSInteger", "key": "DEFAULT_PREDEFINED_SYMBOL" },
+    { "line": 10, "text": "times", "key": "DEFAULT_PARAMETER", "layers": ["DEFAULT_LOCAL_VARIABLE"] },
+    { "line": 15, "text": "std", "key": "DEFAULT_IDENTIFIER", "layers": ["DEFAULT_DOT"] },
+    { "line": 15, "text": "::", "key": "DEFAULT_DOT" },
+    { "line": 16, "text": "@\"", "key": "DEFAULT_DOT", "layers": ["DEFAULT_STRING"] },
+    { "line": 16, "text": "\\n", "key": "DEFAULT_VALID_STRING_ESCAPE", "layers": ["DEFAULT_CONSTANT", "DEFAULT_STRING"] }
+  ]
+}

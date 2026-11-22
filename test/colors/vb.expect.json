@@ -1,0 +1,17 @@
+{
+  "file": "vb.vb",
+  "scope": "source.asp.vb.net",
+  "tokens": [
+    { "line": 1, "text": "한글 주석", "key": "DEFAULT_LINE_COMMENT" },
+    { "line": 5, "text": "Const", "key": "DEFAULT_KEYWORD" },
+    { "line": 5, "text": "As", "key": "DEFAULT_OPERATION_SIGN", "layers": ["DEFAULT_KEYWORD"] },
+    { "line": 5, "text": "Integer", "key": "DEFAULT_PREDEFINED_SYMBOL" },
+    { "line": 5, "text": "10", "key": "DEFAULT_NUMBER", "layers": ["DEFAULT_CONSTANT"] },
+    { "line": 7, "text": "Greet", "key": "DEFAULT_FUNCTION_DECLARATION", "layers": ["DEFAULT_CLASS_NAME", "DEFAULT_IDENTIFIER", "DEFAULT_FUNCTION_CALL"] },
+    { "line": 7, "text": "ByVal", "key": "DEFAULT_LOCAL_VARIABLE" },
+    { "line": 8, "text": "Dim", "key": "DEFAULT_KEYWORD", "layers": ["DEFAULT_LOCAL_VARIABLE"] },
+    { "line": 8, "text": "Hello", "key": "DEFAULT_STRING" },
+    { "line": 12, "text": "Nothing", "key": "DEFAULT_CONSTANT" },
+    { "line": 18, "text": "End", "key": "DEFAULT_FUNCTION_CALL" }
+  ]
+}

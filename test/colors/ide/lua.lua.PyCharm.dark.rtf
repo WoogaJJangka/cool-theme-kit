@@ -1,0 +1,116 @@
+{\rtf1\ansi\deff0{\colortbl;\red188\green190\blue196;\red25\green26\blue28;\red122\green126\blue133;\red207\green142\blue109;\red42\green172\blue184;\red86\green168\blue245;\red106\green171\blue115;\red199\green125\blue187;}
+{\fonttbl{\f1\fmodern JetBrains Mono;}{\f2\fmodern Courier New;}}
+
+\s0\box\cbpat2\cb2\cf1\fs20
+\cf1
+\f1
+\i0\b0
+
+-- \cf3
+\f2
+
+\u54620?\u44544? \u51452?\u49437?\line
+\cf4
+\f1
+
+local \cf1
+
+MAX_SIZE = \cf5
+\i\b0
+
+10\line
+
+\line
+\cf4
+\i0\b0
+
+local \cf1
+
+Greeter = \{\}\line
+
+Greeter.__index = Greeter\line
+
+\line
+\cf4
+
+function \cf6
+
+Greeter\cf1
+
+.\cf6
+
+new\cf1
+
+(name)\line
+
+  \cf4
+
+return \cf1
+
+setmetatable(\{ name = name or "\cf7
+
+world\cf1
+
+" \}, Greeter)\line
+\cf4
+
+end\line
+
+\line
+
+function \cf1
+
+Greeter:\cf6
+
+greet\cf1
+
+(times)\line
+
+  \cf4
+
+local \cf1
+
+message = "\cf7
+
+Hello \cf1
+
+" .. self.name .. "\cf4
+\i\b0
+
+\\n\cf1
+\i0\b0
+
+"\line
+
+  \cf4
+
+return \cf1
+
+string.rep(message, times)\line
+\cf4
+
+end\line
+
+\line
+\cf1
+
+print(Greeter.new():greet(\cf5
+\i\b0
+
+2\cf1
+\i0\b0
+
+), \cf8
+\i\b0
+
+nil\cf1
+\i0\b0
+
+, \cf8
+\i\b0
+
+true\cf1
+\i0\b0
+
+, MAX_SIZE)\line
+\par}

@@ -1,0 +1,151 @@
+{\rtf1\ansi\deff0{\colortbl;\red188\green190\blue196;\red25\green26\blue28;\red122\green126\blue133;\red207\green142\blue109;\red42\green172\blue184;\red106\green171\blue115;\red199\green125\blue187;}
+{\fonttbl{\f1\fmodern JetBrains Mono;}{\f2\fmodern Courier New;}}
+
+\s0\box\cbpat2\cb2\cf1\fs20
+\cf3
+\f1
+\i0\b0
+
+// \f2
+
+\u54620?\u44544? \u51452?\u49437?\line
+\cf4
+\f1
+
+module \cf1
+
+Demo\line
+
+\line
+\cf4
+
+open \cf1
+
+System\line
+
+\line
+\cf3
+
+/// Doc comment of greet\line
+\cf4
+
+let \cf1
+
+maxSize \cf4
+
+= \cf5
+\i\b0
+
+10\line
+
+\line
+\cf4
+\i0\b0
+
+type \cf1
+
+Greeter\cf4
+
+(\cf1
+
+name\cf4
+
+:\cf1
+
+ string\cf4
+
+) =\line
+
+    member \cf1
+
+this.Greet\cf4
+
+(\cf1
+
+times\cf4
+
+: \cf1
+
+int\cf4
+
+) =\line
+\cf1
+
+        String.replicate times \cf4
+
+(\cf1
+
+sprintf "\cf6
+
+Hello \cf4
+
+%s\cf7
+\i\b0
+
+\\n\cf1
+\i0\b0
+
+" name\cf4
+
+)\line
+
+\line
+
+let \cf1
+
+greet name \cf4
+
+=\cf1
+
+ Greeter\cf4
+
+(\cf1
+
+name\cf4
+
+)\cf1
+
+.Greet \cf5
+\i\b0
+
+2\line
+
+\line
+\cf1
+\i0\b0
+
+[<EntryPoint>]\line
+\cf4
+
+let \cf1
+
+main argv \cf4
+
+=\line
+\cf1
+
+    printfn "\cf4
+
+%s %b %d\cf1
+
+" \cf4
+
+(\cf1
+
+greet "\cf6
+\f2
+
+\u54616?\u45208?\cf1
+\f1
+
+"\cf4
+
+) \cf7
+\i\b0
+
+true \cf5
+
+0x1F\line
+
+    0\line
+\par}

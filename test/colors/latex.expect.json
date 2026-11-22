@@ -1,0 +1,14 @@
+{
+  "file": "latex.tex",
+  "scope": "text.tex.latex",
+  "tokens": [
+    { "line": 1, "text": "한글 주석", "key": "DEFAULT_LINE_COMMENT" },
+    { "line": 2, "text": "documentclass", "key": "DEFAULT_KEYWORD" },
+    { "line": 2, "text": "11pt", "key": "DEFAULT_PARAMETER", "layers": ["DEFAULT_LOCAL_VARIABLE"] },
+    { "line": 5, "text": "greet", "key": "DEFAULT_FUNCTION_CALL" },
+    { "line": 8, "text": "Introduction", "key": "DEFAULT_CLASS_NAME", "layers": ["DEFAULT_IDENTIFIER"] },
+    { "line": 10, "text": "sec:intro", "key": "DEFAULT_CONSTANT" },
+    { "line": 13, "text": "2", "key": "DEFAULT_NUMBER", "layers": ["DEFAULT_CONSTANT"] },
+    { "line": 13, "text": "_", "key": "DEFAULT_DOT" }
+  ]
+}

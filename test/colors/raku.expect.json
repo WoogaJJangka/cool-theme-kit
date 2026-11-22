@@ -1,0 +1,14 @@
+{
+  "file": "raku.raku",
+  "scope": "source.perl.6",
+  "tokens": [
+    { "line": 1, "text": "한글 주석", "key": "DEFAULT_LINE_COMMENT" },
+    { "line": 2, "text": "use", "key": "DEFAULT_KEYWORD" },
+    { "line": 6, "text": "Str", "key": "DEFAULT_PREDEFINED_SYMBOL" },
+    { "line": 6, "text": "$name", "key": "DEFAULT_LOCAL_VARIABLE" },
+    { "line": 7, "text": "Hello $name", "key": "DEFAULT_STRING" },
+    { "line": 7, "text": "\\n", "key": "DEFAULT_VALID_STRING_ESCAPE", "layers": ["DEFAULT_CONSTANT", "DEFAULT_STRING"] },
+    { "line": 7, "text": "x", "key": "DEFAULT_OPERATION_SIGN", "layers": ["DEFAULT_KEYWORD"] },
+    { "line": 12, "text": "say", "key": "DEFAULT_FUNCTION_CALL" }
+  ]
+}
