@@ -1,0 +1,12 @@
+{
+  "file": "jsonl.jsonl",
+  "scope": "source.json.lines",
+  "tokens": [
+    { "line": 1, "text": "\"name\"", "key": "JSON.PROPERTY_KEY" },
+    { "line": 1, "text": "\"하나\"", "key": "JSON.STRING" },
+    { "line": 1, "text": "1", "key": "JSON.NUMBER" },
+    { "line": 1, "text": "true", "key": "JSON.KEYWORD" },
+    { "line": 2, "text": "2.5", "key": "JSON.NUMBER" },
+    { "line": 2, "text": "null", "key": "JSON.KEYWORD" }
+  ]
+}

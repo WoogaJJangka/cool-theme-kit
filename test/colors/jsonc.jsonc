@@ -1,0 +1,8 @@
+{
+  // 한글 주석
+  "name": "cool-theme-kit",
+  /* block comment */
+  "version": 1,
+  "enabled": true,
+  "items": [null, "two", 3.5],
+}

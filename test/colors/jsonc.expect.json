@@ -1,0 +1,14 @@
+{
+  "file": "jsonc.jsonc",
+  "scope": "source.json.comments",
+  "tokens": [
+    { "line": 2, "text": "// 한글 주석", "key": "JSON.LINE_COMMENT" },
+    { "line": 3, "text": "\"name\"", "key": "JSON.PROPERTY_KEY" },
+    { "line": 3, "text": "\"cool-theme-kit\"", "key": "JSON.STRING" },
+    { "line": 4, "text": "/* block comment */", "key": "JSON.BLOCK_COMMENT" },
+    { "line": 5, "text": "1", "key": "JSON.NUMBER" },
+    { "line": 6, "text": "true", "key": "JSON.KEYWORD" },
+    { "line": 7, "text": "null", "key": "JSON.KEYWORD" },
+    { "line": 7, "text": "3.5", "key": "JSON.NUMBER" }
+  ]
+}

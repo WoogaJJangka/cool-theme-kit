@@ -1,0 +1,14 @@
+//- 한글 주석
+doctype html
+html(lang="ko")
+  head
+    title= pageTitle
+  body
+    h1#main.title Hello #{name}
+    if items.length > 0
+      ul
+        each item in items
+          li.item= item
+    else
+      p No items
+    include footer.pug

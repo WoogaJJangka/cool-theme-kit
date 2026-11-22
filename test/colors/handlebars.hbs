@@ -1,0 +1,10 @@
+{{!-- 한글 주석 --}}
+<div class="entry">
+  <h1>{{title}}</h1>
+  {{#if author}}
+    <p>{{author.name}} {{@index}}</p>
+  {{else}}
+    <p>{{t "unknown" count=3}}</p>
+  {{/if}}
+  {{{body}}}
+</div>

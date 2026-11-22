@@ -1,0 +1,20 @@
+{
+  "file": "handlebars.hbs",
+  "scope": "text.html.handlebars",
+  "tokens": [
+    { "line": 1, "text": "{{!-- 한글 주석 --}}", "key": "HANDLEBARS.COMMENTS" },
+    { "line": 2, "text": "div", "key": "HTML_TAG_NAME" },
+    { "line": 2, "text": "class", "key": "HTML_ATTRIBUTE_NAME" },
+    { "line": 3, "text": "{{", "key": "HANDLEBARS.MUSTACHES" },
+    { "line": 3, "text": "title", "key": "HANDLEBARS.IDENTIFIERS" },
+    { "line": 4, "text": "#", "key": "HANDLEBARS.MUSTACHES", "todo": "the grammar gives the `#` of `{{#` the scope of the keyword after it" },
+    { "line": 4, "text": "if", "key": "HANDLEBARS.IDENTIFIERS" },
+    { "line": 5, "text": "@index", "key": "HANDLEBARS.IDENTIFIERS" },
+    { "line": 6, "text": "else", "key": "HANDLEBARS.IDENTIFIERS" },
+    { "line": 7, "text": "\"unknown\"", "key": "HANDLEBARS.STRINGS" },
+    { "line": 7, "text": "count", "key": "HANDLEBARS.IDENTIFIERS" },
+    { "line": 7, "text": "=", "nth": 1, "key": "HANDLEBARS.OPERATORS" },
+    { "line": 7, "text": "3", "key": "HANDLEBARS.VALUES" },
+    { "line": 9, "text": "{{{", "key": "HANDLEBARS.MUSTACHES" }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "file": "xsl.xsl",
+  "scope": "text.xml.xsl",
+  "tokens": [
+    { "line": 1, "text": "<?", "key": "XML_PROLOGUE" },
+    { "line": 1, "text": "version", "key": "XML_ATTRIBUTE_NAME" },
+    { "line": 2, "text": "<!-- 한글 주석 -->", "key": "XML_COMMENT" },
+    { "line": 3, "text": "<", "key": "XML_TAG" },
+    { "line": 3, "text": "xsl", "key": "XML_NS_PREFIX" },
+    { "line": 3, "text": "stylesheet", "key": "XML_TAG_NAME" },
+    { "line": 3, "text": "\"1.0\"", "key": "XML_ATTRIBUTE_VALUE" },
+    { "line": 4, "text": "template", "key": "XML_TAG_NAME" },
+    { "line": 4, "text": "match", "key": "XML_ATTRIBUTE_NAME" },
+    { "line": 5, "text": "html", "key": "XML_TAG_NAME" },
+    { "line": 6, "text": "&gt;", "key": "XML_ENTITY_REFERENCE" },
+    { "line": 7, "text": "class", "key": "XML_ATTRIBUTE_NAME" }
+  ]
+}

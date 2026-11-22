@@ -1,0 +1,6 @@
+# 한글 주석
+node_modules/
+*.log
+!keep.log
+/dist
+build/**/*.tmp
