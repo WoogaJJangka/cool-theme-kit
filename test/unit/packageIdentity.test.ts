@@ -1,7 +1,18 @@
 import { strict as assert } from 'node:assert';
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { EXTENSION_ID, EXTENSION_KEY, ICON_THEME_ID, JSON_FILE_NAME, JSON_PRODUCT_FILE_NAME, PACKAGE_NAME, PUBLISHER_ID } from 'src/helpers/constants';
+import {
+  EARLIER_MATERIAL_PRODUCT_THEME_ID,
+  EXTENSION_ID,
+  EXTENSION_KEY,
+  ICON_THEME_ID,
+  JSON_FILE_NAME,
+  JSON_PRODUCT_FILE_NAME,
+  MATERIAL_PRODUCT_THEME_ID,
+  PACKAGE_NAME,
+  PUBLISHER_ID,
+} from 'src/helpers/constants';
+import { ISLANDS_PRODUCT_DIST_FILE, ISLANDS_PRODUCT_THEME_ID } from 'src/productIcons/islandsProductTheme';
 
 const root = join(__dirname, '..', '..');
 const read = (file: string) => readFileSync(join(root, file), 'utf8');
@@ -63,23 +74,31 @@ describe('package identity', () => {
         { id: EXTENSION_KEY, label: 'Cool Icons', path: `./dist/${JSON_FILE_NAME}` },
       ],
     );
+    // the same for Cool Material Icons: the original has its earlier id as the id of its own product icon theme
     assert.deepEqual(
       packageJson.contributes.productIconThemes.map(({ id, label, path }) => ({ id, label, path })),
       [
-        { id: 'cool-islands-product-icons', label: 'Cool Islands Icons', path: './dist/cool-islands-product-icon-theme.json' },
-        { id: `${EXTENSION_KEY}-product-icon-theme`, label: 'Cool Material Icons', path: `./dist/${JSON_PRODUCT_FILE_NAME}` },
+        { id: ISLANDS_PRODUCT_THEME_ID, label: 'Cool Islands Icons', path: `./dist/${ISLANDS_PRODUCT_DIST_FILE}` },
+        { id: MATERIAL_PRODUCT_THEME_ID, label: 'Cool Material Icons', path: `./dist/${JSON_PRODUCT_FILE_NAME}` },
+        { id: EARLIER_MATERIAL_PRODUCT_THEME_ID, label: 'Cool Material Icons', path: `./dist/${JSON_PRODUCT_FILE_NAME}` },
       ],
     );
+    assert.equal(EARLIER_MATERIAL_PRODUCT_THEME_ID, `${EXTENSION_KEY}-product-icon-theme`);
     // the pickers show the description next to the label, and the id when there is none ("Cool Icons a-file-icon-vscode")
-    // the earlier id says what it is for, in every language
+    // the earlier ids say what they are for, in every language
     const [current, earlier] = packageJson.contributes.iconThemes;
-    for (const theme of [current, ...packageJson.contributes.productIconThemes]) {
+    const [islands, material, earlierMaterial] = packageJson.contributes.productIconThemes;
+    for (const theme of [current, islands, material]) {
       assert.equal(theme.description, DISPLAY_NAME, theme.id);
     }
-    assert.equal(earlier.description, '%iconTheme.earlierId.description%');
+    const earlierKeys = ['iconTheme.earlierId.description', 'productIconTheme.earlierId.description'];
+    assert.deepEqual([earlier.description, earlierMaterial.description], earlierKeys.map((key) => `%${key}%`));
     for (const file of nlsFiles) {
-      const description = (JSON.parse(read(file)) as Record<string, string>)['iconTheme.earlierId.description'];
-      if (description !== undefined) assert.ok(description.startsWith(`${DISPLAY_NAME} (`), `${file}: ${description}`);
+      const nls = JSON.parse(read(file)) as Record<string, string>;
+      for (const key of earlierKeys) {
+        const description = nls[key];
+        if (description !== undefined) assert.ok(description.startsWith(`${DISPLAY_NAME} (`), `${file}: ${description}`);
+      }
     }
   });
 

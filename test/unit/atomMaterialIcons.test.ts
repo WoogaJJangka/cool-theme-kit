@@ -3,13 +3,25 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'nod
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { registerCommands } from 'src/commands/commands';
-import { EXTENSION_ID, EXTENSION_KEY, ICON_THEME_ID, OLD_EXTENSION_ID } from 'src/helpers/constants';
+import {
+  EARLIER_MATERIAL_PRODUCT_THEME_ID,
+  EXTENSION_ID,
+  EXTENSION_KEY,
+  ICON_THEME_ID,
+  MATERIAL_PRODUCT_THEME_ID,
+  OLD_EXTENSION_ID,
+} from 'src/helpers/constants';
 import { normalizeByName, normalizeLayers, usedThemeIds } from 'src/helpers/themeLayers';
 import { compareCodeUnits } from 'src/helpers/utils';
 import { findIconTheme, isOwnIconTheme, listIconThemes } from 'src/helpers/vscodeUtils';
 import { initI18next } from 'src/i18n/i18next';
 import { getDefaultConfig } from 'src/icons/configUtils';
+import { productMixerState } from 'src/panels/productMixerState';
+import { ISLANDS_PRODUCT_THEME_ID } from 'src/productIcons/islandsProductTheme';
+import { ProductIconGenerator } from 'src/productIcons/ProductIconGenerator';
+import { findProductTheme } from 'src/productIcons/productIconLayers';
 import { configService } from 'src/services/ConfigService';
+import { forgetInstalledProductThemes, listProductThemes, productIconService } from 'src/services/ProductIconService';
 
 import { registeredCommands, testState } from '../mocks/vscode';
 
@@ -18,9 +30,9 @@ import type { ExtensionContext } from 'vscode';
 import type { TestExtension } from '../mocks/vscode';
 
 /**
- * The original Atom Material Icons (AtomMaterial.a-file-icon-vscode) contributes a file icon theme and settings with the
- * same ids as the earlier ones of this theme. VS Code then shows the theme, and keeps the defaults, of the extension
- * whose folder name comes first: theirs.
+ * The original Atom Material Icons (AtomMaterial.a-file-icon-vscode) contributes a file icon theme, a product icon theme
+ * and settings with the same ids as the earlier ones of this extension. VS Code then shows the theme, and keeps the
+ * defaults, of the extension whose folder name comes first: theirs.
  */
 describe('next to the original Atom Material Icons', () => {
   let folder = '';
@@ -124,6 +136,111 @@ describe('next to the original Atom Material Icons', () => {
         EXTENSION_KEY,
         'material-icon-theme',
       ]);
+    });
+  });
+
+  // The original contributes a product icon theme ("Atom Material Icons") with the earlier id of Cool Material Icons
+  describe('the product icon themes', () => {
+    /** An installed extension contributing the given product icon themes (id -> label), all in one json with a font named after the extension */
+    const productExtension = (id: string, themes: Record<string, string>): TestExtension => {
+      const extensionPath = join(folder, id);
+      mkdirSync(join(extensionPath, 'dist'), { recursive: true });
+      writeFileSync(join(extensionPath, 'dist', `${id}.woff`), id);
+      writeFileSync(
+        join(extensionPath, 'dist', 'product.json'),
+        JSON.stringify({ fonts: [{ id: 'font', src: [{ format: 'woff', path: `./${id}.woff` }] }], iconDefinitions: { files: { fontCharacter: '\\41' } } }),
+      );
+      const productIconThemes = Object.entries(themes).map(([themeId, label]) => ({ id: themeId, label, path: './dist/product.json' }));
+      return { extensionPath, id, packageJSON: { contributes: { productIconThemes }, version: '2.0.1' } };
+    };
+    const atomProduct = () => productExtension('AtomMaterial.a-file-icon-vscode', { [EARLIER_MATERIAL_PRODUCT_THEME_ID]: 'Atom Material Icons' });
+    const ownThemes = {
+      [ISLANDS_PRODUCT_THEME_ID]: 'Cool Islands Icons',
+      [MATERIAL_PRODUCT_THEME_ID]: 'Cool Material Icons',
+      [EARLIER_MATERIAL_PRODUCT_THEME_ID]: 'Cool Material Icons',
+    };
+    const own = () => productExtension(EXTENSION_ID, ownThemes);
+    const listed = () => listProductThemes().map(({ extensionPath, id, label }) => ({ extensionPath, id, label }));
+    /** The extension folder of each font the mix copies */
+    const mixedFonts = () =>
+      productIconService.mix().layers.map(({ theme }) => ({ font: theme.fonts[0]?.src[0]?.path ?? '', id: theme.id }));
+
+    beforeEach(forgetInstalledProductThemes);
+    afterEach(forgetInstalledProductThemes);
+
+    it('list Cool Material Icons by its own id, and the original by the earlier id', () => {
+      const [original, kit] = [atomProduct(), own()];
+      testState.extensions = [original, kit];
+      assert.deepEqual(listed(), [
+        { extensionPath: original.extensionPath, id: EARLIER_MATERIAL_PRODUCT_THEME_ID, label: 'Atom Material Icons' },
+        { extensionPath: kit.extensionPath, id: MATERIAL_PRODUCT_THEME_ID, label: 'Cool Material Icons' },
+      ]);
+    });
+
+    it('leave out the old copy of this extension, which has the same ids', () => {
+      const kit = own();
+      testState.extensions = [productExtension(OLD_EXTENSION_ID, ownThemes), kit];
+      assert.deepEqual(listed(), [{ extensionPath: kit.extensionPath, id: MATERIAL_PRODUCT_THEME_ID, label: 'Cool Material Icons' }]);
+    });
+
+    it('give the earlier id to the original when it is installed, and to Cool Material Icons otherwise', () => {
+      const [original, kit] = [atomProduct(), own()];
+      testState.extensions = [original, kit];
+      assert.equal(findProductTheme(listProductThemes(), EARLIER_MATERIAL_PRODUCT_THEME_ID)?.extensionPath, original.extensionPath);
+      assert.equal(findProductTheme(listProductThemes(), MATERIAL_PRODUCT_THEME_ID)?.extensionPath, kit.extensionPath);
+
+      testState.extensions = [kit];
+      forgetInstalledProductThemes();
+      // under the earlier id: the mixed fonts keep their folder, so the settings written before give the same theme
+      assert.deepEqual(findProductTheme(listProductThemes(), EARLIER_MATERIAL_PRODUCT_THEME_ID), {
+        extensionPath: kit.extensionPath,
+        id: EARLIER_MATERIAL_PRODUCT_THEME_ID,
+        label: 'Cool Material Icons',
+        path: join(kit.extensionPath, 'dist', 'product.json'),
+      });
+      assert.equal(findProductTheme(listProductThemes(), ISLANDS_PRODUCT_THEME_ID), undefined);
+      assert.equal(findProductTheme(listProductThemes(), 'fluent-icons'), undefined);
+    });
+
+    it('mix the original by the earlier id and Cool Material Icons by its id, and watch both files', () => {
+      const [original, kit] = [atomProduct(), own()];
+      testState.extensions = [original, kit];
+      testState.config.productIconThemeLayers = [{ mode: 'override', theme: EARLIER_MATERIAL_PRODUCT_THEME_ID }, MATERIAL_PRODUCT_THEME_ID];
+
+      assert.deepEqual(mixedFonts(), [
+        { font: join(original.extensionPath, 'dist', `${original.id}.woff`), id: EARLIER_MATERIAL_PRODUCT_THEME_ID },
+        { font: join(kit.extensionPath, 'dist', `${kit.id}.woff`), id: MATERIAL_PRODUCT_THEME_ID },
+      ]);
+      assert.deepEqual(productIconService.watchedPaths(), [
+        join(original.extensionPath, 'dist', 'product.json'),
+        join(kit.extensionPath, 'dist', 'product.json'),
+      ]);
+    });
+
+    it('keep mixing Cool Material Icons by the earlier id while the original is not installed', () => {
+      const kit = own();
+      testState.extensions = [kit];
+      testState.config.productIconThemeLayers = [EARLIER_MATERIAL_PRODUCT_THEME_ID];
+      testState.config.productIconByName = { 'debug-*': EARLIER_MATERIAL_PRODUCT_THEME_ID };
+
+      assert.deepEqual(mixedFonts(), [{ font: join(kit.extensionPath, 'dist', `${kit.id}.woff`), id: EARLIER_MATERIAL_PRODUCT_THEME_ID }]);
+      assert.deepEqual(productIconService.mix().byName.map(({ theme }) => theme.id), [EARLIER_MATERIAL_PRODUCT_THEME_ID]);
+      assert.deepEqual(productIconService.watchedPaths(), [join(kit.extensionPath, 'dist', 'product.json')]);
+
+      // the Product icons tab shows the layer as installed, by the name of the theme it gives
+      const state = productMixerState({
+        byName: testState.config.productIconByName,
+        distPath: join(folder, 'dist'),
+        generator: new ProductIconGenerator({ dist: join(folder, 'dist'), productIcons: join(__dirname, '..', '..', 'productIcons') }),
+        installed: listProductThemes(),
+        labels: { base: 'Cool Islands Icons', result: 'Result' },
+        layers: testState.config.productIconThemeLayers,
+        mix: productIconService.mix(),
+      });
+      assert.deepEqual(state.layers, [{ installed: true, label: 'Cool Material Icons', mode: 'fill', theme: EARLIER_MATERIAL_PRODUCT_THEME_ID }]);
+      assert.deepEqual(state.columns.map((column) => column.id), ['result', 'base', EARLIER_MATERIAL_PRODUCT_THEME_ID]);
+      // the themes to add: Cool Material Icons once, by its own id
+      assert.deepEqual(state.themes, [{ id: MATERIAL_PRODUCT_THEME_ID, label: 'Cool Material Icons' }]);
     });
   });
 

@@ -774,6 +774,12 @@
       },
       {
         "description": "Cool Theme Kit",
+        "id": "cool-material-product-icons",
+        "label": "Cool Material Icons",
+        "path": "./dist/a-file-icon-vscode-product-icon-theme.json"
+      },
+      {
+        "description": "%productIconTheme.earlierId.description%",
         "id": "a-file-icon-vscode-product-icon-theme",
         "label": "Cool Material Icons",
         "path": "./dist/a-file-icon-vscode-product-icon-theme.json"

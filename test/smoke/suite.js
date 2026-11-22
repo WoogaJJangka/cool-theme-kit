@@ -14,6 +14,11 @@ const EXTENSION_ID = 'woogajjangka.cool-theme-kit';
 const KEY = 'a-file-icon-vscode';
 /** `workbench.iconTheme` of this theme (KEY is its earlier id, which the original Atom Material Icons has too) */
 const ICON_THEME = 'cool-theme-kit-icons';
+/** `workbench.productIconTheme` of Cool Material Icons, and its earlier id, which the original has too */
+const MATERIAL_PRODUCT_THEME = 'cool-material-product-icons';
+const EARLIER_MATERIAL_PRODUCT_THEME = `${KEY}-product-icon-theme`;
+/** The original Atom Material Icons, as COMPAT_EXTENSIONS of run.js names it */
+const ORIGINAL_EXTENSION_ID = 'AtomMaterial.a-file-icon-vscode';
 
 /**
  * Memory budget: what the extension host keeps more after the cycles than before them (after a garbage collection).
@@ -319,6 +324,17 @@ const compatibility = async (ids, { darkTheme, iconTheme, productTheme, report, 
       await waitFor(`the fonts of ${productIconTheme.id}`, () =>
         (productTheme().fonts ?? []).some((font) => font.src?.some((source) => source.path?.includes('layers/product'))),
       REGENERATE_TIMEOUT);
+    });
+  }
+
+  // the original contributes a product icon theme with the earlier id of Cool Material Icons: by that id the layer is
+  // theirs, and Cool Material Icons is a layer by its own id (which theme each id gives is in the unit tests: the two
+  // themes have the same font and definitions)
+  if (ids.includes(ORIGINAL_EXTENSION_ID)) {
+    await step('mixes the product icons of the original by the earlier id, and Cool Material Icons by its id', async () => {
+      await settings().update('productIconThemeLayers', [{ mode: 'override', theme: EARLIER_MATERIAL_PRODUCT_THEME }, MATERIAL_PRODUCT_THEME], global);
+      const copied = (id) => (productTheme().fonts ?? []).some((font) => font.src?.some((source) => source.path?.includes(`layers/product/${id}/`)));
+      await waitFor('the fonts of both themes', () => copied(EARLIER_MATERIAL_PRODUCT_THEME) && copied(MATERIAL_PRODUCT_THEME), REGENERATE_TIMEOUT);
     });
   }
 
