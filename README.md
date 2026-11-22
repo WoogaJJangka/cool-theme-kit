@@ -103,7 +103,9 @@ which JetBrains color each VS Code color takes:
 
 - Python looks like PyCharm: keywords, `self`, keyword arguments, builtins, `__dunder__` names, decorators and
   docstrings have their PyCharm colors, and constants, attributes and method calls keep the text color, as in PyCharm.
-- With a language server (Pylance, TypeScript…), its semantic tokens get the same colors.
+- With a language server (Pylance, TypeScript…), its semantic tokens get the same colors. With the TypeScript server
+  built into VS Code they are checked too (`bun run check:semantic`): static fields, parameter properties, locals and
+  the globals of the standard library get the colors of WebStorm, which the grammar alone cannot tell apart.
 - Bracket pairs keep the text color: the JetBrains IDEs do not color them. Turn
   `editor.bracketPairColorization.enabled` off to remove the VS Code setting itself.
 - VS Code cannot draw the rounded islands: the panels get the island color and the space between them the window color.

@@ -57,6 +57,11 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: bun run check:colors
 
+      # the same with the semantic tokens of the TypeScript server built into VS Code (a real VS Code: needs a display)
+      - name: Semantic colors 🎨
+        if: matrix.os == 'ubuntu-latest'
+        run: xvfb-run -a bun run check:semantic
+
       - name: Package VSIX 📦
         if: matrix.os == 'ubuntu-latest'
         run: npx --yes --ignore-scripts @vscode/vsce@3.6.0 package --no-dependencies --allow-missing-repository --skip-license -o a-file-icon-vscode.vsix

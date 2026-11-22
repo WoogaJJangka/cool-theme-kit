@@ -49,6 +49,7 @@
 | JetBrains 연결 규칙 동기화 | `bun run sync:upstream` |
 | JetBrains 색 테마 동기화 (고정 커밋 / 최신) | `bun run sync:colors` / `bun run sync:colors -- --latest` |
 | 문법 색을 JetBrains 와 비교 (실제 VS Code 문법으로 `test/colors` 샘플을 토큰으로 나눔, `.vscode-test` 에 받음) | `bun run check:colors` (`-- --report` 토큰마다 scope·색·규칙, 색 없는 scope) |
+| 같은 비교를 VS Code 내장 TypeScript 서버의 의미 토큰까지 얹어서 (TS·JS 샘플, 실제 VS Code 를 띄움, Linux 는 `xvfb-run -a`) | `bun run check:semantic` (`-- --report` 의미 토큰마다 종류·수식어·스타일) |
 | IDE 서식 복사(`test/colors/ide/*.rtf`)와 글자 단위 비교 (다른 곳만 출력, 실패하지 않음) | `bun run compare:ide` (`-- ruby php` 이름 일부로 고름) |
 | New UI 제품 아이콘 글꼴 만들기 (확인용 그림 포함) | `bun run build:product-icons` (`-- --sheet <png>`) |
 | VSIX 만들기 | `npx --yes @vscode/vsce@3.6.0 package --no-dependencies --allow-missing-repository --skip-license -o <경로>.vsix` |
@@ -121,6 +122,11 @@
   Sass·Less·Kotlin·JSX 컴포넌트 키는 VS Code 쪽 scope 를 확정할 수 없거나(VS Code 에 Kotlin 문법 없음) 쓰임을 공개 소스로 확인할 수 없어 넣지 않았다.
   scope 이름은 VS Code 에 들어 있는 문법(`resources/app/extensions/*/syntaxes`)에서 확인한다. 화면 확인은 격리 VS Code(아래 "확인 방법"의 세 옵션)를
   `--remote-debugging-port` 로 띄워 CDP `Page.captureScreenshot` 으로 캡처(창을 앞으로 가져오지 않아 사용자 작업을 방해하지 않음).
+- 의미 색 검사(`bun run check:semantic`, `src/themes/semanticTokens.ts` = VS Code `tokenClassificationRegistry.ts`·`colorThemeData.getTokenStyle` 포팅,
+  `test/semantic/run.js` 가 실제 VS Code 에서 내장 TypeScript 서버의 의미 토큰을 뽑음): TS·JS 샘플의 기대값을 TextMate 색 위에 의미 스타일을 얹어 비교한다.
+  선택자 점수는 수식어 100·타입 100·언어 10 이라 `property.readonly`(200)가 `property:typescript`(110)를 이긴다 → 언어별 규칙에 일반 규칙의 수식어를 다시 적는다
+  (`SEMANTIC_RULES` 의 JS 부분). 의미 스타일이 비운 속성은 VS Code 기본 규칙(+ 내장 확장의 `semanticTokenScopes`)이 테마 `tokenColors` 에서 scope 를 찾아 채운다.
+  의미 토큰으로도 남는 차이는 기대값 `semantic` 에 이유를 적는다(`todo` 는 TextMate 만의 차이). 다른 언어 서버(Pylance·Java·C++)는 확장이라 검사하지 않는다.
 - 문법 색 검사(`bun run check:colors`, `src/themes/colorCheck.ts` 순수 함수 + `src/scripts/themes/checkColors.ts`): `test/colors/<이름>.<확장자>` 샘플을
   VS Code(`VSCODE_VERSION`, `.vscode-test` 에 받음) 내장 문법 + `vscode-textmate` 로 나누고, `<이름>.expect.json` 의 토큰마다(`key` = IDE 하이라이터가 주는 키 하나)
   `themes/*.base.json` 의 색이 IDE 의 색과 같은지 두 테마 다 본다. IDE 색은 `sync:colors` 가 함께 쓰는 `test/colors/jetbrains-attributes.json`(scheme 체인)과
