@@ -1,0 +1,21 @@
+{
+  "file": "pug.pug",
+  "scope": "text.pug",
+  "tokens": [
+    { "line": 1, "text": "한글 주석", "key": "JADE_UNBUF_COMMENT" },
+    { "line": 2, "text": "doctype html", "key": "JADE_DOCTYPE" },
+    { "line": 3, "text": "html", "key": "JADE_TAG_NAME" },
+    { "line": 3, "text": "(", "key": "JADE_PARENTS" },
+    { "line": 3, "text": "lang", "key": "JADE_ATTRIBUTE_NAME" },
+    { "line": 3, "text": "=", "key": "JADE_OPERATION_SIGN" },
+    { "line": 3, "text": "\"ko\"", "key": "DEFAULT_STRING" },
+    { "line": 5, "text": "=", "key": "JADE_OPERATION_SIGN" },
+    { "line": 7, "text": "#main", "key": "JADE_TAG_ID" },
+    { "line": 7, "text": ".title", "key": "JADE_TAG_CLASS" },
+    { "line": 7, "text": " Hello ", "key": "JADE_TEXT", "todo": "the grammar gives the text of a tag no scope" },
+    { "line": 8, "text": "if", "key": "JADE_KEYWORD" },
+    { "line": 10, "text": "each", "key": "JADE_KEYWORD" },
+    { "line": 14, "text": "include", "key": "JADE_KEYWORD" },
+    { "line": 14, "text": "footer.pug", "key": "JADE_FILE_PATH" }
+  ]
+}

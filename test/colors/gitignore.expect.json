@@ -1,0 +1,10 @@
+{
+  "file": "gitignore.gitignore",
+  "scope": "source.ignore",
+  "tokens": [
+    { "line": 1, "text": "# 한글 주석", "key": "DEFAULT_LINE_COMMENT" },
+    { "line": 2, "text": "node_modules/", "key": "TEXT" },
+    { "line": 4, "text": "!keep.log", "key": "TEXT" },
+    { "line": 6, "text": "build/**/*.tmp", "key": "TEXT" }
+  ]
+}

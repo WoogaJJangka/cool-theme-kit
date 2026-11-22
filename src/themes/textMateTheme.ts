@@ -156,7 +156,7 @@ const textMateAttributes = (scope: string, resolve: (key: string) => TextAttribu
 };
 
 /** The last segment of the scopes of grammars the IDE does not draw with TextMate: their rules never reach these languages */
-const OTHER_LANGUAGE = /\.(c|cpp|cs|css|dotenv|go|groovy|ini|java|jsdoc|js|json|jsx|less|markdown|php|properties|python|regexp|rst|ruby|rust|scss|shell|sql|toml|ts|tsx|xml|yaml)$/;
+const OTHER_LANGUAGE = /\.(c|cpp|cs|css|dotenv|go|groovy|handlebars|ini|java|jsdoc|js|json|jsx|less|markdown|php|properties|pug|python|regexp|rst|ruby|rust|scss|shell|sql|toml|ts|tsx|xml|yaml)$/;
 
 /**
  * Scopes inside others whose layers add up to a style no single rule gives: the `rem` of a batch comment is a keyword

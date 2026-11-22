@@ -1080,7 +1080,8 @@
     {
       "name": "Entity",
       "scope": [
-        "constant.character.entity"
+        "constant.character.entity",
+        "constant.character.entity punctuation"
       ],
       "settings": {
         "fontStyle": "",
@@ -1949,6 +1950,160 @@
       "settings": {
         "fontStyle": "",
         "foreground": "#7a7e85"
+      }
+    },
+    {
+      "name": "Pug doctype",
+      "scope": [
+        "text.pug meta.tag.sgml.doctype.html"
+      ],
+      "settings": {
+        "fontStyle": "",
+        "foreground": "#cf8e6d"
+      }
+    },
+    {
+      "name": "Pug tag",
+      "scope": [
+        "entity.name.tag.pug"
+      ],
+      "settings": {
+        "fontStyle": "",
+        "foreground": "#d5b778"
+      }
+    },
+    {
+      "name": "Pug attribute",
+      "scope": [
+        "entity.other.attribute-name.tag.pug"
+      ],
+      "settings": {
+        "fontStyle": "",
+        "foreground": "#bababa"
+      }
+    },
+    {
+      "name": "Pug id",
+      "scope": [
+        "entity.other.attribute-name.id.css.pug"
+      ],
+      "settings": {
+        "fontStyle": "",
+        "foreground": "#bababa"
+      }
+    },
+    {
+      "name": "Pug class",
+      "scope": [
+        "entity.other.attribute-name.class.css.pug"
+      ],
+      "settings": {
+        "fontStyle": "italic",
+        "foreground": "#c77dbb"
+      }
+    },
+    {
+      "name": "Pug parentheses",
+      "scope": [
+        "constant.name.attribute.tag.pug"
+      ],
+      "settings": {
+        "fontStyle": "",
+        "foreground": "#bcbec4"
+      }
+    },
+    {
+      "name": "Pug operator",
+      "scope": [
+        "text.pug attribute_value",
+        "text.pug source.js constant"
+      ],
+      "settings": {
+        "fontStyle": "",
+        "foreground": "#bcbec4"
+      }
+    },
+    {
+      "name": "Pug keyword",
+      "scope": [
+        "storage.type.function.pug",
+        "storage.type.import.include.pug"
+      ],
+      "settings": {
+        "fontStyle": "",
+        "foreground": "#cf8e6d"
+      }
+    },
+    {
+      "name": "Pug file",
+      "scope": [
+        "variable.control.import.include.pug"
+      ],
+      "settings": {
+        "fontStyle": "",
+        "foreground": "#6aab73"
+      }
+    },
+    {
+      "name": "Handlebars comment",
+      "scope": [
+        "comment.block.handlebars"
+      ],
+      "settings": {
+        "fontStyle": "",
+        "foreground": "#7a7e85"
+      }
+    },
+    {
+      "name": "Handlebars braces",
+      "scope": [
+        "support.constant.handlebars"
+      ],
+      "settings": {
+        "fontStyle": "",
+        "foreground": "#bcbec4"
+      }
+    },
+    {
+      "name": "Handlebars identifier",
+      "scope": [
+        "support.constant.handlebars keyword.control",
+        "variable.parameter.handlebars"
+      ],
+      "settings": {
+        "fontStyle": "",
+        "foreground": "#cf8e6d"
+      }
+    },
+    {
+      "name": "Handlebars operator",
+      "scope": [
+        "entity.other.attribute-name.handlebars"
+      ],
+      "settings": {
+        "fontStyle": "",
+        "foreground": "#bcbec4"
+      }
+    },
+    {
+      "name": "Handlebars value",
+      "scope": [
+        "entity.other.attribute-value.handlebars variable.parameter.handlebars"
+      ],
+      "settings": {
+        "fontStyle": "",
+        "foreground": "#2aacb8"
+      }
+    },
+    {
+      "name": "Handlebars string",
+      "scope": [
+        "string.quoted.double.handlebars",
+        "string.quoted.single.handlebars"
+      ],
+      "settings": {
+        "fontStyle": "",
+        "foreground": "#6aab73"
       }
     },
     {
@@ -3296,6 +3451,35 @@
         "text.bibtex constant.character.entity",
         "text.log constant.character.entity",
         "text.tex constant.character.entity"
+      ],
+      "settings": {
+        "fontStyle": "italic",
+        "foreground": "#bcbec4"
+      }
+    },
+    {
+      "name": "TextMate constant.character.entity punctuation",
+      "scope": [
+        "source.asp.vb.net constant.character.entity punctuation",
+        "source.batchfile constant.character.entity punctuation",
+        "source.clojure constant.character.entity punctuation",
+        "source.coffee constant.character.entity punctuation",
+        "source.dart constant.character.entity punctuation",
+        "source.fsharp constant.character.entity punctuation",
+        "source.hlsl constant.character.entity punctuation",
+        "source.julia constant.character.entity punctuation",
+        "source.lua constant.character.entity punctuation",
+        "source.makefile constant.character.entity punctuation",
+        "source.objc constant.character.entity punctuation",
+        "source.objcpp constant.character.entity punctuation",
+        "source.perl constant.character.entity punctuation",
+        "source.powershell constant.character.entity punctuation",
+        "source.r constant.character.entity punctuation",
+        "source.shaderlab constant.character.entity punctuation",
+        "source.swift constant.character.entity punctuation",
+        "text.bibtex constant.character.entity punctuation",
+        "text.log constant.character.entity punctuation",
+        "text.tex constant.character.entity punctuation"
       ],
       "settings": {
         "fontStyle": "italic",

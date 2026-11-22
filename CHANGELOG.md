@@ -7,6 +7,10 @@ All notable changes to this project will be documented in this file. Dates are d
 - feat: F#, VB.NET, HLSL, ShaderLab, CoffeeScript, LaTeX and BibTeX get the colors PyCharm gives them with the same
   TextMate grammars as VS Code, and C the colors of CLion. Every TextMate language (Lua, Swift, PowerShell, Dart,
   Julia, Clojure, Objective-C, batch files…) is now compared character by character with a PyCharm without plugins.
+- feat: Pug and Handlebars get the colors of the JetBrains plugins for them (a Pug class is a static field, every
+  Handlebars identifier a keyword); JSONC, JSON Lines, XSL and `.gitignore` files are checked against the JSON, XML and
+  ignore file colors of the IDE.
+- fix: the `&` and `;` of an entity in an XML or HTML attribute value (`&gt;`) have the entity color, not the tag color.
 - fix: in these languages the quotes of a string, the marker of a comment and the `\` of a LaTeX command have the text
   color, as in PyCharm, instead of the string, comment or keyword color.
 

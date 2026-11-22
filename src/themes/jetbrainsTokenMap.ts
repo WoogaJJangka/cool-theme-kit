@@ -126,7 +126,7 @@ export const TOKEN_RULES: TokenRule[] = [
   { from: ['HTML_ATTRIBUTE_VALUE', 'XML_ATTRIBUTE_VALUE', 'DEFAULT_STRING'], name: 'Attribute value', scope: ['meta.attribute-with-value string', 'meta.tag string', 'meta.attribute punctuation.separator.key-value.html'] },
   // The name of a doctype is the tag, not a tag name: text in Islands Light
   { from: ['HTML_TAG', 'DEFAULT_TAG', 'TEXT'], name: 'HTML doctype', scope: ['meta.tag.metadata.doctype.html entity.name.tag'] },
-  { from: ['HTML_ENTITY_REFERENCE', 'XML_ENTITY_REFERENCE', 'DEFAULT_VALID_STRING_ESCAPE'], name: 'Entity', scope: ['constant.character.entity'] },
+  { from: ['HTML_ENTITY_REFERENCE', 'XML_ENTITY_REFERENCE', 'DEFAULT_VALID_STRING_ESCAPE'], name: 'Entity', scope: ['constant.character.entity', 'constant.character.entity punctuation'] },
   { from: ['ERRORS_ATTRIBUTES'], name: 'Invalid', scope: ['invalid', 'invalid.illegal'] },
   { from: ['DEPRECATED_ATTRIBUTES'], name: 'Deprecated', scope: ['invalid.deprecated'] },
 
@@ -255,6 +255,25 @@ export const TOKEN_RULES: TokenRule[] = [
   { from: ['DOTENV_KEY'], name: '.env key', scope: ['variable.key.dotenv'] },
   { from: ['DOTENV_VALUE'], name: '.env value', scope: ['property.value.dotenv', 'property.value.dotenv keyword', 'property.value.dotenv variable'] },
   { from: ['DOTENV_COMMENT'], name: '.env export', scope: ['keyword.key.export.dotenv'] },
+  // Pug (intellij-plugins JadeSyntaxHighlighter): HTML tag and attribute names, an id an attribute name, a class a static
+  // field, the statements and `include` keywords, the `=` of an attribute or of code an operator
+  { from: ['JADE_DOCTYPE'], name: 'Pug doctype', scope: ['text.pug meta.tag.sgml.doctype.html'] },
+  { from: ['JADE_TAG_NAME'], name: 'Pug tag', scope: ['entity.name.tag.pug'] },
+  { from: ['JADE_ATTRIBUTE_NAME'], name: 'Pug attribute', scope: ['entity.other.attribute-name.tag.pug'] },
+  { from: ['JADE_TAG_ID'], name: 'Pug id', scope: ['entity.other.attribute-name.id.css.pug'] },
+  { from: ['JADE_TAG_CLASS'], name: 'Pug class', scope: ['entity.other.attribute-name.class.css.pug'] },
+  { from: ['JADE_PARENTS', 'TEXT'], name: 'Pug parentheses', scope: ['constant.name.attribute.tag.pug'] },
+  { from: ['JADE_OPERATION_SIGN', 'TEXT'], name: 'Pug operator', scope: ['text.pug attribute_value', 'text.pug source.js constant'] },
+  { from: ['JADE_KEYWORD'], name: 'Pug keyword', scope: ['storage.type.function.pug', 'storage.type.import.include.pug'] },
+  { from: ['JADE_FILE_PATH'], name: 'Pug file', scope: ['variable.control.import.include.pug'] },
+  // Handlebars (intellij-plugins HbHighlighter): `{{ }}` braces, every identifier (`if`, `else`, a name) a keyword,
+  // `=` an operator, the value of a hash a value (number)
+  { from: ['HANDLEBARS.COMMENTS'], name: 'Handlebars comment', scope: ['comment.block.handlebars'] },
+  { from: ['HANDLEBARS.MUSTACHES', 'TEXT'], name: 'Handlebars braces', scope: ['support.constant.handlebars'] },
+  { from: ['HANDLEBARS.IDENTIFIERS'], name: 'Handlebars identifier', scope: ['support.constant.handlebars keyword.control', 'variable.parameter.handlebars'] },
+  { from: ['HANDLEBARS.OPERATORS', 'TEXT'], name: 'Handlebars operator', scope: ['entity.other.attribute-name.handlebars'] },
+  { from: ['HANDLEBARS.VALUES'], name: 'Handlebars value', scope: ['entity.other.attribute-value.handlebars variable.parameter.handlebars'] },
+  { from: ['HANDLEBARS.STRINGS'], name: 'Handlebars string', scope: ['string.quoted.double.handlebars', 'string.quoted.single.handlebars'] },
   // SQL (Database Tools, closed). Seen in PyCharm 2026-11-21: the table of a CREATE, an alias and the column after it are
   // text (a column the IDE resolves can be purple: semantic), a built-in function italic like a static method
   { from: ['TEXT'], name: 'SQL name', scope: ['entity.name.function.sql', 'constant.other.database-name.sql', 'constant.other.table-name.sql'] },

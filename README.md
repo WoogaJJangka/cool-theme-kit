@@ -91,6 +91,7 @@ Code), and compared character by character with the rich text the IDEs copy (`bu
 | JavaScript/TypeScript, HTML, XML, CSS, JSON, SQL | WebStorm, PyCharm |
 | Python, YAML, TOML, Markdown, reStructuredText, shell, properties, Groovy, Java, `.env` | PyCharm, IntelliJ IDEA |
 | Ruby, PHP | RubyMine, PhpStorm |
+| JSONC, JSON Lines, XSL, Pug, Handlebars, `.gitignore` | the highlighters of the JetBrains IDEs (JSON, XML, ignore files; Pug and Handlebars from [intellij-plugins](https://github.com/JetBrains/intellij-plugins)) |
 | C, C++, Go, Rust | CLion, GoLand, RustRover |
 | C# | the Islands defaults (Rider draws C# with its own palette) |
 | Lua, Swift, PowerShell, Dart, Julia, Clojure, Objective-C/C++, F#, VB.NET, HLSL, ShaderLab, CoffeeScript, LaTeX, BibTeX, Raku, batch files, Makefiles, log files | PyCharm, which draws them with the same TextMate grammars as VS Code |

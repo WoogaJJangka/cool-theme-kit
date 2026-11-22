@@ -330,6 +330,35 @@ const DOTENV_KEYS: Record<string, string> = {
   DOTENV_VALUE: 'DEFAULT_STRING',
 };
 
+/** JetBrains/intellij-plugins jade/src/com/jetbrains/plugins/jade/highlighter/JadeHighlighter.java (Pug) */
+const PUG_KEYS: Record<string, string> = {
+  JADE_ATTRIBUTE_NAME: 'HTML_ATTRIBUTE_NAME',
+  JADE_COMMENT: 'DEFAULT_LINE_COMMENT',
+  JADE_DOCTYPE: 'DEFAULT_KEYWORD',
+  JADE_FILE_PATH: 'DEFAULT_STRING',
+  JADE_KEYWORD: 'DEFAULT_KEYWORD',
+  JADE_NUMBER: 'DEFAULT_NUMBER',
+  JADE_OPERATION_SIGN: 'DEFAULT_OPERATION_SIGN',
+  JADE_PARENTS: 'DEFAULT_PARENTHS',
+  JADE_TAG_CLASS: 'DEFAULT_STATIC_FIELD',
+  JADE_TAG_ID: 'HTML_ATTRIBUTE_NAME',
+  JADE_TAG_NAME: 'HTML_TAG_NAME',
+  JADE_TEXT: 'DEFAULT_STRING',
+  JADE_UNBUF_COMMENT: 'DEFAULT_LINE_COMMENT',
+};
+
+/** JetBrains/intellij-plugins handlebars/src/com/dmarcotte/handlebars/HbHighlighter.java (an identifier is a keyword) */
+const HANDLEBARS_KEYS: Record<string, string> = {
+  'HANDLEBARS.COMMENTS': 'DEFAULT_BLOCK_COMMENT',
+  'HANDLEBARS.DATA_PREFIX': 'DEFAULT_KEYWORD',
+  'HANDLEBARS.ESCAPE': 'DEFAULT_VALID_STRING_ESCAPE',
+  'HANDLEBARS.IDENTIFIERS': 'DEFAULT_KEYWORD',
+  'HANDLEBARS.MUSTACHES': 'DEFAULT_BRACES',
+  'HANDLEBARS.OPERATORS': 'DEFAULT_OPERATION_SIGN',
+  'HANDLEBARS.STRINGS': 'DEFAULT_STRING',
+  'HANDLEBARS.VALUES': 'DEFAULT_NUMBER',
+};
+
 /** xml/xml-psi-impl/src/com/intellij/openapi/editor/XmlHighlighterColors.java */
 const XML_KEYS: Record<string, string> = {
   HTML_ATTRIBUTE_NAME: 'DEFAULT_ATTRIBUTE',
@@ -373,6 +402,8 @@ export const KEY_FALLBACKS: Record<string, string> = {
   ...REST_KEYS,
   ...TOML_KEYS,
   ...DOTENV_KEYS,
+  ...PUG_KEYS,
+  ...HANDLEBARS_KEYS,
   ...XML_KEYS,
   ...CAPTURED_FALLBACKS,
 };
