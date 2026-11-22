@@ -1,0 +1,23 @@
+{
+  "file": "c.c",
+  "scope": "source.c",
+  "tokens": [
+    { "line": 1, "text": "#include", "key": "DEFAULT_KEYWORD" },
+    { "line": 1, "text": "<stdio.h>", "key": "DEFAULT_STRING" },
+    { "line": 4, "text": "MAX_SIZE", "key": "DEFAULT_METADATA" },
+    { "line": 6, "text": "// 한글 주석", "key": "DEFAULT_LINE_COMMENT" },
+    { "line": 7, "text": "/** Doc comment */", "key": "DEFAULT_DOC_COMMENT" },
+    { "line": 8, "text": "struct", "key": "DEFAULT_KEYWORD" },
+    { "line": 9, "text": "const", "key": "DEFAULT_KEYWORD" },
+    { "line": 9, "text": "char", "key": "DEFAULT_KEYWORD" },
+    { "line": 13, "text": "static", "key": "DEFAULT_KEYWORD" },
+    { "line": 13, "text": "greet", "key": "DEFAULT_FUNCTION_DECLARATION" },
+    { "line": 14, "text": "snprintf", "key": "DEFAULT_FUNCTION_CALL" },
+    { "line": 14, "text": "\"Hello ", "key": "DEFAULT_STRING" },
+    { "line": 14, "text": "\\n","key": "DEFAULT_VALID_STRING_ESCAPE" },
+    { "line": 15, "text": "return", "key": "DEFAULT_KEYWORD" },
+    { "line": 15, "text": "0", "key": "DEFAULT_NUMBER" },
+    { "line": 21, "text": "sizeof", "key": "DEFAULT_KEYWORD", "todo": "the grammar gives `sizeof` without parentheses no scope" },
+    { "line": 22, "text": "strlen", "key": "DEFAULT_FUNCTION_CALL" }
+  ]
+}

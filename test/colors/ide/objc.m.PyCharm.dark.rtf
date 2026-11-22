@@ -1,0 +1,121 @@
+{\rtf1\ansi\deff0{\colortbl;\red188\green190\blue196;\red25\green26\blue28;\red122\green126\blue133;\red207\green142\blue109;\red106\green171\blue115;\red86\green168\blue245;\red42\green172\blue184;\red199\green125\blue187;}
+{\fonttbl{\f1\fmodern JetBrains Mono;}{\f2\fmodern Courier New;}}
+
+\s0\box\cbpat2\cb2\cf1\fs20
+\cf1
+\f1
+\i0\b0
+
+// \cf3
+\f2
+
+\u54620?\u44544? \u51452?\u49437?\line
+\cf1
+\f1
+
+#\cf4
+
+import \cf1
+
+<\cf5
+
+Foundation/Foundation.h\cf1
+
+>\line
+
+\line
+
+#\cf4
+
+define \cf6
+
+MAX_SIZE \cf7
+\i\b0
+
+10\line
+
+\line
+\cf1
+\i0\b0
+
+@\cf4
+
+interface \cf1
+
+Greeter : NSObject\line
+
+@\cf4
+
+property \cf1
+
+(\cf4
+
+nonatomic\cf1
+
+, \cf4
+
+copy\cf1
+
+) NSString *name;\line
+
+- (NSString *)\cf6
+
+greet\cf1
+
+:(NSInteger)times;\line
+
+@\cf4
+
+end\line
+
+\line
+\cf1
+
+@\cf4
+
+implementation \cf1
+
+Greeter\line
+
+- (NSString *)\cf6
+
+greet\cf1
+
+:(NSInteger)times \{\line
+
+    NSString *message = [NSString stringWithFormat:@"\cf5
+
+Hello \cf8
+\i\b0
+
+%@\cf4
+
+\\n\cf1
+\i0\b0
+
+", self.name];\line
+
+    \cf4
+
+return\cf1
+
+ times > \cf7
+\i\b0
+
+0 \cf1
+\i0\b0
+
+? message : \cf8
+\i\b0
+
+nil\cf1
+\i0\b0
+
+;\line
+
+\}\line
+
+@\cf4
+
+end\line
+\par}

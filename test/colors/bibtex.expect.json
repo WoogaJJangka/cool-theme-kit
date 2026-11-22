@@ -1,0 +1,12 @@
+{
+  "file": "bibtex.bib",
+  "scope": "text.bibtex",
+  "tokens": [
+    { "line": 1, "text": "한글 주석", "key": "DEFAULT_BLOCK_COMMENT", "layers": ["DEFAULT_LINE_COMMENT"] },
+    { "line": 2, "text": "article", "key": "DEFAULT_KEYWORD" },
+    { "line": 2, "text": "knuth", "key": "DEFAULT_CLASS_NAME", "layers": ["DEFAULT_IDENTIFIER"] },
+    { "line": 3, "text": "author", "key": "DEFAULT_FUNCTION_CALL" },
+    { "line": 6, "text": "1984", "key": "DEFAULT_NUMBER", "layers": ["DEFAULT_CONSTANT"] },
+    { "line": 10, "text": "tcj", "key": "DEFAULT_LOCAL_VARIABLE" }
+  ]
+}

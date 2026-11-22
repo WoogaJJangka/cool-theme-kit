@@ -3,7 +3,7 @@
   "scope": "source.swift",
   "tokens": [
     { "line": 1, "text": "import", "key": "DEFAULT_KEYWORD" },
-    { "line": 3, "text": "/// Doc comment", "key": "DEFAULT_LINE_COMMENT" },
+    { "line": 3, "text": "Doc comment", "key": "DEFAULT_LINE_COMMENT" },
     { "line": 4, "text": "let", "key": "DEFAULT_KEYWORD" },
     { "line": 4, "text": "10", "key": "DEFAULT_NUMBER", "layers": ["DEFAULT_CONSTANT"] },
     { "line": 6, "text": "struct", "key": "DEFAULT_KEYWORD" },

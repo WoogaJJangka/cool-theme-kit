@@ -8,7 +8,8 @@ import type { TextAttributes } from 'src/themes/jetbrainsTheme';
 const KEYS: Record<string, TextAttributes> = {
   DEFAULT_BLOCK_COMMENT: { foreground: '#000002' },
   DEFAULT_CONSTANT: { fontType: 2, foreground: '#000003' },
-  DEFAULT_LINE_COMMENT: { foreground: '#000001' },
+  DEFAULT_DOT: { foreground: '#000007' },
+  DEFAULT_LINE_COMMENT: { fontType: 2, foreground: '#000001' },
   DEFAULT_NUMBER: { foreground: '#000004' },
   DEFAULT_VALID_STRING_ESCAPE: { fontType: 1, foreground: '#000005' },
   DIFF_INSERTED: { background: '#000006' },
@@ -28,8 +29,12 @@ describe('TextMate languages', () => {
     assert.deepEqual(textMateAttributes('constant.character.escape.ruby', resolve), { fontType: 3, foreground: '#000005' });
     // a layer without a color (a diff background, which a VS Code token cannot have) leaves no color
     assert.deepEqual(textMateAttributes('markup.inserted', resolve), { fontType: 0 });
-    // the parents of a scope are layers under it
-    assert.deepEqual(textMateAttributes('comment.block.documentation punctuation.definition.comment', resolve), { fontType: 0, foreground: '#000002' });
+    // the parents of a scope are layers under it: the marker of a comment is punctuation (the text color in Islands)
+    // with the italic of the comment
+    assert.deepEqual(textMateAttributes('comment.block.documentation punctuation.definition.comment', resolve), { fontType: 2, foreground: '#000007' });
+    // a comment marker is always in a comment: its own rule has the layers of the comment, with no parent in the selector
+    assert.deepEqual(textMateAttributes('punctuation.definition.comment.lua', resolve), { fontType: 2, foreground: '#000007' });
+    assert.deepEqual(textMateAttributes('punctuation.definition.string.begin.lua', resolve), { fontType: 0, foreground: '#000007' });
     // whole segments only, and a key the scheme does not have adds nothing
     assert.equal(textMateAttributes('constantly', resolve), undefined);
     assert.deepEqual(textMateAttributes('string', resolve), {});
@@ -43,6 +48,8 @@ describe('TextMate languages', () => {
     assert.ok(!scopes.includes('support.class'));
     assert.ok(!scopes.includes('source.rst comment.block'));
     for (const selector of Object.keys(TEXTMATE_RULES)) assert.ok(scopes.includes(selector), selector);
+    // a keyword in a comment (the `rem` of a batch file) has the italic of the comment
+    assert.ok(scopes.includes('comment keyword'));
   });
 
   it('writes one rule per scope for every TextMate language, always with a color', () => {

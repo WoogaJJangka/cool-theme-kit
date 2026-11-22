@@ -1,0 +1,17 @@
+{
+  "file": "perl.pl",
+  "scope": "source.perl",
+  "tokens": [
+    { "line": 1, "text": "!/usr/bin/perl", "key": "DEFAULT_LINE_COMMENT" },
+    { "line": 3, "text": "use", "key": "DEFAULT_KEYWORD" },
+    { "line": 6, "text": "max_size", "key": "DEFAULT_LOCAL_VARIABLE" },
+    { "line": 7, "text": "하나", "key": "DEFAULT_STRING" },
+    { "line": 8, "text": "alice", "key": "DEFAULT_CONSTANT" },
+    { "line": 8, "text": "=>", "key": "DEFAULT_OPERATION_SIGN", "layers": ["DEFAULT_KEYWORD"] },
+    { "line": 10, "text": "greet", "key": "DEFAULT_FUNCTION_DECLARATION", "layers": ["DEFAULT_CLASS_NAME", "DEFAULT_IDENTIFIER"] },
+    { "line": 12, "text": "name", "key": "DEFAULT_LOCAL_VARIABLE", "layers": ["DEFAULT_STRING"] },
+    { "line": 12, "text": "\\n", "key": "DEFAULT_VALID_STRING_ESCAPE", "layers": ["DEFAULT_CONSTANT", "DEFAULT_STRING"] },
+    { "line": 15, "text": "\\w", "key": "DEFAULT_VALID_STRING_ESCAPE", "layers": ["DEFAULT_CONSTANT", "JS.REGEXP", "DEFAULT_STRING"] },
+    { "line": 16, "text": "print", "key": "DEFAULT_FUNCTION_CALL" }
+  ]
+}

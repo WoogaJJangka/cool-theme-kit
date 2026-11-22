@@ -362,8 +362,9 @@ export const TOKEN_RULES: TokenRule[] = [
 
   // JavaScript and TypeScript, captured in WebStorm 2026-11-22: a property declaration is a field, a property access and
   // a parameter text, a local variable (declared in a block) its own color, the code of `${…}` code (its braces text), a
-  // method declaration the member function color, a type parameter TypeScript's own color
-  ...['ts', 'tsx', 'js', 'jsx'].flatMap((suffix) => [
+  // method declaration the member function color, a type parameter TypeScript's own color. JSX scopes end in `.js.jsx`,
+  // so the `.js` rules reach them
+  ...['ts', 'tsx', 'js'].flatMap((suffix) => [
     { from: ['DEFAULT_INSTANCE_FIELD'], name: `JavaScript field ${suffix}`, scope: [`meta.definition.property.${suffix} variable.object.property.${suffix}`] },
     { from: ['TEXT'], name: `JavaScript property access ${suffix}`, scope: [`variable.other.property.${suffix}`, `variable.other.object.property.${suffix}`, `variable.parameter.${suffix}`] },
     {

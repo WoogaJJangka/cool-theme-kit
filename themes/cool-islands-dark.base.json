@@ -2813,71 +2813,6 @@
       }
     },
     {
-      "name": "JavaScript field jsx",
-      "scope": [
-        "meta.definition.property.jsx variable.object.property.jsx"
-      ],
-      "settings": {
-        "fontStyle": "",
-        "foreground": "#c77dbb"
-      }
-    },
-    {
-      "name": "JavaScript property access jsx",
-      "scope": [
-        "variable.other.property.jsx",
-        "variable.other.object.property.jsx",
-        "variable.parameter.jsx"
-      ],
-      "settings": {
-        "fontStyle": "",
-        "foreground": "#bcbec4"
-      }
-    },
-    {
-      "name": "JavaScript local variable jsx",
-      "scope": [
-        "meta.block.jsx meta.definition.variable.jsx variable.other.constant.jsx",
-        "meta.block.jsx meta.definition.variable.jsx variable.other.readwrite.jsx"
-      ],
-      "settings": {
-        "fontStyle": "",
-        "foreground": "#a9b7c6"
-      }
-    },
-    {
-      "name": "JavaScript template expression jsx",
-      "scope": [
-        "meta.template.expression.jsx",
-        "punctuation.definition.template-expression.begin.jsx",
-        "punctuation.definition.template-expression.end.jsx"
-      ],
-      "settings": {
-        "fontStyle": "",
-        "foreground": "#bcbec4"
-      }
-    },
-    {
-      "name": "JavaScript method jsx",
-      "scope": [
-        "meta.definition.method.jsx entity.name.function.jsx"
-      ],
-      "settings": {
-        "fontStyle": "",
-        "foreground": "#56a8f5"
-      }
-    },
-    {
-      "name": "TypeScript type parameter jsx",
-      "scope": [
-        "meta.type.parameters.jsx entity.name.type.jsx"
-      ],
-      "settings": {
-        "fontStyle": "",
-        "foreground": "#507874"
-      }
-    },
-    {
       "name": "Shell command",
       "scope": [
         "entity.name.command.shell"
@@ -3080,9 +3015,13 @@
     {
       "name": "TextMate comment.block.documentation",
       "scope": [
+        "source.asp.vb.net comment.block.documentation",
         "source.batchfile comment.block.documentation",
         "source.clojure comment.block.documentation",
+        "source.coffee comment.block.documentation",
         "source.dart comment.block.documentation",
+        "source.fsharp comment.block.documentation",
+        "source.hlsl comment.block.documentation",
         "source.julia comment.block.documentation",
         "source.lua comment.block.documentation",
         "source.makefile comment.block.documentation",
@@ -3091,8 +3030,11 @@
         "source.perl comment.block.documentation",
         "source.powershell comment.block.documentation",
         "source.r comment.block.documentation",
+        "source.shaderlab comment.block.documentation",
         "source.swift comment.block.documentation",
-        "text.log comment.block.documentation"
+        "text.bibtex comment.block.documentation",
+        "text.log comment.block.documentation",
+        "text.tex comment.block.documentation"
       ],
       "settings": {
         "fontStyle": "",
@@ -3102,9 +3044,13 @@
     {
       "name": "TextMate comment.block.documentation keyword",
       "scope": [
+        "source.asp.vb.net comment.block.documentation keyword",
         "source.batchfile comment.block.documentation keyword",
         "source.clojure comment.block.documentation keyword",
+        "source.coffee comment.block.documentation keyword",
         "source.dart comment.block.documentation keyword",
+        "source.fsharp comment.block.documentation keyword",
+        "source.hlsl comment.block.documentation keyword",
         "source.julia comment.block.documentation keyword",
         "source.lua comment.block.documentation keyword",
         "source.makefile comment.block.documentation keyword",
@@ -3113,8 +3059,11 @@
         "source.perl comment.block.documentation keyword",
         "source.powershell comment.block.documentation keyword",
         "source.r comment.block.documentation keyword",
+        "source.shaderlab comment.block.documentation keyword",
         "source.swift comment.block.documentation keyword",
-        "text.log comment.block.documentation keyword"
+        "text.bibtex comment.block.documentation keyword",
+        "text.log comment.block.documentation keyword",
+        "text.tex comment.block.documentation keyword"
       ],
       "settings": {
         "fontStyle": "",
@@ -3124,9 +3073,13 @@
     {
       "name": "TextMate comment.block.documentation punctuation.definition.comment",
       "scope": [
+        "source.asp.vb.net comment.block.documentation punctuation.definition.comment",
         "source.batchfile comment.block.documentation punctuation.definition.comment",
         "source.clojure comment.block.documentation punctuation.definition.comment",
+        "source.coffee comment.block.documentation punctuation.definition.comment",
         "source.dart comment.block.documentation punctuation.definition.comment",
+        "source.fsharp comment.block.documentation punctuation.definition.comment",
+        "source.hlsl comment.block.documentation punctuation.definition.comment",
         "source.julia comment.block.documentation punctuation.definition.comment",
         "source.lua comment.block.documentation punctuation.definition.comment",
         "source.makefile comment.block.documentation punctuation.definition.comment",
@@ -3135,20 +3088,27 @@
         "source.perl comment.block.documentation punctuation.definition.comment",
         "source.powershell comment.block.documentation punctuation.definition.comment",
         "source.r comment.block.documentation punctuation.definition.comment",
+        "source.shaderlab comment.block.documentation punctuation.definition.comment",
         "source.swift comment.block.documentation punctuation.definition.comment",
-        "text.log comment.block.documentation punctuation.definition.comment"
+        "text.bibtex comment.block.documentation punctuation.definition.comment",
+        "text.log comment.block.documentation punctuation.definition.comment",
+        "text.tex comment.block.documentation punctuation.definition.comment"
       ],
       "settings": {
         "fontStyle": "",
-        "foreground": "#7a7e85"
+        "foreground": "#bcbec4"
       }
     },
     {
       "name": "TextMate comment.block.documentation storage.type",
       "scope": [
+        "source.asp.vb.net comment.block.documentation storage.type",
         "source.batchfile comment.block.documentation storage.type",
         "source.clojure comment.block.documentation storage.type",
+        "source.coffee comment.block.documentation storage.type",
         "source.dart comment.block.documentation storage.type",
+        "source.fsharp comment.block.documentation storage.type",
+        "source.hlsl comment.block.documentation storage.type",
         "source.julia comment.block.documentation storage.type",
         "source.lua comment.block.documentation storage.type",
         "source.makefile comment.block.documentation storage.type",
@@ -3157,8 +3117,11 @@
         "source.perl comment.block.documentation storage.type",
         "source.powershell comment.block.documentation storage.type",
         "source.r comment.block.documentation storage.type",
+        "source.shaderlab comment.block.documentation storage.type",
         "source.swift comment.block.documentation storage.type",
-        "text.log comment.block.documentation storage.type"
+        "text.bibtex comment.block.documentation storage.type",
+        "text.log comment.block.documentation storage.type",
+        "text.tex comment.block.documentation storage.type"
       ],
       "settings": {
         "fontStyle": "",
@@ -3168,9 +3131,13 @@
     {
       "name": "TextMate comment.block.javadoc",
       "scope": [
+        "source.asp.vb.net comment.block.javadoc",
         "source.batchfile comment.block.javadoc",
         "source.clojure comment.block.javadoc",
+        "source.coffee comment.block.javadoc",
         "source.dart comment.block.javadoc",
+        "source.fsharp comment.block.javadoc",
+        "source.hlsl comment.block.javadoc",
         "source.julia comment.block.javadoc",
         "source.lua comment.block.javadoc",
         "source.makefile comment.block.javadoc",
@@ -3179,8 +3146,11 @@
         "source.perl comment.block.javadoc",
         "source.powershell comment.block.javadoc",
         "source.r comment.block.javadoc",
+        "source.shaderlab comment.block.javadoc",
         "source.swift comment.block.javadoc",
-        "text.log comment.block.javadoc"
+        "text.bibtex comment.block.javadoc",
+        "text.log comment.block.javadoc",
+        "text.tex comment.block.javadoc"
       ],
       "settings": {
         "fontStyle": "",
@@ -3190,9 +3160,13 @@
     {
       "name": "TextMate comment.block.javadoc punctuation.definition.comment",
       "scope": [
+        "source.asp.vb.net comment.block.javadoc punctuation.definition.comment",
         "source.batchfile comment.block.javadoc punctuation.definition.comment",
         "source.clojure comment.block.javadoc punctuation.definition.comment",
+        "source.coffee comment.block.javadoc punctuation.definition.comment",
         "source.dart comment.block.javadoc punctuation.definition.comment",
+        "source.fsharp comment.block.javadoc punctuation.definition.comment",
+        "source.hlsl comment.block.javadoc punctuation.definition.comment",
         "source.julia comment.block.javadoc punctuation.definition.comment",
         "source.lua comment.block.javadoc punctuation.definition.comment",
         "source.makefile comment.block.javadoc punctuation.definition.comment",
@@ -3201,20 +3175,27 @@
         "source.perl comment.block.javadoc punctuation.definition.comment",
         "source.powershell comment.block.javadoc punctuation.definition.comment",
         "source.r comment.block.javadoc punctuation.definition.comment",
+        "source.shaderlab comment.block.javadoc punctuation.definition.comment",
         "source.swift comment.block.javadoc punctuation.definition.comment",
-        "text.log comment.block.javadoc punctuation.definition.comment"
+        "text.bibtex comment.block.javadoc punctuation.definition.comment",
+        "text.log comment.block.javadoc punctuation.definition.comment",
+        "text.tex comment.block.javadoc punctuation.definition.comment"
       ],
       "settings": {
         "fontStyle": "",
-        "foreground": "#7a7e85"
+        "foreground": "#bcbec4"
       }
     },
     {
       "name": "TextMate comment.documentation",
       "scope": [
+        "source.asp.vb.net comment.documentation",
         "source.batchfile comment.documentation",
         "source.clojure comment.documentation",
+        "source.coffee comment.documentation",
         "source.dart comment.documentation",
+        "source.fsharp comment.documentation",
+        "source.hlsl comment.documentation",
         "source.julia comment.documentation",
         "source.lua comment.documentation",
         "source.makefile comment.documentation",
@@ -3223,8 +3204,11 @@
         "source.perl comment.documentation",
         "source.powershell comment.documentation",
         "source.r comment.documentation",
+        "source.shaderlab comment.documentation",
         "source.swift comment.documentation",
-        "text.log comment.documentation"
+        "text.bibtex comment.documentation",
+        "text.log comment.documentation",
+        "text.tex comment.documentation"
       ],
       "settings": {
         "fontStyle": "italic",
@@ -3234,9 +3218,13 @@
     {
       "name": "TextMate constant",
       "scope": [
+        "source.asp.vb.net constant",
         "source.batchfile constant",
         "source.clojure constant",
+        "source.coffee constant",
         "source.dart constant",
+        "source.fsharp constant",
+        "source.hlsl constant",
         "source.julia constant",
         "source.lua constant",
         "source.makefile constant",
@@ -3245,8 +3233,11 @@
         "source.perl constant",
         "source.powershell constant",
         "source.r constant",
+        "source.shaderlab constant",
         "source.swift constant",
-        "text.log constant"
+        "text.bibtex constant",
+        "text.log constant",
+        "text.tex constant"
       ],
       "settings": {
         "fontStyle": "italic",
@@ -3254,11 +3245,44 @@
       }
     },
     {
+      "name": "TextMate constant punctuation",
+      "scope": [
+        "source.asp.vb.net constant punctuation",
+        "source.batchfile constant punctuation",
+        "source.clojure constant punctuation",
+        "source.coffee constant punctuation",
+        "source.dart constant punctuation",
+        "source.fsharp constant punctuation",
+        "source.hlsl constant punctuation",
+        "source.julia constant punctuation",
+        "source.lua constant punctuation",
+        "source.makefile constant punctuation",
+        "source.objc constant punctuation",
+        "source.objcpp constant punctuation",
+        "source.perl constant punctuation",
+        "source.powershell constant punctuation",
+        "source.r constant punctuation",
+        "source.shaderlab constant punctuation",
+        "source.swift constant punctuation",
+        "text.bibtex constant punctuation",
+        "text.log constant punctuation",
+        "text.tex constant punctuation"
+      ],
+      "settings": {
+        "fontStyle": "italic",
+        "foreground": "#bcbec4"
+      }
+    },
+    {
       "name": "TextMate constant.character.entity",
       "scope": [
+        "source.asp.vb.net constant.character.entity",
         "source.batchfile constant.character.entity",
         "source.clojure constant.character.entity",
+        "source.coffee constant.character.entity",
         "source.dart constant.character.entity",
+        "source.fsharp constant.character.entity",
+        "source.hlsl constant.character.entity",
         "source.julia constant.character.entity",
         "source.lua constant.character.entity",
         "source.makefile constant.character.entity",
@@ -3267,8 +3291,11 @@
         "source.perl constant.character.entity",
         "source.powershell constant.character.entity",
         "source.r constant.character.entity",
+        "source.shaderlab constant.character.entity",
         "source.swift constant.character.entity",
-        "text.log constant.character.entity"
+        "text.bibtex constant.character.entity",
+        "text.log constant.character.entity",
+        "text.tex constant.character.entity"
       ],
       "settings": {
         "fontStyle": "italic",
@@ -3278,9 +3305,13 @@
     {
       "name": "TextMate constant.character.escape",
       "scope": [
+        "source.asp.vb.net constant.character.escape",
         "source.batchfile constant.character.escape",
         "source.clojure constant.character.escape",
+        "source.coffee constant.character.escape",
         "source.dart constant.character.escape",
+        "source.fsharp constant.character.escape",
+        "source.hlsl constant.character.escape",
         "source.julia constant.character.escape",
         "source.lua constant.character.escape",
         "source.makefile constant.character.escape",
@@ -3289,8 +3320,11 @@
         "source.perl constant.character.escape",
         "source.powershell constant.character.escape",
         "source.r constant.character.escape",
+        "source.shaderlab constant.character.escape",
         "source.swift constant.character.escape",
-        "text.log constant.character.escape"
+        "text.bibtex constant.character.escape",
+        "text.log constant.character.escape",
+        "text.tex constant.character.escape"
       ],
       "settings": {
         "fontStyle": "italic",
@@ -3300,9 +3334,13 @@
     {
       "name": "TextMate constant.character.format.placeholder",
       "scope": [
+        "source.asp.vb.net constant.character.format.placeholder",
         "source.batchfile constant.character.format.placeholder",
         "source.clojure constant.character.format.placeholder",
+        "source.coffee constant.character.format.placeholder",
         "source.dart constant.character.format.placeholder",
+        "source.fsharp constant.character.format.placeholder",
+        "source.hlsl constant.character.format.placeholder",
         "source.julia constant.character.format.placeholder",
         "source.lua constant.character.format.placeholder",
         "source.makefile constant.character.format.placeholder",
@@ -3311,8 +3349,11 @@
         "source.perl constant.character.format.placeholder",
         "source.powershell constant.character.format.placeholder",
         "source.r constant.character.format.placeholder",
+        "source.shaderlab constant.character.format.placeholder",
         "source.swift constant.character.format.placeholder",
-        "text.log constant.character.format.placeholder"
+        "text.bibtex constant.character.format.placeholder",
+        "text.log constant.character.format.placeholder",
+        "text.tex constant.character.format.placeholder"
       ],
       "settings": {
         "fontStyle": "italic",
@@ -3322,9 +3363,13 @@
     {
       "name": "TextMate constant.language",
       "scope": [
+        "source.asp.vb.net constant.language",
         "source.batchfile constant.language",
         "source.clojure constant.language",
+        "source.coffee constant.language",
         "source.dart constant.language",
+        "source.fsharp constant.language",
+        "source.hlsl constant.language",
         "source.julia constant.language",
         "source.lua constant.language",
         "source.makefile constant.language",
@@ -3333,8 +3378,11 @@
         "source.perl constant.language",
         "source.powershell constant.language",
         "source.r constant.language",
+        "source.shaderlab constant.language",
         "source.swift constant.language",
-        "text.log constant.language"
+        "text.bibtex constant.language",
+        "text.log constant.language",
+        "text.tex constant.language"
       ],
       "settings": {
         "fontStyle": "italic",
@@ -3344,9 +3392,13 @@
     {
       "name": "TextMate constant.number",
       "scope": [
+        "source.asp.vb.net constant.number",
         "source.batchfile constant.number",
         "source.clojure constant.number",
+        "source.coffee constant.number",
         "source.dart constant.number",
+        "source.fsharp constant.number",
+        "source.hlsl constant.number",
         "source.julia constant.number",
         "source.lua constant.number",
         "source.makefile constant.number",
@@ -3355,8 +3407,11 @@
         "source.perl constant.number",
         "source.powershell constant.number",
         "source.r constant.number",
+        "source.shaderlab constant.number",
         "source.swift constant.number",
-        "text.log constant.number"
+        "text.bibtex constant.number",
+        "text.log constant.number",
+        "text.tex constant.number"
       ],
       "settings": {
         "fontStyle": "italic",
@@ -3366,9 +3421,13 @@
     {
       "name": "TextMate constant.numeric",
       "scope": [
+        "source.asp.vb.net constant.numeric",
         "source.batchfile constant.numeric",
         "source.clojure constant.numeric",
+        "source.coffee constant.numeric",
         "source.dart constant.numeric",
+        "source.fsharp constant.numeric",
+        "source.hlsl constant.numeric",
         "source.julia constant.numeric",
         "source.lua constant.numeric",
         "source.makefile constant.numeric",
@@ -3377,8 +3436,11 @@
         "source.perl constant.numeric",
         "source.powershell constant.numeric",
         "source.r constant.numeric",
+        "source.shaderlab constant.numeric",
         "source.swift constant.numeric",
-        "text.log constant.numeric"
+        "text.bibtex constant.numeric",
+        "text.log constant.numeric",
+        "text.tex constant.numeric"
       ],
       "settings": {
         "fontStyle": "italic",
@@ -3388,9 +3450,13 @@
     {
       "name": "TextMate constant.other.placeholder",
       "scope": [
+        "source.asp.vb.net constant.other.placeholder",
         "source.batchfile constant.other.placeholder",
         "source.clojure constant.other.placeholder",
+        "source.coffee constant.other.placeholder",
         "source.dart constant.other.placeholder",
+        "source.fsharp constant.other.placeholder",
+        "source.hlsl constant.other.placeholder",
         "source.julia constant.other.placeholder",
         "source.lua constant.other.placeholder",
         "source.makefile constant.other.placeholder",
@@ -3399,8 +3465,11 @@
         "source.perl constant.other.placeholder",
         "source.powershell constant.other.placeholder",
         "source.r constant.other.placeholder",
+        "source.shaderlab constant.other.placeholder",
         "source.swift constant.other.placeholder",
-        "text.log constant.other.placeholder"
+        "text.bibtex constant.other.placeholder",
+        "text.log constant.other.placeholder",
+        "text.tex constant.other.placeholder"
       ],
       "settings": {
         "fontStyle": "italic",
@@ -3410,9 +3479,13 @@
     {
       "name": "TextMate entity",
       "scope": [
+        "source.asp.vb.net entity",
         "source.batchfile entity",
         "source.clojure entity",
+        "source.coffee entity",
         "source.dart entity",
+        "source.fsharp entity",
+        "source.hlsl entity",
         "source.julia entity",
         "source.lua entity",
         "source.makefile entity",
@@ -3421,8 +3494,11 @@
         "source.perl entity",
         "source.powershell entity",
         "source.r entity",
+        "source.shaderlab entity",
         "source.swift entity",
-        "text.log entity"
+        "text.bibtex entity",
+        "text.log entity",
+        "text.tex entity"
       ],
       "settings": {
         "fontStyle": "",
@@ -3432,9 +3508,13 @@
     {
       "name": "TextMate entity.name",
       "scope": [
+        "source.asp.vb.net entity.name",
         "source.batchfile entity.name",
         "source.clojure entity.name",
+        "source.coffee entity.name",
         "source.dart entity.name",
+        "source.fsharp entity.name",
+        "source.hlsl entity.name",
         "source.julia entity.name",
         "source.lua entity.name",
         "source.makefile entity.name",
@@ -3443,8 +3523,11 @@
         "source.perl entity.name",
         "source.powershell entity.name",
         "source.r entity.name",
+        "source.shaderlab entity.name",
         "source.swift entity.name",
-        "text.log entity.name"
+        "text.bibtex entity.name",
+        "text.log entity.name",
+        "text.tex entity.name"
       ],
       "settings": {
         "fontStyle": "",
@@ -3454,9 +3537,13 @@
     {
       "name": "TextMate entity.name.constant",
       "scope": [
+        "source.asp.vb.net entity.name.constant",
         "source.batchfile entity.name.constant",
         "source.clojure entity.name.constant",
+        "source.coffee entity.name.constant",
         "source.dart entity.name.constant",
+        "source.fsharp entity.name.constant",
+        "source.hlsl entity.name.constant",
         "source.julia entity.name.constant",
         "source.lua entity.name.constant",
         "source.makefile entity.name.constant",
@@ -3465,8 +3552,11 @@
         "source.perl entity.name.constant",
         "source.powershell entity.name.constant",
         "source.r entity.name.constant",
+        "source.shaderlab entity.name.constant",
         "source.swift entity.name.constant",
-        "text.log entity.name.constant"
+        "text.bibtex entity.name.constant",
+        "text.log entity.name.constant",
+        "text.tex entity.name.constant"
       ],
       "settings": {
         "fontStyle": "",
@@ -3476,9 +3566,13 @@
     {
       "name": "TextMate entity.name.type.parameter",
       "scope": [
+        "source.asp.vb.net entity.name.type.parameter",
         "source.batchfile entity.name.type.parameter",
         "source.clojure entity.name.type.parameter",
+        "source.coffee entity.name.type.parameter",
         "source.dart entity.name.type.parameter",
+        "source.fsharp entity.name.type.parameter",
+        "source.hlsl entity.name.type.parameter",
         "source.julia entity.name.type.parameter",
         "source.lua entity.name.type.parameter",
         "source.makefile entity.name.type.parameter",
@@ -3487,8 +3581,11 @@
         "source.perl entity.name.type.parameter",
         "source.powershell entity.name.type.parameter",
         "source.r entity.name.type.parameter",
+        "source.shaderlab entity.name.type.parameter",
         "source.swift entity.name.type.parameter",
-        "text.log entity.name.type.parameter"
+        "text.bibtex entity.name.type.parameter",
+        "text.log entity.name.type.parameter",
+        "text.tex entity.name.type.parameter"
       ],
       "settings": {
         "fontStyle": "",
@@ -3498,9 +3595,13 @@
     {
       "name": "TextMate entity.name.variable.field",
       "scope": [
+        "source.asp.vb.net entity.name.variable.field",
         "source.batchfile entity.name.variable.field",
         "source.clojure entity.name.variable.field",
+        "source.coffee entity.name.variable.field",
         "source.dart entity.name.variable.field",
+        "source.fsharp entity.name.variable.field",
+        "source.hlsl entity.name.variable.field",
         "source.julia entity.name.variable.field",
         "source.lua entity.name.variable.field",
         "source.makefile entity.name.variable.field",
@@ -3509,8 +3610,11 @@
         "source.perl entity.name.variable.field",
         "source.powershell entity.name.variable.field",
         "source.r entity.name.variable.field",
+        "source.shaderlab entity.name.variable.field",
         "source.swift entity.name.variable.field",
-        "text.log entity.name.variable.field"
+        "text.bibtex entity.name.variable.field",
+        "text.log entity.name.variable.field",
+        "text.tex entity.name.variable.field"
       ],
       "settings": {
         "fontStyle": "",
@@ -3520,9 +3624,13 @@
     {
       "name": "TextMate entity.other.attribute-name",
       "scope": [
+        "source.asp.vb.net entity.other.attribute-name",
         "source.batchfile entity.other.attribute-name",
         "source.clojure entity.other.attribute-name",
+        "source.coffee entity.other.attribute-name",
         "source.dart entity.other.attribute-name",
+        "source.fsharp entity.other.attribute-name",
+        "source.hlsl entity.other.attribute-name",
         "source.julia entity.other.attribute-name",
         "source.lua entity.other.attribute-name",
         "source.makefile entity.other.attribute-name",
@@ -3531,8 +3639,11 @@
         "source.perl entity.other.attribute-name",
         "source.powershell entity.other.attribute-name",
         "source.r entity.other.attribute-name",
+        "source.shaderlab entity.other.attribute-name",
         "source.swift entity.other.attribute-name",
-        "text.log entity.other.attribute-name"
+        "text.bibtex entity.other.attribute-name",
+        "text.log entity.other.attribute-name",
+        "text.tex entity.other.attribute-name"
       ],
       "settings": {
         "fontStyle": "",
@@ -3542,9 +3653,13 @@
     {
       "name": "TextMate invalid",
       "scope": [
+        "source.asp.vb.net invalid",
         "source.batchfile invalid",
         "source.clojure invalid",
+        "source.coffee invalid",
         "source.dart invalid",
+        "source.fsharp invalid",
+        "source.hlsl invalid",
         "source.julia invalid",
         "source.lua invalid",
         "source.makefile invalid",
@@ -3553,8 +3668,11 @@
         "source.perl invalid",
         "source.powershell invalid",
         "source.r invalid",
+        "source.shaderlab invalid",
         "source.swift invalid",
-        "text.log invalid"
+        "text.bibtex invalid",
+        "text.log invalid",
+        "text.tex invalid"
       ],
       "settings": {
         "fontStyle": "",
@@ -3564,9 +3682,13 @@
     {
       "name": "TextMate invalid.deprecated",
       "scope": [
+        "source.asp.vb.net invalid.deprecated",
         "source.batchfile invalid.deprecated",
         "source.clojure invalid.deprecated",
+        "source.coffee invalid.deprecated",
         "source.dart invalid.deprecated",
+        "source.fsharp invalid.deprecated",
+        "source.hlsl invalid.deprecated",
         "source.julia invalid.deprecated",
         "source.lua invalid.deprecated",
         "source.makefile invalid.deprecated",
@@ -3575,8 +3697,11 @@
         "source.perl invalid.deprecated",
         "source.powershell invalid.deprecated",
         "source.r invalid.deprecated",
+        "source.shaderlab invalid.deprecated",
         "source.swift invalid.deprecated",
-        "text.log invalid.deprecated"
+        "text.bibtex invalid.deprecated",
+        "text.log invalid.deprecated",
+        "text.tex invalid.deprecated"
       ],
       "settings": {
         "fontStyle": "strikethrough",
@@ -3586,9 +3711,13 @@
     {
       "name": "TextMate invalid.illegal",
       "scope": [
+        "source.asp.vb.net invalid.illegal",
         "source.batchfile invalid.illegal",
         "source.clojure invalid.illegal",
+        "source.coffee invalid.illegal",
         "source.dart invalid.illegal",
+        "source.fsharp invalid.illegal",
+        "source.hlsl invalid.illegal",
         "source.julia invalid.illegal",
         "source.lua invalid.illegal",
         "source.makefile invalid.illegal",
@@ -3597,8 +3726,11 @@
         "source.perl invalid.illegal",
         "source.powershell invalid.illegal",
         "source.r invalid.illegal",
+        "source.shaderlab invalid.illegal",
         "source.swift invalid.illegal",
-        "text.log invalid.illegal"
+        "text.bibtex invalid.illegal",
+        "text.log invalid.illegal",
+        "text.tex invalid.illegal"
       ],
       "settings": {
         "fontStyle": "",
@@ -3608,9 +3740,13 @@
     {
       "name": "TextMate invalid.illegal.character.escape",
       "scope": [
+        "source.asp.vb.net invalid.illegal.character.escape",
         "source.batchfile invalid.illegal.character.escape",
         "source.clojure invalid.illegal.character.escape",
+        "source.coffee invalid.illegal.character.escape",
         "source.dart invalid.illegal.character.escape",
+        "source.fsharp invalid.illegal.character.escape",
+        "source.hlsl invalid.illegal.character.escape",
         "source.julia invalid.illegal.character.escape",
         "source.lua invalid.illegal.character.escape",
         "source.makefile invalid.illegal.character.escape",
@@ -3619,8 +3755,11 @@
         "source.perl invalid.illegal.character.escape",
         "source.powershell invalid.illegal.character.escape",
         "source.r invalid.illegal.character.escape",
+        "source.shaderlab invalid.illegal.character.escape",
         "source.swift invalid.illegal.character.escape",
-        "text.log invalid.illegal.character.escape"
+        "text.bibtex invalid.illegal.character.escape",
+        "text.log invalid.illegal.character.escape",
+        "text.tex invalid.illegal.character.escape"
       ],
       "settings": {
         "fontStyle": "",
@@ -3630,9 +3769,13 @@
     {
       "name": "TextMate invalid.illegal.unrecognized-string-escape",
       "scope": [
+        "source.asp.vb.net invalid.illegal.unrecognized-string-escape",
         "source.batchfile invalid.illegal.unrecognized-string-escape",
         "source.clojure invalid.illegal.unrecognized-string-escape",
+        "source.coffee invalid.illegal.unrecognized-string-escape",
         "source.dart invalid.illegal.unrecognized-string-escape",
+        "source.fsharp invalid.illegal.unrecognized-string-escape",
+        "source.hlsl invalid.illegal.unrecognized-string-escape",
         "source.julia invalid.illegal.unrecognized-string-escape",
         "source.lua invalid.illegal.unrecognized-string-escape",
         "source.makefile invalid.illegal.unrecognized-string-escape",
@@ -3641,8 +3784,11 @@
         "source.perl invalid.illegal.unrecognized-string-escape",
         "source.powershell invalid.illegal.unrecognized-string-escape",
         "source.r invalid.illegal.unrecognized-string-escape",
+        "source.shaderlab invalid.illegal.unrecognized-string-escape",
         "source.swift invalid.illegal.unrecognized-string-escape",
-        "text.log invalid.illegal.unrecognized-string-escape"
+        "text.bibtex invalid.illegal.unrecognized-string-escape",
+        "text.log invalid.illegal.unrecognized-string-escape",
+        "text.tex invalid.illegal.unrecognized-string-escape"
       ],
       "settings": {
         "fontStyle": "",
@@ -3652,9 +3798,13 @@
     {
       "name": "TextMate keyword.operator.expression",
       "scope": [
+        "source.asp.vb.net keyword.operator.expression",
         "source.batchfile keyword.operator.expression",
         "source.clojure keyword.operator.expression",
+        "source.coffee keyword.operator.expression",
         "source.dart keyword.operator.expression",
+        "source.fsharp keyword.operator.expression",
+        "source.hlsl keyword.operator.expression",
         "source.julia keyword.operator.expression",
         "source.lua keyword.operator.expression",
         "source.makefile keyword.operator.expression",
@@ -3663,8 +3813,11 @@
         "source.perl keyword.operator.expression",
         "source.powershell keyword.operator.expression",
         "source.r keyword.operator.expression",
+        "source.shaderlab keyword.operator.expression",
         "source.swift keyword.operator.expression",
-        "text.log keyword.operator.expression"
+        "text.bibtex keyword.operator.expression",
+        "text.log keyword.operator.expression",
+        "text.tex keyword.operator.expression"
       ],
       "settings": {
         "fontStyle": "",
@@ -3674,9 +3827,13 @@
     {
       "name": "TextMate keyword.operator.instanceof",
       "scope": [
+        "source.asp.vb.net keyword.operator.instanceof",
         "source.batchfile keyword.operator.instanceof",
         "source.clojure keyword.operator.instanceof",
+        "source.coffee keyword.operator.instanceof",
         "source.dart keyword.operator.instanceof",
+        "source.fsharp keyword.operator.instanceof",
+        "source.hlsl keyword.operator.instanceof",
         "source.julia keyword.operator.instanceof",
         "source.lua keyword.operator.instanceof",
         "source.makefile keyword.operator.instanceof",
@@ -3685,8 +3842,11 @@
         "source.perl keyword.operator.instanceof",
         "source.powershell keyword.operator.instanceof",
         "source.r keyword.operator.instanceof",
+        "source.shaderlab keyword.operator.instanceof",
         "source.swift keyword.operator.instanceof",
-        "text.log keyword.operator.instanceof"
+        "text.bibtex keyword.operator.instanceof",
+        "text.log keyword.operator.instanceof",
+        "text.tex keyword.operator.instanceof"
       ],
       "settings": {
         "fontStyle": "",
@@ -3696,9 +3856,13 @@
     {
       "name": "TextMate keyword.operator.new",
       "scope": [
+        "source.asp.vb.net keyword.operator.new",
         "source.batchfile keyword.operator.new",
         "source.clojure keyword.operator.new",
+        "source.coffee keyword.operator.new",
         "source.dart keyword.operator.new",
+        "source.fsharp keyword.operator.new",
+        "source.hlsl keyword.operator.new",
         "source.julia keyword.operator.new",
         "source.lua keyword.operator.new",
         "source.makefile keyword.operator.new",
@@ -3707,8 +3871,11 @@
         "source.perl keyword.operator.new",
         "source.powershell keyword.operator.new",
         "source.r keyword.operator.new",
+        "source.shaderlab keyword.operator.new",
         "source.swift keyword.operator.new",
-        "text.log keyword.operator.new"
+        "text.bibtex keyword.operator.new",
+        "text.log keyword.operator.new",
+        "text.tex keyword.operator.new"
       ],
       "settings": {
         "fontStyle": "",
@@ -3718,9 +3885,13 @@
     {
       "name": "TextMate keyword.operator.typeof",
       "scope": [
+        "source.asp.vb.net keyword.operator.typeof",
         "source.batchfile keyword.operator.typeof",
         "source.clojure keyword.operator.typeof",
+        "source.coffee keyword.operator.typeof",
         "source.dart keyword.operator.typeof",
+        "source.fsharp keyword.operator.typeof",
+        "source.hlsl keyword.operator.typeof",
         "source.julia keyword.operator.typeof",
         "source.lua keyword.operator.typeof",
         "source.makefile keyword.operator.typeof",
@@ -3729,8 +3900,11 @@
         "source.perl keyword.operator.typeof",
         "source.powershell keyword.operator.typeof",
         "source.r keyword.operator.typeof",
+        "source.shaderlab keyword.operator.typeof",
         "source.swift keyword.operator.typeof",
-        "text.log keyword.operator.typeof"
+        "text.bibtex keyword.operator.typeof",
+        "text.log keyword.operator.typeof",
+        "text.tex keyword.operator.typeof"
       ],
       "settings": {
         "fontStyle": "",
@@ -3740,9 +3914,13 @@
     {
       "name": "TextMate keyword.operator.word",
       "scope": [
+        "source.asp.vb.net keyword.operator.word",
         "source.batchfile keyword.operator.word",
         "source.clojure keyword.operator.word",
+        "source.coffee keyword.operator.word",
         "source.dart keyword.operator.word",
+        "source.fsharp keyword.operator.word",
+        "source.hlsl keyword.operator.word",
         "source.julia keyword.operator.word",
         "source.lua keyword.operator.word",
         "source.makefile keyword.operator.word",
@@ -3751,8 +3929,11 @@
         "source.perl keyword.operator.word",
         "source.powershell keyword.operator.word",
         "source.r keyword.operator.word",
+        "source.shaderlab keyword.operator.word",
         "source.swift keyword.operator.word",
-        "text.log keyword.operator.word"
+        "text.bibtex keyword.operator.word",
+        "text.log keyword.operator.word",
+        "text.tex keyword.operator.word"
       ],
       "settings": {
         "fontStyle": "",
@@ -3762,9 +3943,13 @@
     {
       "name": "TextMate keyword.other.unit",
       "scope": [
+        "source.asp.vb.net keyword.other.unit",
         "source.batchfile keyword.other.unit",
         "source.clojure keyword.other.unit",
+        "source.coffee keyword.other.unit",
         "source.dart keyword.other.unit",
+        "source.fsharp keyword.other.unit",
+        "source.hlsl keyword.other.unit",
         "source.julia keyword.other.unit",
         "source.lua keyword.other.unit",
         "source.makefile keyword.other.unit",
@@ -3773,8 +3958,11 @@
         "source.perl keyword.other.unit",
         "source.powershell keyword.other.unit",
         "source.r keyword.other.unit",
+        "source.shaderlab keyword.other.unit",
         "source.swift keyword.other.unit",
-        "text.log keyword.other.unit"
+        "text.bibtex keyword.other.unit",
+        "text.log keyword.other.unit",
+        "text.tex keyword.other.unit"
       ],
       "settings": {
         "fontStyle": "",
@@ -3784,9 +3972,13 @@
     {
       "name": "TextMate markup.bold",
       "scope": [
+        "source.asp.vb.net markup.bold",
         "source.batchfile markup.bold",
         "source.clojure markup.bold",
+        "source.coffee markup.bold",
         "source.dart markup.bold",
+        "source.fsharp markup.bold",
+        "source.hlsl markup.bold",
         "source.julia markup.bold",
         "source.lua markup.bold",
         "source.makefile markup.bold",
@@ -3795,8 +3987,11 @@
         "source.perl markup.bold",
         "source.powershell markup.bold",
         "source.r markup.bold",
+        "source.shaderlab markup.bold",
         "source.swift markup.bold",
-        "text.log markup.bold"
+        "text.bibtex markup.bold",
+        "text.log markup.bold",
+        "text.tex markup.bold"
       ],
       "settings": {
         "fontStyle": "bold",
@@ -3806,9 +4001,13 @@
     {
       "name": "TextMate markup.changed",
       "scope": [
+        "source.asp.vb.net markup.changed",
         "source.batchfile markup.changed",
         "source.clojure markup.changed",
+        "source.coffee markup.changed",
         "source.dart markup.changed",
+        "source.fsharp markup.changed",
+        "source.hlsl markup.changed",
         "source.julia markup.changed",
         "source.lua markup.changed",
         "source.makefile markup.changed",
@@ -3817,8 +4016,11 @@
         "source.perl markup.changed",
         "source.powershell markup.changed",
         "source.r markup.changed",
+        "source.shaderlab markup.changed",
         "source.swift markup.changed",
-        "text.log markup.changed"
+        "text.bibtex markup.changed",
+        "text.log markup.changed",
+        "text.tex markup.changed"
       ],
       "settings": {
         "fontStyle": "",
@@ -3828,9 +4030,13 @@
     {
       "name": "TextMate markup.deleted",
       "scope": [
+        "source.asp.vb.net markup.deleted",
         "source.batchfile markup.deleted",
         "source.clojure markup.deleted",
+        "source.coffee markup.deleted",
         "source.dart markup.deleted",
+        "source.fsharp markup.deleted",
+        "source.hlsl markup.deleted",
         "source.julia markup.deleted",
         "source.lua markup.deleted",
         "source.makefile markup.deleted",
@@ -3839,8 +4045,11 @@
         "source.perl markup.deleted",
         "source.powershell markup.deleted",
         "source.r markup.deleted",
+        "source.shaderlab markup.deleted",
         "source.swift markup.deleted",
-        "text.log markup.deleted"
+        "text.bibtex markup.deleted",
+        "text.log markup.deleted",
+        "text.tex markup.deleted"
       ],
       "settings": {
         "fontStyle": "",
@@ -3850,9 +4059,13 @@
     {
       "name": "TextMate markup.inserted",
       "scope": [
+        "source.asp.vb.net markup.inserted",
         "source.batchfile markup.inserted",
         "source.clojure markup.inserted",
+        "source.coffee markup.inserted",
         "source.dart markup.inserted",
+        "source.fsharp markup.inserted",
+        "source.hlsl markup.inserted",
         "source.julia markup.inserted",
         "source.lua markup.inserted",
         "source.makefile markup.inserted",
@@ -3861,8 +4074,11 @@
         "source.perl markup.inserted",
         "source.powershell markup.inserted",
         "source.r markup.inserted",
+        "source.shaderlab markup.inserted",
         "source.swift markup.inserted",
-        "text.log markup.inserted"
+        "text.bibtex markup.inserted",
+        "text.log markup.inserted",
+        "text.tex markup.inserted"
       ],
       "settings": {
         "fontStyle": "",
@@ -3872,9 +4088,13 @@
     {
       "name": "TextMate markup.italic",
       "scope": [
+        "source.asp.vb.net markup.italic",
         "source.batchfile markup.italic",
         "source.clojure markup.italic",
+        "source.coffee markup.italic",
         "source.dart markup.italic",
+        "source.fsharp markup.italic",
+        "source.hlsl markup.italic",
         "source.julia markup.italic",
         "source.lua markup.italic",
         "source.makefile markup.italic",
@@ -3883,8 +4103,11 @@
         "source.perl markup.italic",
         "source.powershell markup.italic",
         "source.r markup.italic",
+        "source.shaderlab markup.italic",
         "source.swift markup.italic",
-        "text.log markup.italic"
+        "text.bibtex markup.italic",
+        "text.log markup.italic",
+        "text.tex markup.italic"
       ],
       "settings": {
         "fontStyle": "italic",
@@ -3892,11 +4115,44 @@
       }
     },
     {
+      "name": "TextMate meta.attribute punctuation.separator.key-value.html",
+      "scope": [
+        "source.asp.vb.net meta.attribute punctuation.separator.key-value.html",
+        "source.batchfile meta.attribute punctuation.separator.key-value.html",
+        "source.clojure meta.attribute punctuation.separator.key-value.html",
+        "source.coffee meta.attribute punctuation.separator.key-value.html",
+        "source.dart meta.attribute punctuation.separator.key-value.html",
+        "source.fsharp meta.attribute punctuation.separator.key-value.html",
+        "source.hlsl meta.attribute punctuation.separator.key-value.html",
+        "source.julia meta.attribute punctuation.separator.key-value.html",
+        "source.lua meta.attribute punctuation.separator.key-value.html",
+        "source.makefile meta.attribute punctuation.separator.key-value.html",
+        "source.objc meta.attribute punctuation.separator.key-value.html",
+        "source.objcpp meta.attribute punctuation.separator.key-value.html",
+        "source.perl meta.attribute punctuation.separator.key-value.html",
+        "source.powershell meta.attribute punctuation.separator.key-value.html",
+        "source.r meta.attribute punctuation.separator.key-value.html",
+        "source.shaderlab meta.attribute punctuation.separator.key-value.html",
+        "source.swift meta.attribute punctuation.separator.key-value.html",
+        "text.bibtex meta.attribute punctuation.separator.key-value.html",
+        "text.log meta.attribute punctuation.separator.key-value.html",
+        "text.tex meta.attribute punctuation.separator.key-value.html"
+      ],
+      "settings": {
+        "fontStyle": "",
+        "foreground": "#bcbec4"
+      }
+    },
+    {
       "name": "TextMate meta.function-call entity.name.function",
       "scope": [
+        "source.asp.vb.net meta.function-call entity.name.function",
         "source.batchfile meta.function-call entity.name.function",
         "source.clojure meta.function-call entity.name.function",
+        "source.coffee meta.function-call entity.name.function",
         "source.dart meta.function-call entity.name.function",
+        "source.fsharp meta.function-call entity.name.function",
+        "source.hlsl meta.function-call entity.name.function",
         "source.julia meta.function-call entity.name.function",
         "source.lua meta.function-call entity.name.function",
         "source.makefile meta.function-call entity.name.function",
@@ -3905,8 +4161,11 @@
         "source.perl meta.function-call entity.name.function",
         "source.powershell meta.function-call entity.name.function",
         "source.r meta.function-call entity.name.function",
+        "source.shaderlab meta.function-call entity.name.function",
         "source.swift meta.function-call entity.name.function",
-        "text.log meta.function-call entity.name.function"
+        "text.bibtex meta.function-call entity.name.function",
+        "text.log meta.function-call entity.name.function",
+        "text.tex meta.function-call entity.name.function"
       ],
       "settings": {
         "fontStyle": "",
@@ -3916,9 +4175,13 @@
     {
       "name": "TextMate meta.method-call entity.name.function",
       "scope": [
+        "source.asp.vb.net meta.method-call entity.name.function",
         "source.batchfile meta.method-call entity.name.function",
         "source.clojure meta.method-call entity.name.function",
+        "source.coffee meta.method-call entity.name.function",
         "source.dart meta.method-call entity.name.function",
+        "source.fsharp meta.method-call entity.name.function",
+        "source.hlsl meta.method-call entity.name.function",
         "source.julia meta.method-call entity.name.function",
         "source.lua meta.method-call entity.name.function",
         "source.makefile meta.method-call entity.name.function",
@@ -3927,8 +4190,11 @@
         "source.perl meta.method-call entity.name.function",
         "source.powershell meta.method-call entity.name.function",
         "source.r meta.method-call entity.name.function",
+        "source.shaderlab meta.method-call entity.name.function",
         "source.swift meta.method-call entity.name.function",
-        "text.log meta.method-call entity.name.function"
+        "text.bibtex meta.method-call entity.name.function",
+        "text.log meta.method-call entity.name.function",
+        "text.tex meta.method-call entity.name.function"
       ],
       "settings": {
         "fontStyle": "",
@@ -3938,9 +4204,13 @@
     {
       "name": "TextMate meta.tag",
       "scope": [
+        "source.asp.vb.net meta.tag",
         "source.batchfile meta.tag",
         "source.clojure meta.tag",
+        "source.coffee meta.tag",
         "source.dart meta.tag",
+        "source.fsharp meta.tag",
+        "source.hlsl meta.tag",
         "source.julia meta.tag",
         "source.lua meta.tag",
         "source.makefile meta.tag",
@@ -3949,8 +4219,11 @@
         "source.perl meta.tag",
         "source.powershell meta.tag",
         "source.r meta.tag",
+        "source.shaderlab meta.tag",
         "source.swift meta.tag",
-        "text.log meta.tag"
+        "text.bibtex meta.tag",
+        "text.log meta.tag",
+        "text.tex meta.tag"
       ],
       "settings": {
         "fontStyle": "",
@@ -3960,9 +4233,13 @@
     {
       "name": "TextMate meta.tag punctuation",
       "scope": [
+        "source.asp.vb.net meta.tag punctuation",
         "source.batchfile meta.tag punctuation",
         "source.clojure meta.tag punctuation",
+        "source.coffee meta.tag punctuation",
         "source.dart meta.tag punctuation",
+        "source.fsharp meta.tag punctuation",
+        "source.hlsl meta.tag punctuation",
         "source.julia meta.tag punctuation",
         "source.lua meta.tag punctuation",
         "source.makefile meta.tag punctuation",
@@ -3971,20 +4248,27 @@
         "source.perl meta.tag punctuation",
         "source.powershell meta.tag punctuation",
         "source.r meta.tag punctuation",
+        "source.shaderlab meta.tag punctuation",
         "source.swift meta.tag punctuation",
-        "text.log meta.tag punctuation"
+        "text.bibtex meta.tag punctuation",
+        "text.log meta.tag punctuation",
+        "text.tex meta.tag punctuation"
       ],
       "settings": {
         "fontStyle": "",
-        "foreground": "#b3ae60"
+        "foreground": "#bcbec4"
       }
     },
     {
       "name": "TextMate meta.tag.custom entity.name.tag",
       "scope": [
+        "source.asp.vb.net meta.tag.custom entity.name.tag",
         "source.batchfile meta.tag.custom entity.name.tag",
         "source.clojure meta.tag.custom entity.name.tag",
+        "source.coffee meta.tag.custom entity.name.tag",
         "source.dart meta.tag.custom entity.name.tag",
+        "source.fsharp meta.tag.custom entity.name.tag",
+        "source.hlsl meta.tag.custom entity.name.tag",
         "source.julia meta.tag.custom entity.name.tag",
         "source.lua meta.tag.custom entity.name.tag",
         "source.makefile meta.tag.custom entity.name.tag",
@@ -3993,8 +4277,11 @@
         "source.perl meta.tag.custom entity.name.tag",
         "source.powershell meta.tag.custom entity.name.tag",
         "source.r meta.tag.custom entity.name.tag",
+        "source.shaderlab meta.tag.custom entity.name.tag",
         "source.swift meta.tag.custom entity.name.tag",
-        "text.log meta.tag.custom entity.name.tag"
+        "text.bibtex meta.tag.custom entity.name.tag",
+        "text.log meta.tag.custom entity.name.tag",
+        "text.tex meta.tag.custom entity.name.tag"
       ],
       "settings": {
         "fontStyle": "",
@@ -4004,9 +4291,13 @@
     {
       "name": "TextMate meta.type.parameters entity.name.type",
       "scope": [
+        "source.asp.vb.net meta.type.parameters entity.name.type",
         "source.batchfile meta.type.parameters entity.name.type",
         "source.clojure meta.type.parameters entity.name.type",
+        "source.coffee meta.type.parameters entity.name.type",
         "source.dart meta.type.parameters entity.name.type",
+        "source.fsharp meta.type.parameters entity.name.type",
+        "source.hlsl meta.type.parameters entity.name.type",
         "source.julia meta.type.parameters entity.name.type",
         "source.lua meta.type.parameters entity.name.type",
         "source.makefile meta.type.parameters entity.name.type",
@@ -4015,8 +4306,156 @@
         "source.perl meta.type.parameters entity.name.type",
         "source.powershell meta.type.parameters entity.name.type",
         "source.r meta.type.parameters entity.name.type",
+        "source.shaderlab meta.type.parameters entity.name.type",
         "source.swift meta.type.parameters entity.name.type",
-        "text.log meta.type.parameters entity.name.type"
+        "text.bibtex meta.type.parameters entity.name.type",
+        "text.log meta.type.parameters entity.name.type",
+        "text.tex meta.type.parameters entity.name.type"
+      ],
+      "settings": {
+        "fontStyle": "",
+        "foreground": "#bcbec4"
+      }
+    },
+    {
+      "name": "TextMate punctuation",
+      "scope": [
+        "source.asp.vb.net punctuation",
+        "source.batchfile punctuation",
+        "source.clojure punctuation",
+        "source.coffee punctuation",
+        "source.dart punctuation",
+        "source.fsharp punctuation",
+        "source.hlsl punctuation",
+        "source.julia punctuation",
+        "source.lua punctuation",
+        "source.makefile punctuation",
+        "source.objc punctuation",
+        "source.objcpp punctuation",
+        "source.perl punctuation",
+        "source.powershell punctuation",
+        "source.r punctuation",
+        "source.shaderlab punctuation",
+        "source.swift punctuation",
+        "text.bibtex punctuation",
+        "text.log punctuation",
+        "text.tex punctuation"
+      ],
+      "settings": {
+        "fontStyle": "",
+        "foreground": "#bcbec4"
+      }
+    },
+    {
+      "name": "TextMate punctuation.definition.annotation",
+      "scope": [
+        "source.asp.vb.net punctuation.definition.annotation",
+        "source.batchfile punctuation.definition.annotation",
+        "source.clojure punctuation.definition.annotation",
+        "source.coffee punctuation.definition.annotation",
+        "source.dart punctuation.definition.annotation",
+        "source.fsharp punctuation.definition.annotation",
+        "source.hlsl punctuation.definition.annotation",
+        "source.julia punctuation.definition.annotation",
+        "source.lua punctuation.definition.annotation",
+        "source.makefile punctuation.definition.annotation",
+        "source.objc punctuation.definition.annotation",
+        "source.objcpp punctuation.definition.annotation",
+        "source.perl punctuation.definition.annotation",
+        "source.powershell punctuation.definition.annotation",
+        "source.r punctuation.definition.annotation",
+        "source.shaderlab punctuation.definition.annotation",
+        "source.swift punctuation.definition.annotation",
+        "text.bibtex punctuation.definition.annotation",
+        "text.log punctuation.definition.annotation",
+        "text.tex punctuation.definition.annotation"
+      ],
+      "settings": {
+        "fontStyle": "",
+        "foreground": "#bcbec4"
+      }
+    },
+    {
+      "name": "TextMate punctuation.definition.comment",
+      "scope": [
+        "source.asp.vb.net punctuation.definition.comment",
+        "source.batchfile punctuation.definition.comment",
+        "source.clojure punctuation.definition.comment",
+        "source.coffee punctuation.definition.comment",
+        "source.dart punctuation.definition.comment",
+        "source.fsharp punctuation.definition.comment",
+        "source.hlsl punctuation.definition.comment",
+        "source.julia punctuation.definition.comment",
+        "source.lua punctuation.definition.comment",
+        "source.makefile punctuation.definition.comment",
+        "source.objc punctuation.definition.comment",
+        "source.objcpp punctuation.definition.comment",
+        "source.perl punctuation.definition.comment",
+        "source.powershell punctuation.definition.comment",
+        "source.r punctuation.definition.comment",
+        "source.shaderlab punctuation.definition.comment",
+        "source.swift punctuation.definition.comment",
+        "text.bibtex punctuation.definition.comment",
+        "text.log punctuation.definition.comment",
+        "text.tex punctuation.definition.comment"
+      ],
+      "settings": {
+        "fontStyle": "",
+        "foreground": "#bcbec4"
+      }
+    },
+    {
+      "name": "TextMate punctuation.definition.decorator",
+      "scope": [
+        "source.asp.vb.net punctuation.definition.decorator",
+        "source.batchfile punctuation.definition.decorator",
+        "source.clojure punctuation.definition.decorator",
+        "source.coffee punctuation.definition.decorator",
+        "source.dart punctuation.definition.decorator",
+        "source.fsharp punctuation.definition.decorator",
+        "source.hlsl punctuation.definition.decorator",
+        "source.julia punctuation.definition.decorator",
+        "source.lua punctuation.definition.decorator",
+        "source.makefile punctuation.definition.decorator",
+        "source.objc punctuation.definition.decorator",
+        "source.objcpp punctuation.definition.decorator",
+        "source.perl punctuation.definition.decorator",
+        "source.powershell punctuation.definition.decorator",
+        "source.r punctuation.definition.decorator",
+        "source.shaderlab punctuation.definition.decorator",
+        "source.swift punctuation.definition.decorator",
+        "text.bibtex punctuation.definition.decorator",
+        "text.log punctuation.definition.decorator",
+        "text.tex punctuation.definition.decorator"
+      ],
+      "settings": {
+        "fontStyle": "",
+        "foreground": "#bcbec4"
+      }
+    },
+    {
+      "name": "TextMate punctuation.definition.string",
+      "scope": [
+        "source.asp.vb.net punctuation.definition.string",
+        "source.batchfile punctuation.definition.string",
+        "source.clojure punctuation.definition.string",
+        "source.coffee punctuation.definition.string",
+        "source.dart punctuation.definition.string",
+        "source.fsharp punctuation.definition.string",
+        "source.hlsl punctuation.definition.string",
+        "source.julia punctuation.definition.string",
+        "source.lua punctuation.definition.string",
+        "source.makefile punctuation.definition.string",
+        "source.objc punctuation.definition.string",
+        "source.objcpp punctuation.definition.string",
+        "source.perl punctuation.definition.string",
+        "source.powershell punctuation.definition.string",
+        "source.r punctuation.definition.string",
+        "source.shaderlab punctuation.definition.string",
+        "source.swift punctuation.definition.string",
+        "text.bibtex punctuation.definition.string",
+        "text.log punctuation.definition.string",
+        "text.tex punctuation.definition.string"
       ],
       "settings": {
         "fontStyle": "",
@@ -4026,9 +4465,13 @@
     {
       "name": "TextMate punctuation.definition.tag",
       "scope": [
+        "source.asp.vb.net punctuation.definition.tag",
         "source.batchfile punctuation.definition.tag",
         "source.clojure punctuation.definition.tag",
+        "source.coffee punctuation.definition.tag",
         "source.dart punctuation.definition.tag",
+        "source.fsharp punctuation.definition.tag",
+        "source.hlsl punctuation.definition.tag",
         "source.julia punctuation.definition.tag",
         "source.lua punctuation.definition.tag",
         "source.makefile punctuation.definition.tag",
@@ -4037,8 +4480,11 @@
         "source.perl punctuation.definition.tag",
         "source.powershell punctuation.definition.tag",
         "source.r punctuation.definition.tag",
+        "source.shaderlab punctuation.definition.tag",
         "source.swift punctuation.definition.tag",
-        "text.log punctuation.definition.tag"
+        "text.bibtex punctuation.definition.tag",
+        "text.log punctuation.definition.tag",
+        "text.tex punctuation.definition.tag"
       ],
       "settings": {
         "fontStyle": "",
@@ -4048,9 +4494,13 @@
     {
       "name": "TextMate storage",
       "scope": [
+        "source.asp.vb.net storage",
         "source.batchfile storage",
         "source.clojure storage",
+        "source.coffee storage",
         "source.dart storage",
+        "source.fsharp storage",
+        "source.hlsl storage",
         "source.julia storage",
         "source.lua storage",
         "source.makefile storage",
@@ -4059,8 +4509,11 @@
         "source.perl storage",
         "source.powershell storage",
         "source.r storage",
+        "source.shaderlab storage",
         "source.swift storage",
-        "text.log storage"
+        "text.bibtex storage",
+        "text.log storage",
+        "text.tex storage"
       ],
       "settings": {
         "fontStyle": "",
@@ -4070,9 +4523,13 @@
     {
       "name": "TextMate storage.type.annotation",
       "scope": [
+        "source.asp.vb.net storage.type.annotation",
         "source.batchfile storage.type.annotation",
         "source.clojure storage.type.annotation",
+        "source.coffee storage.type.annotation",
         "source.dart storage.type.annotation",
+        "source.fsharp storage.type.annotation",
+        "source.hlsl storage.type.annotation",
         "source.julia storage.type.annotation",
         "source.lua storage.type.annotation",
         "source.makefile storage.type.annotation",
@@ -4081,8 +4538,11 @@
         "source.perl storage.type.annotation",
         "source.powershell storage.type.annotation",
         "source.r storage.type.annotation",
+        "source.shaderlab storage.type.annotation",
         "source.swift storage.type.annotation",
-        "text.log storage.type.annotation"
+        "text.bibtex storage.type.annotation",
+        "text.log storage.type.annotation",
+        "text.tex storage.type.annotation"
       ],
       "settings": {
         "fontStyle": "",
@@ -4092,9 +4552,13 @@
     {
       "name": "TextMate string.quoted.docstring",
       "scope": [
+        "source.asp.vb.net string.quoted.docstring",
         "source.batchfile string.quoted.docstring",
         "source.clojure string.quoted.docstring",
+        "source.coffee string.quoted.docstring",
         "source.dart string.quoted.docstring",
+        "source.fsharp string.quoted.docstring",
+        "source.hlsl string.quoted.docstring",
         "source.julia string.quoted.docstring",
         "source.lua string.quoted.docstring",
         "source.makefile string.quoted.docstring",
@@ -4103,8 +4567,11 @@
         "source.perl string.quoted.docstring",
         "source.powershell string.quoted.docstring",
         "source.r string.quoted.docstring",
+        "source.shaderlab string.quoted.docstring",
         "source.swift string.quoted.docstring",
-        "text.log string.quoted.docstring"
+        "text.bibtex string.quoted.docstring",
+        "text.log string.quoted.docstring",
+        "text.tex string.quoted.docstring"
       ],
       "settings": {
         "fontStyle": "",
@@ -4114,9 +4581,13 @@
     {
       "name": "TextMate string.quoted.docstring punctuation.definition.string",
       "scope": [
+        "source.asp.vb.net string.quoted.docstring punctuation.definition.string",
         "source.batchfile string.quoted.docstring punctuation.definition.string",
         "source.clojure string.quoted.docstring punctuation.definition.string",
+        "source.coffee string.quoted.docstring punctuation.definition.string",
         "source.dart string.quoted.docstring punctuation.definition.string",
+        "source.fsharp string.quoted.docstring punctuation.definition.string",
+        "source.hlsl string.quoted.docstring punctuation.definition.string",
         "source.julia string.quoted.docstring punctuation.definition.string",
         "source.lua string.quoted.docstring punctuation.definition.string",
         "source.makefile string.quoted.docstring punctuation.definition.string",
@@ -4125,20 +4596,27 @@
         "source.perl string.quoted.docstring punctuation.definition.string",
         "source.powershell string.quoted.docstring punctuation.definition.string",
         "source.r string.quoted.docstring punctuation.definition.string",
+        "source.shaderlab string.quoted.docstring punctuation.definition.string",
         "source.swift string.quoted.docstring punctuation.definition.string",
-        "text.log string.quoted.docstring punctuation.definition.string"
+        "text.bibtex string.quoted.docstring punctuation.definition.string",
+        "text.log string.quoted.docstring punctuation.definition.string",
+        "text.tex string.quoted.docstring punctuation.definition.string"
       ],
       "settings": {
         "fontStyle": "",
-        "foreground": "#6aab73"
+        "foreground": "#bcbec4"
       }
     },
     {
       "name": "TextMate string.regexp",
       "scope": [
+        "source.asp.vb.net string.regexp",
         "source.batchfile string.regexp",
         "source.clojure string.regexp",
+        "source.coffee string.regexp",
         "source.dart string.regexp",
+        "source.fsharp string.regexp",
+        "source.hlsl string.regexp",
         "source.julia string.regexp",
         "source.lua string.regexp",
         "source.makefile string.regexp",
@@ -4147,8 +4625,11 @@
         "source.perl string.regexp",
         "source.powershell string.regexp",
         "source.r string.regexp",
+        "source.shaderlab string.regexp",
         "source.swift string.regexp",
-        "text.log string.regexp"
+        "text.bibtex string.regexp",
+        "text.log string.regexp",
+        "text.tex string.regexp"
       ],
       "settings": {
         "fontStyle": "",
@@ -4158,9 +4639,13 @@
     {
       "name": "TextMate support.function.builtin",
       "scope": [
+        "source.asp.vb.net support.function.builtin",
         "source.batchfile support.function.builtin",
         "source.clojure support.function.builtin",
+        "source.coffee support.function.builtin",
         "source.dart support.function.builtin",
+        "source.fsharp support.function.builtin",
+        "source.hlsl support.function.builtin",
         "source.julia support.function.builtin",
         "source.lua support.function.builtin",
         "source.makefile support.function.builtin",
@@ -4169,8 +4654,11 @@
         "source.perl support.function.builtin",
         "source.powershell support.function.builtin",
         "source.r support.function.builtin",
+        "source.shaderlab support.function.builtin",
         "source.swift support.function.builtin",
-        "text.log support.function.builtin"
+        "text.bibtex support.function.builtin",
+        "text.log support.function.builtin",
+        "text.tex support.function.builtin"
       ],
       "settings": {
         "fontStyle": "",
@@ -4180,9 +4668,13 @@
     {
       "name": "TextMate support.type.primitive",
       "scope": [
+        "source.asp.vb.net support.type.primitive",
         "source.batchfile support.type.primitive",
         "source.clojure support.type.primitive",
+        "source.coffee support.type.primitive",
         "source.dart support.type.primitive",
+        "source.fsharp support.type.primitive",
+        "source.hlsl support.type.primitive",
         "source.julia support.type.primitive",
         "source.lua support.type.primitive",
         "source.makefile support.type.primitive",
@@ -4191,8 +4683,11 @@
         "source.perl support.type.primitive",
         "source.powershell support.type.primitive",
         "source.r support.type.primitive",
+        "source.shaderlab support.type.primitive",
         "source.swift support.type.primitive",
-        "text.log support.type.primitive"
+        "text.bibtex support.type.primitive",
+        "text.log support.type.primitive",
+        "text.tex support.type.primitive"
       ],
       "settings": {
         "fontStyle": "",
@@ -4202,9 +4697,13 @@
     {
       "name": "TextMate variable",
       "scope": [
+        "source.asp.vb.net variable",
         "source.batchfile variable",
         "source.clojure variable",
+        "source.coffee variable",
         "source.dart variable",
+        "source.fsharp variable",
+        "source.hlsl variable",
         "source.julia variable",
         "source.lua variable",
         "source.makefile variable",
@@ -4213,8 +4712,11 @@
         "source.perl variable",
         "source.powershell variable",
         "source.r variable",
+        "source.shaderlab variable",
         "source.swift variable",
-        "text.log variable"
+        "text.bibtex variable",
+        "text.log variable",
+        "text.tex variable"
       ],
       "settings": {
         "fontStyle": "",
@@ -4224,9 +4726,13 @@
     {
       "name": "TextMate variable.language.super",
       "scope": [
+        "source.asp.vb.net variable.language.super",
         "source.batchfile variable.language.super",
         "source.clojure variable.language.super",
+        "source.coffee variable.language.super",
         "source.dart variable.language.super",
+        "source.fsharp variable.language.super",
+        "source.hlsl variable.language.super",
         "source.julia variable.language.super",
         "source.lua variable.language.super",
         "source.makefile variable.language.super",
@@ -4235,8 +4741,11 @@
         "source.perl variable.language.super",
         "source.powershell variable.language.super",
         "source.r variable.language.super",
+        "source.shaderlab variable.language.super",
         "source.swift variable.language.super",
-        "text.log variable.language.super"
+        "text.bibtex variable.language.super",
+        "text.log variable.language.super",
+        "text.tex variable.language.super"
       ],
       "settings": {
         "fontStyle": "",
@@ -4246,9 +4755,13 @@
     {
       "name": "TextMate variable.language.this",
       "scope": [
+        "source.asp.vb.net variable.language.this",
         "source.batchfile variable.language.this",
         "source.clojure variable.language.this",
+        "source.coffee variable.language.this",
         "source.dart variable.language.this",
+        "source.fsharp variable.language.this",
+        "source.hlsl variable.language.this",
         "source.julia variable.language.this",
         "source.lua variable.language.this",
         "source.makefile variable.language.this",
@@ -4257,8 +4770,11 @@
         "source.perl variable.language.this",
         "source.powershell variable.language.this",
         "source.r variable.language.this",
+        "source.shaderlab variable.language.this",
         "source.swift variable.language.this",
-        "text.log variable.language.this"
+        "text.bibtex variable.language.this",
+        "text.log variable.language.this",
+        "text.tex variable.language.this"
       ],
       "settings": {
         "fontStyle": "",
@@ -4268,9 +4784,13 @@
     {
       "name": "TextMate variable.other.constant",
       "scope": [
+        "source.asp.vb.net variable.other.constant",
         "source.batchfile variable.other.constant",
         "source.clojure variable.other.constant",
+        "source.coffee variable.other.constant",
         "source.dart variable.other.constant",
+        "source.fsharp variable.other.constant",
+        "source.hlsl variable.other.constant",
         "source.julia variable.other.constant",
         "source.lua variable.other.constant",
         "source.makefile variable.other.constant",
@@ -4279,8 +4799,11 @@
         "source.perl variable.other.constant",
         "source.powershell variable.other.constant",
         "source.r variable.other.constant",
+        "source.shaderlab variable.other.constant",
         "source.swift variable.other.constant",
-        "text.log variable.other.constant"
+        "text.bibtex variable.other.constant",
+        "text.log variable.other.constant",
+        "text.tex variable.other.constant"
       ],
       "settings": {
         "fontStyle": "",
@@ -4290,9 +4813,13 @@
     {
       "name": "TextMate variable.other.enummember",
       "scope": [
+        "source.asp.vb.net variable.other.enummember",
         "source.batchfile variable.other.enummember",
         "source.clojure variable.other.enummember",
+        "source.coffee variable.other.enummember",
         "source.dart variable.other.enummember",
+        "source.fsharp variable.other.enummember",
+        "source.hlsl variable.other.enummember",
         "source.julia variable.other.enummember",
         "source.lua variable.other.enummember",
         "source.makefile variable.other.enummember",
@@ -4301,8 +4828,11 @@
         "source.perl variable.other.enummember",
         "source.powershell variable.other.enummember",
         "source.r variable.other.enummember",
+        "source.shaderlab variable.other.enummember",
         "source.swift variable.other.enummember",
-        "text.log variable.other.enummember"
+        "text.bibtex variable.other.enummember",
+        "text.log variable.other.enummember",
+        "text.tex variable.other.enummember"
       ],
       "settings": {
         "fontStyle": "",
@@ -4312,9 +4842,13 @@
     {
       "name": "TextMate variable.other.member",
       "scope": [
+        "source.asp.vb.net variable.other.member",
         "source.batchfile variable.other.member",
         "source.clojure variable.other.member",
+        "source.coffee variable.other.member",
         "source.dart variable.other.member",
+        "source.fsharp variable.other.member",
+        "source.hlsl variable.other.member",
         "source.julia variable.other.member",
         "source.lua variable.other.member",
         "source.makefile variable.other.member",
@@ -4323,8 +4857,11 @@
         "source.perl variable.other.member",
         "source.powershell variable.other.member",
         "source.r variable.other.member",
+        "source.shaderlab variable.other.member",
         "source.swift variable.other.member",
-        "text.log variable.other.member"
+        "text.bibtex variable.other.member",
+        "text.log variable.other.member",
+        "text.tex variable.other.member"
       ],
       "settings": {
         "fontStyle": "",
@@ -4334,9 +4871,13 @@
     {
       "name": "TextMate variable.other.object.property",
       "scope": [
+        "source.asp.vb.net variable.other.object.property",
         "source.batchfile variable.other.object.property",
         "source.clojure variable.other.object.property",
+        "source.coffee variable.other.object.property",
         "source.dart variable.other.object.property",
+        "source.fsharp variable.other.object.property",
+        "source.hlsl variable.other.object.property",
         "source.julia variable.other.object.property",
         "source.lua variable.other.object.property",
         "source.makefile variable.other.object.property",
@@ -4345,8 +4886,11 @@
         "source.perl variable.other.object.property",
         "source.powershell variable.other.object.property",
         "source.r variable.other.object.property",
+        "source.shaderlab variable.other.object.property",
         "source.swift variable.other.object.property",
-        "text.log variable.other.object.property"
+        "text.bibtex variable.other.object.property",
+        "text.log variable.other.object.property",
+        "text.tex variable.other.object.property"
       ],
       "settings": {
         "fontStyle": "",
@@ -4356,9 +4900,13 @@
     {
       "name": "TextMate variable.other.property",
       "scope": [
+        "source.asp.vb.net variable.other.property",
         "source.batchfile variable.other.property",
         "source.clojure variable.other.property",
+        "source.coffee variable.other.property",
         "source.dart variable.other.property",
+        "source.fsharp variable.other.property",
+        "source.hlsl variable.other.property",
         "source.julia variable.other.property",
         "source.lua variable.other.property",
         "source.makefile variable.other.property",
@@ -4367,8 +4915,11 @@
         "source.perl variable.other.property",
         "source.powershell variable.other.property",
         "source.r variable.other.property",
+        "source.shaderlab variable.other.property",
         "source.swift variable.other.property",
-        "text.log variable.other.property"
+        "text.bibtex variable.other.property",
+        "text.log variable.other.property",
+        "text.tex variable.other.property"
       ],
       "settings": {
         "fontStyle": "",

@@ -1,0 +1,117 @@
+{\rtf1\ansi\deff0{\colortbl;\red188\green190\blue196;\red25\green26\blue28;\red122\green126\blue133;\red207\green142\blue109;\red42\green172\blue184;\red106\green171\blue115;\red86\green168\blue245;\red199\green125\blue187;}
+{\fonttbl{\f1\fmodern JetBrains Mono;}{\f2\fmodern Courier New;}}
+
+\s0\box\cbpat2\cb2\cf1\fs20
+\cf1
+\f1
+\i0\b0
+
+# \cf3
+\f2
+
+\u54620?\u44544? \u51452?\u49437?\line
+\cf4
+\f1
+
+const\cf1
+
+ MAX_SIZE = \cf5
+\i\b0
+
+10\line
+
+\line
+\cf4
+\i0\b0
+
+struct\cf1
+
+ Greeter\line
+
+    name::String\line
+\cf4
+
+end\line
+
+\line
+\cf1
+
+"""\cf6
+
+Docstring of greet\cf1
+
+"""\line
+\cf4
+
+function \cf7
+
+greet\cf1
+
+(g::Greeter, times::Int=\cf5
+\i\b0
+
+2\cf1
+\i0\b0
+
+)\line
+
+    message = "\cf6
+
+Hello \cf1
+
+$(g.name)\cf4
+\i\b0
+
+\\n\cf1
+\i0\b0
+
+"\line
+
+    \cf4
+
+return \cf1
+
+repeat(message, times)\line
+\cf4
+
+end\line
+
+\line
+
+for\cf1
+
+ name in ["\cf6
+\f2
+
+\u54616?\u45208?\cf1
+\f1
+
+", "\cf6
+
+two\cf1
+
+"]\line
+
+    println(greet(Greeter(name)), \cf8
+\i\b0
+
+nothing\cf1
+\i0\b0
+
+, \cf8
+\i\b0
+
+true\cf1
+\i0\b0
+
+, \cf5
+\i\b0
+
+0x1f\cf1
+\i0\b0
+
+)\line
+\cf4
+
+end\line
+\par}

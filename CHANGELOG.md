@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. Dates are displayed in UTC.
 
+#### Unreleased
+
+- feat: F#, VB.NET, HLSL, ShaderLab, CoffeeScript, LaTeX and BibTeX get the colors PyCharm gives them with the same
+  TextMate grammars as VS Code, and C the colors of CLion. Every TextMate language (Lua, Swift, PowerShell, Dart,
+  Julia, Clojure, Objective-C, batch files…) is now compared character by character with a PyCharm without plugins.
+- fix: in these languages the quotes of a string, the marker of a comment and the `\` of a LaTeX command have the text
+  color, as in PyCharm, instead of the string, comment or keyword color.
+
 #### 1.0.1 (2026-11-22)
 
 Python compared character by character with PyCharm, the icons of the pickers, VS Code profiles that overwrote each

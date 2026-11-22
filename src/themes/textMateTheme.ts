@@ -19,12 +19,19 @@ import type { TextAttributes } from './jetbrainsTheme';
 /**
  * Root scopes of the languages the IDE (PyCharm, the reference) draws with TextMate: VS Code grammars of languages
  * with no plugin in PyCharm (Go, Rust, C/C++, C#, Java, Ruby and PHP follow their own IDE instead: Ruby and PHP as
- * RubyMine and PhpStorm draw them, captured 2026-11-22).
+ * RubyMine and PhpStorm draw them, captured 2026-11-22). Captured in a PyCharm without plugins (test/colors/ide,
+ * 2026-11-22). Perl and R are drawn like the TextMate bundle would, but PyCharm itself opens `.pl` with another
+ * highlighter and `.r` as plain text. Not here: diffs (PyCharm opens a patch in its diff viewer, the text has no
+ * colors; the diff rules of the theme stay), Razor (HTML and C# rules of the theme reach it, not checked).
  */
 const TEXTMATE_LANGUAGES = [
+  'source.asp.vb.net',
   'source.batchfile',
   'source.clojure',
+  'source.coffee',
   'source.dart',
+  'source.fsharp',
+  'source.hlsl',
   'source.julia',
   'source.lua',
   'source.makefile',
@@ -33,8 +40,11 @@ const TEXTMATE_LANGUAGES = [
   'source.perl',
   'source.powershell',
   'source.r',
+  'source.shaderlab',
   'source.swift',
+  'text.bibtex',
   'text.log',
+  'text.tex',
 ];
 
 /** `markup.bold` and `markup.italic` are keys the TextMate plugin creates with a font style and no color */
@@ -43,8 +53,9 @@ const ITALIC: TextAttributes = { fontType: 2 };
 
 /**
  * Selector -> attribute key of the IDE (or attributes): `TextMateDefaultColorsProvider`, then the `TextMateTheme`
- * selectors whose keys the IDE has. Not written: `punctuation` -> DEFAULT_DOT (PyCharm draws the quotes of a string in
- * the string color, so the dot layer does not reach them; outside a string the dot is the text color in Islands),
+ * selectors whose keys the IDE has. `punctuation` -> DEFAULT_DOT is the top layer of the quotes of a string, the marker
+ * of a comment, the `\` of a LaTeX command…: the text color in Islands (rich text copied from a PyCharm without plugins,
+ * 2026-11-22; a look at the screen of a PyCharm with plugins had seen the quotes in the string color). Not written:
  * `markup.underline`/`markup.heading` (an effect without a color draws nothing), and the selectors of `TextMateTheme`
  * whose keys belong to plugins PyCharm does not have (RUBY_*, COFFEESCRIPT.*, PUPPET_*…: no color, no layer).
  */
@@ -79,6 +90,7 @@ const TEXTMATE_RULES: Record<string, TextAttributes | string> = {
   'markup.inserted': 'DIFF_INSERTED',
   'markup.italic': ITALIC,
   'meta.tag': 'DEFAULT_METADATA',
+  punctuation: 'DEFAULT_DOT',
   'punctuation.definition.tag': 'DEFAULT_TAG',
   storage: 'DEFAULT_KEYWORD',
   'storage.type': 'DEFAULT_KEYWORD',
@@ -117,13 +129,23 @@ const rulesOf = (scope: string) =>
     .sort((first, second) => dots(first) - dots(second));
 
 /**
+ * Scopes the grammars only put inside another: the marker of a comment is always in the comment, so its rule takes the
+ * layers of the comment too. Written on the scope itself, not as `comment punctuation.definition.comment`: vscode-textmate
+ * ranks two rules for the same scope by the length of their nearest parent, and `source.lua` beats `comment`.
+ */
+const IMPLIED_PARENTS: Record<string, string> = { 'punctuation.definition.comment': 'comment' };
+
+/**
  * The attributes the IDE draws a scope with, the rules that match it merged (the more specific on top). A scope with
- * parents (`comment.block.documentation punctuation.definition.comment`) gets the layers of its parents under its own.
+ * parents (`comment.block.documentation punctuation.definition.comment`) gets the layers of its parents under its own,
+ * and those of `IMPLIED_PARENTS`.
  * @param resolve the attributes of a key in the scheme (with its fallbacks), undefined when it has none
  * @returns undefined when no rule matches the scope
  */
 const textMateAttributes = (scope: string, resolve: (key: string) => TextAttributes | undefined): TextAttributes | undefined => {
-  const selectors = scope.split(' ').flatMap((part) => rulesOf(part));
+  const parts = scope.split(' ');
+  const implied = Object.entries(IMPLIED_PARENTS).find(([selector]) => matches(selector, parts.at(-1)!))?.[1];
+  const selectors = [...(implied && !parts.some((part) => matches(implied, part)) ? [implied] : []), ...parts].flatMap((part) => rulesOf(part));
   if (selectors.length === 0) return undefined;
   const layers = selectors.flatMap((selector) => {
     const rule = TEXTMATE_RULES[selector];
@@ -137,16 +159,25 @@ const textMateAttributes = (scope: string, resolve: (key: string) => TextAttribu
 const OTHER_LANGUAGE = /\.(c|cpp|cs|css|dotenv|go|groovy|ini|java|jsdoc|js|json|jsx|less|markdown|php|properties|python|regexp|rst|ruby|rust|scss|shell|sql|toml|ts|tsx|xml|yaml)$/;
 
 /**
+ * Scopes inside others whose layers add up to a style no single rule gives: the `rem` of a batch comment is a keyword
+ * in a comment, keyword color with the italic of the comment (Islands Light); the `\` of a LaTeX symbol, punctuation
+ * in a constant, takes the italic of the constant. They win only where no rule of the language root names the same
+ * scope (see `IMPLIED_PARENTS`)
+ */
+const NESTED_SCOPES = ['comment keyword', 'constant punctuation'];
+
+/**
  * The scopes to write a rule for in each TextMate language: the selectors above, and the scopes of other rules of the
  * theme that are deeper than one of them (`constant.language` is a keyword elsewhere; in Ruby it is a CONSTANT) or that
- * have parents one of them matches (the delimiters of a doc comment are a doc comment elsewhere).
+ * have parents one of them matches (the delimiters of a doc comment are a doc comment elsewhere), and the scopes
+ * of `NESTED_SCOPES`.
  */
 const textMateScopes = (otherScopes: string[]): string[] => {
   const reached = otherScopes.filter((scope) => {
     const parts = scope.split(' ');
     return parts.every((part) => !OTHER_LANGUAGE.test(part)) && parts.some((part) => rulesOf(part).length > 0);
   });
-  return [...new Set([...Object.keys(TEXTMATE_RULES), ...reached])].sort(compareCodeUnits);
+  return [...new Set([...Object.keys(TEXTMATE_RULES), ...reached, ...NESTED_SCOPES])].sort(compareCodeUnits);
 };
 
 /**
