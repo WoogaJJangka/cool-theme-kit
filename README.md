@@ -262,15 +262,11 @@ You can find a list of all the available associations in the following links:
 
 ## Usage
 
-Since this extension is based off the
-original [Material Icon Theme](https://github.com/PKief/vscode-material-icon-theme),
-you can find most of the original settings here as well.
+Every part of the kit has commands: type `Cool Theme Kit` in the command palette to see them. The settings of the
+icons below come from the original Atom Material Icons (itself based on
+[Material Icon Theme](https://github.com/PKief/vscode-material-icon-theme)), and each one has a command with a picker.
 
-Therefore, this extension exposes a bunch of commands that you can invoke via the command palette:
-
-![commandPalette.png](./docs/commandPalette.png)
-
-Just type `Cool Theme Kit` in order to see the commands that are available.
+![The commands of Cool Theme Kit in the command palette](docs/screenshots/command-palette.png)
 
 ----
 
@@ -303,7 +299,7 @@ As in the JetBrains plugin, two packs do not belong to a framework:
 - **pycharm** (enabled by default): Python files look like in PyCharm. Every `.py`, `.pyi` and `.pyw` file, whatever its
   name (`manage.py`, `__init__.py`, `test_app.py`...), uses the two-tone Python icon of PyCharm instead of the Atom icons.
 
-![iconPacks.png](./docs/iconPacks.png)
+![The icon pack picker](docs/screenshots/icon-packs.png)
 
 > **Note**: Since you can enable multiple packs, there is still a way to enable both overlapping icon packs. It's
 > recommended to not do as such as it would return unexpected results.
@@ -314,7 +310,7 @@ As in the JetBrains plugin, two packs do not belong to a framework:
 
 You can customize the look of the arrows in the tree view using the command palette:
 
-![arrowStyles.png](./docs/arrowStyles.png)
+![The arrow style picker](docs/screenshots/arrow-styles.png)
 
 or via user settings:
 
@@ -346,7 +342,7 @@ The available options are:
 
 You can customize the color of the default folder icon using the command palette:
 
-![folderColor.png](./docs/folderColor.png)
+![The folder color picker](docs/screenshots/folder-color.png)
 
 or via user settings:
 
@@ -363,7 +359,7 @@ or via user settings:
 
 You can change the style of the folder icons using the command palette:
 
-![folderTheme.png](./docs/folderTheme.png)
+![The folder theme picker](docs/screenshots/folder-theme.png)
 
 or via user settings:
 
@@ -387,7 +383,7 @@ You can customize the opacity of the icons, between totally opaque to completely
 
 You can either choose a predefined opacity or enter your own opacity via the command palette:
 
-![opacity.png](./docs/opacity.png)
+![The opacity picker](docs/screenshots/opacity.png)
 
 or via user settings:
 
@@ -405,7 +401,7 @@ You can customize the saturation of the icons. The less saturated they are, the 
 
 You can either choose a predefined saturation or enter your own saturation via the command palette:
 
-![saturation.png](./docs/saturation.png)
+![The saturation picker](docs/screenshots/saturation.png)
 
 or via user settings:
 
@@ -560,9 +556,8 @@ listed wins). The fonts of the other themes are copied into this extension's fol
 selected product icon theme and its icons change, a notification offers to reload the window. The Product icons tab of
 the [Mix Themes page](#mix-themes-page) edits both settings with a preview.
 
-![prodIcon.png](./docs/prodIcon.png)
+![Cool Islands Icons and Cool Material Icons in the product icon theme picker](docs/screenshots/product-icon-theme.png)
 
-![productIconTheme.png](./docs/productIconTheme.png)
 ------
 
 ## Custom associations

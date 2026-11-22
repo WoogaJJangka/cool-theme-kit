@@ -116,133 +116,133 @@
     "icons": {
       "atom-angular": {
         "default": {
-          "fontCharacter": "\\ea2a",
+          "fontCharacter": "\\ea2b",
           "fontPath": "./productIcons/a-file-icon-vscode.woff"
         },
         "description": "Angular"
       },
       "atom-angular2": {
         "default": {
-          "fontCharacter": "\\ea2a",
+          "fontCharacter": "\\ea2c",
           "fontPath": "./productIcons/a-file-icon-vscode.woff"
         },
         "description": "Angular"
       },
       "atom-nest": {
         "default": {
-          "fontCharacter": "\\ed57",
+          "fontCharacter": "\\edad",
           "fontPath": "./productIcons/a-file-icon-vscode.woff"
         },
         "description": "Nest"
       },
       "atom-next": {
         "default": {
-          "fontCharacter": "\\ed57",
+          "fontCharacter": "\\ede1",
           "fontPath": "./productIcons/a-file-icon-vscode.woff"
         },
         "description": "Next"
       },
       "atom-ngrx": {
         "default": {
-          "fontCharacter": "\\ed7b",
+          "fontCharacter": "\\edf1",
           "fontPath": "./productIcons/a-file-icon-vscode.woff"
         },
         "description": "NgRx"
       },
       "atom-phalcon": {
         "default": {
-          "fontCharacter": "\\eddf",
+          "fontCharacter": "\\ee5d",
           "fontPath": "./productIcons/a-file-icon-vscode.woff"
         },
         "description": "Phalcon"
       },
       "atom-rails": {
         "default": {
-          "fontCharacter": "\\ee40",
+          "fontCharacter": "\\eecc",
           "fontPath": "./productIcons/a-file-icon-vscode.woff"
         },
         "description": "Rails"
       },
       "atom-react": {
         "default": {
-          "fontCharacter": "\\ee5a",
+          "fontCharacter": "\\eef4",
           "fontPath": "./productIcons/a-file-icon-vscode.woff"
         },
         "description": "React"
       },
       "atom-recoil": {
         "default": {
-          "fontCharacter": "\\ee64",
+          "fontCharacter": "\\eefe",
           "fontPath": "./productIcons/a-file-icon-vscode.woff"
         },
         "description": "Recoil"
       },
       "atom-redux": {
         "default": {
-          "fontCharacter": "\\ee6a",
+          "fontCharacter": "\\ef05",
           "fontPath": "./productIcons/a-file-icon-vscode.woff"
         },
         "description": "Redux"
       },
       "atom-volt": {
         "default": {
-          "fontCharacter": "\\ef91",
+          "fontCharacter": "\\f066",
           "fontPath": "./productIcons/a-file-icon-vscode.woff"
         },
         "description": "Volt"
       },
       "atom-vue": {
         "default": {
-          "fontCharacter": "\\ef99",
+          "fontCharacter": "\\f06f",
           "fontPath": "./productIcons/a-file-icon-vscode.woff"
         },
         "description": "Vue"
       },
       "atom-vuex": {
         "default": {
-          "fontCharacter": "\\ef9d",
+          "fontCharacter": "\\f073",
           "fontPath": "./productIcons/a-file-icon-vscode.woff"
         },
         "description": "Vuex"
       },
       "atom-folder-specific": {
         "default": {
-          "fontCharacter": "\\f187",
+          "fontCharacter": "\\f28b",
           "fontPath": "./productIcons/a-file-icon-vscode.woff"
         },
         "description": "Specific Folders"
       },
       "atom-folder-classic": {
         "default": {
-          "fontCharacter": "\\f05e",
+          "fontCharacter": "\\f140",
           "fontPath": "./productIcons/a-file-icon-vscode.woff"
         },
         "description": "Classic Folders"
       },
       "atom-arrows-material": {
         "default": {
-          "fontCharacter": "\\f257",
+          "fontCharacter": "\\f371",
           "fontPath": "./productIcons/a-file-icon-vscode.woff"
         },
         "description": "Material Arrows"
       },
       "atom-arrows-triangles": {
         "default": {
-          "fontCharacter": "\\f25f",
+          "fontCharacter": "\\f379",
           "fontPath": "./productIcons/a-file-icon-vscode.woff"
         },
         "description": "Triangles"
       },
       "atom-arrows-plusMinus": {
         "default": {
-          "fontCharacter": "\\f25a",
+          "fontCharacter": "\\f374",
           "fontPath": "./productIcons/a-file-icon-vscode.woff"
         },
         "description": "Plus-Minus"
       },
       "atom-arrows-arrows": {
         "default": {
-          "fontCharacter": "\\f24d",
+          "fontCharacter": "\\f367",
           "fontPath": "./productIcons/a-file-icon-vscode.woff"
         },
         "description": "Arrows"

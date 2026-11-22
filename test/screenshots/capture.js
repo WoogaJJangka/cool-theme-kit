@@ -1,6 +1,7 @@
 /**
  * Captures the screenshots of the README in a real VS Code: `bun run build`, then
- * `bun run screenshots [version] [--vsix <file>] [--preset <id>|all]` (default `stable`). The images go to `docs/screenshots/`.
+ * `bun run screenshots [version] [--vsix <file>] [--preset <id>|all]` (default `stable`). The images go to `docs/screenshots/`:
+ * the whole window, and the pickers of the settings (PICKERS) alone.
  * With `--preset`, only the theme combinations of `src/presets/presets.ts` are captured, to
  * `docs/screenshots/presets/<id>.png` (docs/THEME_COMBINATIONS.md): the extensions they need are installed into the
  * temporary profile only.
@@ -214,10 +215,34 @@ const COMMANDS = {
   mixProduct: { args: 'product', command: 'a-file-icon-vscode.openThemeMixer' },
   reload: { command: 'workbench.action.reloadWindow' },
   walkthrough: { args: `${EXTENSION_ID}#coolThemeKit`, command: 'workbench.action.openWalkthrough' },
+  // the pickers of the README, captured alone (PICKERS)
+  arrowTheme: { command: 'a-file-icon-vscode.changeArrowTheme' },
+  commandPalette: { args: '>Cool Theme Kit: ', command: 'workbench.action.quickOpen' },
+  folderColor: { command: 'a-file-icon-vscode.changeFolderColor' },
+  folderTheme: { command: 'a-file-icon-vscode.changeFolderTheme' },
+  iconPacks: { command: 'a-file-icon-vscode.toggleIconPacks' },
+  opacity: { command: 'a-file-icon-vscode.changeOpacity' },
+  productIconTheme: { command: 'workbench.action.selectProductIconTheme' },
+  saturation: { command: 'a-file-icon-vscode.changeSaturation' },
 };
-/** F13 to F24: keys no other binding uses */
-const commandKey = (index) => ({ code: `F${13 + index}`, key: `F${13 + index}`, windowsVirtualKeyCode: 124 + index });
-const keybindings = () => Object.values(COMMANDS).map((binding, index) => ({ ...binding, key: `f${13 + index}` }));
+/** The pickers of the README: the command of COMMANDS → the image in docs/screenshots */
+const PICKERS = {
+  commandPalette: 'command-palette.png',
+  iconPacks: 'icon-packs.png',
+  arrowTheme: 'arrow-styles.png',
+  folderColor: 'folder-color.png',
+  folderTheme: 'folder-theme.png',
+  opacity: 'opacity.png',
+  saturation: 'saturation.png',
+  productIconTheme: 'product-icon-theme.png',
+};
+/** F13 to F24, then the same keys with Shift: keys no other binding uses */
+const commandKey = (index) => {
+  const number = 13 + (index % 12);
+  return { code: `F${number}`, key: `F${number}`, modifiers: index < 12 ? 0 : 8, windowsVirtualKeyCode: 111 + number };
+};
+const keybindings = () =>
+  Object.values(COMMANDS).map((binding, index) => ({ ...binding, key: `${index < 12 ? '' : 'shift+'}f${13 + (index % 12)}` }));
 
 const capture = async () => {
   const presets = loadPresets();
@@ -285,6 +310,24 @@ const capture = async () => {
     writeFileSync(join(output, name), Buffer.from(image.result.data, 'base64'));
     console.log(`  docs/screenshots/${name}`);
   };
+  /** The open picker alone, with a margin (it closes when it loses the focus, so nothing is blurred); then Escape */
+  const pickerShot = async (name) => {
+    const box = await run(
+      "(() => { const box = document.querySelector('.quick-input-widget')?.getBoundingClientRect(); return box?.height ? { height: box.height, width: box.width, x: box.x, y: box.y } : undefined; })()",
+    );
+    if (!box) throw new Error(`No picker is open for ${name}`);
+    // the keys of COMMANDS are this profile's, not the user's
+    await run("document.querySelectorAll('.quick-input-widget .monaco-keybinding').forEach((key) => { key.style.display = 'none'; })");
+    const margin = 8;
+    const x = Math.max(0, Math.floor(box.x - margin));
+    const y = Math.max(0, Math.floor(box.y - margin));
+    const clip = { height: Math.min(HEIGHT - y, Math.ceil(box.height) + 2 * margin), scale: 1, width: Math.min(WIDTH - x, Math.ceil(box.width) + 2 * margin), x, y };
+    const image = await page.send('Page.captureScreenshot', { clip, format: 'png' });
+    writeFileSync(join(output, name), Buffer.from(image.result.data, 'base64'));
+    console.log(`  docs/screenshots/${name}`);
+    for (const type of ['rawKeyDown', 'keyUp']) await page.send('Input.dispatchKeyEvent', { code: 'Escape', key: 'Escape', type, windowsVirtualKeyCode: 27 });
+    await sleep(600);
+  };
   const useSettings = async (colorTheme) => {
     writeFileSync(settingsFile, JSON.stringify(settings(colorTheme), null, 2));
     await sleep(3000);
@@ -320,6 +363,11 @@ const capture = async () => {
     await useSettings('Cool Islands Light');
     await shot('cool-islands-light.png');
     await useSettings('Cool Islands Dark');
+
+    for (const [name, image] of Object.entries(PICKERS)) {
+      await command(name, 2000);
+      await pickerShot(image);
+    }
 
     await command('mixIcons', 4000);
     await shot('mix-icon-themes.png');
