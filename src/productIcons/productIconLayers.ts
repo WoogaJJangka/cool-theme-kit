@@ -5,7 +5,10 @@
  *   - `productIconByName`: icon ids or globs of them (`debug-*`) -> the theme giving their icon, whatever the layers.
  * From the strongest to the weakest: by name (a later entry wins) > override layers (the first listed wins) > Cool Islands
  * Icons > fill layers (the first listed wins). The fonts of the other themes are copied next to the generated theme.
+ * Cool Material Icons of this extension is a layer by its own id; its earlier id is the theme of the original Atom
+ * Material Icons (see findProductTheme).
  */
+import { EARLIER_MATERIAL_PRODUCT_THEME_ID, MATERIAL_PRODUCT_THEME_ID } from 'src/helpers/constants';
 import { compareCodeUnits } from 'src/helpers/utils';
 
 const MODES = new Set<unknown>(['fill', 'off', 'override']);
@@ -61,6 +64,20 @@ export const normalizeProductByName = (byName: unknown): Array<{ key: string; ma
     const regex = globPattern(pattern);
     return [{ key: pattern, matches: (icon: string) => regex.test(icon), theme: id }];
   });
+};
+
+/**
+ * The installed theme a layer or a name of the settings gives by its id, the way VS Code finds the theme of
+ * `workbench.productIconTheme`: the earlier id of Cool Material Icons is the theme of the original Atom Material Icons
+ * when it is installed, and Cool Material Icons, under that id, while no installed extension contributes it (the
+ * settings written before Cool Material Icons had its own id).
+ * @param installed the themes that can be mixed in: Cool Material Icons by its own id, not by the earlier one
+ */
+export const findProductTheme = <T extends { id: string }>(installed: T[], id: string): T | undefined => {
+  const theme = installed.find((item) => item.id === id);
+  if (theme || id !== EARLIER_MATERIAL_PRODUCT_THEME_ID) return theme;
+  const own = installed.find((item) => item.id === MATERIAL_PRODUCT_THEME_ID);
+  return own && { ...own, id };
 };
 
 /** Ids of the installed product icon themes the settings mix in */

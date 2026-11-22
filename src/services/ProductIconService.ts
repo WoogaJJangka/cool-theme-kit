@@ -1,12 +1,12 @@
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import i18next from 'i18next';
-import { EXTENSION_ID } from 'src/helpers/constants';
+import { EXTENSION_ID, MATERIAL_PRODUCT_THEME_ID, OLD_EXTENSION_ID } from 'src/helpers/constants';
 import { isInsideFolder } from 'src/helpers/themePaths';
 import { getExtensionPath } from 'src/helpers/vscodeUtils';
 import { ISLANDS_PRODUCT_THEME_ID } from 'src/productIcons/islandsProductTheme';
 import { ProductIconGenerator, readProductTheme } from 'src/productIcons/ProductIconGenerator';
-import { normalizeProductByName, normalizeProductLayers, usedProductThemeIds } from 'src/productIcons/productIconLayers';
+import { findProductTheme, normalizeProductByName, normalizeProductLayers, usedProductThemeIds } from 'src/productIcons/productIconLayers';
 import { configService } from 'src/services/ConfigService';
 import { logger } from 'src/services/LoggingService';
 import { offerReload } from 'src/services/reloadNotice';
@@ -21,19 +21,23 @@ type ContributedProductTheme = { id?: unknown; label?: unknown; path?: unknown }
 type InstalledProductTheme = { extensionPath: string; id: string; label: string; path: string };
 
 /**
- * The product icon themes that can be mixed with Cool Islands Icons: the ones of the other installed extensions, and
- * Cool Material Icons of this extension. The id is the value of `workbench.productIconTheme`. A theme file outside the
- * folder of its extension is left out.
+ * The product icon themes that can be mixed with Cool Islands Icons: the ones of the other installed extensions (the
+ * original Atom Material Icons among them, with the earlier id of Cool Material Icons), and Cool Material Icons of this
+ * extension by its own id. The old copy of this extension (`cool-icon-vscode`) is left out: its themes have the same
+ * ids. The id is the value of `workbench.productIconTheme`. A theme file outside the folder of its extension is left out.
  */
 const scanProductThemes = (): InstalledProductTheme[] => {
   const result: InstalledProductTheme[] = [];
   for (const extension of extensions.all) {
-    const own = extension.id.toLowerCase() === EXTENSION_ID.toLowerCase();
+    const extensionId = extension.id.toLowerCase();
+    if (extensionId === OLD_EXTENSION_ID) continue;
+    const own = extensionId === EXTENSION_ID.toLowerCase();
     const themes: ContributedProductTheme[] = extension.packageJSON?.contributes?.productIconThemes ?? [];
     if (!Array.isArray(themes)) continue;
     for (const theme of themes) {
       if (typeof theme?.id !== 'string' || typeof theme.path !== 'string') continue;
-      if ((own && theme.id === ISLANDS_PRODUCT_THEME_ID) || result.some((item) => item.id === theme.id)) continue;
+      // of this extension, only Cool Material Icons by its own id: Cool Islands Icons is the base
+      if ((own && theme.id !== MATERIAL_PRODUCT_THEME_ID) || result.some((item) => item.id === theme.id)) continue;
       const path = join(extension.extensionPath, theme.path);
       if (!isInsideFolder(extension.extensionPath, path)) continue;
       const label = typeof theme.label === 'string' && !/^%.*%$/.test(theme.label) ? theme.label : theme.id;
@@ -60,22 +64,22 @@ export const forgetInstalledProductThemes = () => {
 export class ProductIconService {
   /** The files of the product icon themes the settings mix in, to regenerate when one changes */
   watchedPaths(): string[] {
-    const ids = new Set(usedProductThemeIds(configService.productIconThemeLayers, configService.productIconByName));
-    if (ids.size === 0) return [];
-    return listProductThemes()
-      .filter((theme) => ids.has(theme.id))
-      .map((theme) => theme.path);
+    const ids = usedProductThemeIds(configService.productIconThemeLayers, configService.productIconByName);
+    if (ids.length === 0) return [];
+    const installed = listProductThemes();
+    const paths = ids.flatMap((id) => findProductTheme(installed, id)?.path ?? []);
+    return [...new Set(paths)];
   }
 
   /** The themes of the settings, read; the ones not installed or not readable are left out */
   mix(): ProductMix {
     // listed only when a theme is mixed in: most users mix none
-    let installedById: Map<string, InstalledProductTheme> | undefined;
+    let installed: InstalledProductTheme[] | undefined;
     const cache = new Map<string, ReadProductTheme | undefined>();
     const read = (id: string): ReadProductTheme | undefined => {
       if (!cache.has(id)) {
-        installedById ??= new Map(listProductThemes().map((item) => [item.id, item]));
-        const theme = installedById.get(id);
+        installed ??= listProductThemes();
+        const theme = findProductTheme(installed, id);
         let data: ReadProductTheme | undefined;
         if (theme && existsSync(theme.path)) {
           try {

@@ -25,7 +25,18 @@ export const VERSION_KEY = `${EXTENSION_KEY}.version`;
 export const JSON_FILE_NAME = `${EXTENSION_KEY}-icon-theme.json`;
 /** Theme id of the Material Icon Theme extension (PKief.material-icon-theme) */
 export const MATERIAL_ICON_THEME = 'material-icon-theme';
+/** The file of Cool Material Icons, the product icon theme of the Material Design Icons, in dist/ */
 export const JSON_PRODUCT_FILE_NAME = `${EXTENSION_KEY}-product-icon-theme.json`;
+/**
+ * Id of Cool Material Icons (`workbench.productIconTheme`), and how a layer gives it: no other extension contributes it.
+ */
+export const MATERIAL_PRODUCT_THEME_ID = 'cool-material-product-icons';
+/**
+ * The earlier id of Cool Material Icons, which the original Atom Material Icons contributes too (its "Atom Material Icons"
+ * product icon theme): with both installed, VS Code shows theirs for it. It still gives Cool Material Icons while no
+ * other extension contributes it.
+ */
+export const EARLIER_MATERIAL_PRODUCT_THEME_ID = `${EXTENSION_KEY}-product-icon-theme`;
 
 export const DEFAULT_FOLDER_COLOR = '#90a4ae';
 export const DEFAULT_OPACITY = 1;

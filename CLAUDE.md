@@ -9,6 +9,9 @@
   단 파일 아이콘 테마는 2026-11-22 부터 겹치지 않는 id `cool-theme-kit-icons`(`ICON_THEME_ID`, 우리가 고를 때 쓰는 것)를 더 갖는다: 옛 id
   `a-file-icon-vscode` 는 원본 Atom Material Icons 도 기여해서 둘 다 설치되면 VS Code 가 원본을 고른다. 섞기에서 `a-file-icon-vscode` = 원본
   (`docs/MAINTENANCE.md` 2장 규칙 11, `test/unit/atomMaterialIcons.test.ts`).
+  제품 아이콘 Cool Material Icons 도 같은 이유로 새 id `cool-material-product-icons`(`MATERIAL_PRODUCT_THEME_ID`)를 갖는다(옛 id
+  `a-file-icon-vscode-product-icon-theme` = 원본 "Atom Material Icons"). 섞기에서 옛 id 는 원본이 있으면 원본, 없으면 우리 것
+  (`productIconLayers.findProductTheme` 으로만 찾는다).
   그래서 옛 id 가 화면에 나오지 않게 한다: 테마 선택 목록은 `description`("Cool Theme Kit")이 없으면 id 를 보여 주고, 설정 화면은
   설정 묶음 `id`(`a-file-icon-vscode.<종류>`)가 없으면 이름 앞에 "A-file-icon-vscode:" 를 붙인다(검색 결과·`@ext:` 에서는 VS Code 가 늘 붙임).
   `test/unit/packageIdentity.test.ts` 가 지킨다. 한국어 조사는 읽는 소리 기준: "Cool Theme Kit이/과", "Cool Icons가/와".
@@ -205,7 +208,7 @@
   New UI 이름 대응은 `platform/icons/src/PlatformIconMappings.json` 이 참고가 된다(예: 브랜치 = `general/vcs`).
   섞기: `productIconThemeLayers`(fill/override/off)·`productIconByName`(id glob), 우선순위는 색·아이콘과 같다. 다른 테마 글꼴은
   `dist/layers/product/<테마>/` 로 복사하고 글리프마다 `fontId`(Islands 글꼴이 첫 번째라 fontId 없는 정의는 Islands). Cool Material Icons 도
-  층으로 고를 수 있다. 화살표 스타일(`arrowTheme`)은 Material 테마에만 적용. 섞기 화면 제품 아이콘 탭(`openThemeMixer` 에 'product' 인자).
+  층으로 고를 수 있다(새 id `cool-material-product-icons`). 화살표 스타일(`arrowTheme`)은 Material 테마에만 적용. 섞기 화면 제품 아이콘 탭(`openThemeMixer` 에 'product' 인자).
 - 아이콘 팩(`enabledFor`) 항목은 생성 때 일반 항목 뒤에 적용돼 같은 확장자를 덮어쓴다(css → css2). 기본 팩은
   `package.json` 기본값과 `getDefaultConfig` 를 같이 고친다.
 - 시작 때 설정과 생성된 테마를 비교하느라 테마 json(아이콘 735 KB + 제품 180 KB)을 통째로 파싱하지 않는다: `helpers/themeState.ts` 가

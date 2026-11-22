@@ -5,7 +5,7 @@
 import { dirname, resolve } from 'node:path';
 import { decodeFontCharacter } from 'src/helpers/themePreview';
 import { readProductTheme } from 'src/productIcons/ProductIconGenerator';
-import { normalizeProductByName, normalizeProductLayers } from 'src/productIcons/productIconLayers';
+import { findProductTheme, normalizeProductByName, normalizeProductLayers } from 'src/productIcons/productIconLayers';
 
 import type { PreviewFont } from 'src/helpers/themePreview';
 import type { ProductIconGenerator, ProductMix } from 'src/productIcons/ProductIconGenerator';
@@ -93,7 +93,8 @@ export const productMixerState = (options: {
   mix: ProductMix;
 }) => {
   const { installed } = options;
-  const find = (id: string) => installed.find((theme) => theme.id === id);
+  // as the generator finds them: the earlier id of Cool Material Icons is the original's theme, or Cool Material Icons
+  const find = (id: string) => findProductTheme(installed, id);
   const layers = normalizeProductLayers(options.layers);
   const byName = normalizeProductByName(options.byName).map(({ key, theme }) => ({ key, theme }));
   const usedIds = [...new Set([...layers.map((layer) => layer.theme), ...byName.map((entry) => entry.theme)])];

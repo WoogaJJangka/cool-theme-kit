@@ -489,6 +489,10 @@ other, by its id. To show its icons first and Cool Icons for the names it does n
 }
 ```
 
+The same goes for the product icons: the original's product icon theme has the earlier id of Cool Material Icons,
+`a-file-icon-vscode-product-icon-theme`, and Cool Material Icons has its own, `cool-material-product-icons` (see
+[Product Theme](#product-theme)).
+
 The two extensions also read the same `a-file-icon-vscode.*` settings. Cool Theme Kit uses its own defaults for the ones
 you leave unset (the original has other default icon packs). Seven commands have the same ids in both (Change Arrow
 Theme, Change Folder Color, Change Folder Theme, Change Opacity, Change Saturation, Toggle Icon Packs, Restore Default
@@ -572,18 +576,21 @@ Two product icon themes replace the icons of the VS Code interface (**Preference
   the VS Code icon. The font is built from the New UI SVGs of
   [JetBrains/intellij-community](https://github.com/JetBrains/intellij-community) (`bun run build:product-icons`): each
   icon is turned into a one-color glyph, as VS Code draws product icons with the color of the theme.
-- **Cool Material Icons**: the Material Design Icons of the original extension. Its arrows follow the
-  [arrow style](#arrow-styles) setting.
+- **Cool Material Icons** (`cool-material-product-icons`): the Material Design Icons of the original extension. Its
+  arrows follow the [arrow style](#arrow-styles) setting. Its earlier id, `a-file-icon-vscode-product-icon-theme` (the
+  entry marked "for earlier settings" in the picker), is also the id of the product icon theme of the original
+  [Atom Material Icons](#with-the-original-atom-material-icons): with both extensions installed, VS Code shows the
+  original for it, so select Cool Material Icons by its own id.
 
 ### Mixing product icon themes
 
 Other installed product icon themes can be mixed into Cool Islands Icons, given by their id (the value of
-`workbench.productIconTheme`), Cool Material Icons included:
+`workbench.productIconTheme`), Cool Material Icons included (`cool-material-product-icons`):
 
 ```json
 {
   "a-file-icon-vscode.productIconThemeLayers": [
-    "a-file-icon-vscode-product-icon-theme",
+    "cool-material-product-icons",
     { "theme": "fluent-icons", "mode": "override" }
   ],
   "a-file-icon-vscode.productIconByName": {
@@ -598,6 +605,10 @@ A layer is `fill` (a plain id: only the icons Cool Islands Icons has none for), 
 listed wins). The fonts of the other themes are copied into this extension's folder. When Cool Islands Icons is the
 selected product icon theme and its icons change, a notification offers to reload the window. The Product icons tab of
 the [Mix Themes page](#mix-themes-page) edits both settings with a preview.
+
+As a layer, `a-file-icon-vscode-product-icon-theme` is the product icon theme of the original Atom Material Icons when
+it is installed, the way VS Code reads that id, and Cool Material Icons otherwise (the settings written before Cool
+Material Icons had its own id keep working).
 
 ![Cool Islands Icons and Cool Material Icons in the product icon theme picker](docs/screenshots/product-icon-theme.png)
 
@@ -735,7 +746,7 @@ Some options of the JetBrains plugin cannot be built with the VS Code icon theme
 | A read-only install (system-wide install, read-only folder) | The same as the web: the default themes work. A notice says once (per version) that the settings are not applied, instead of an error at every change. |
 | An untrusted folder (Restricted Mode)   | Everything, except the `filesAssociations`, `foldersAssociations` and `languagesAssociations` of the folder's settings, which may point to SVG files: only those of your user settings apply until you trust the folder. |
 | Several VS Code profiles                | Everything, with the same theme settings in every profile. With other values, the profiles overwrite each other's theme: see [VS Code profiles](#vs-code-profiles). |
-| Next to the original Atom Material Icons | Everything, with Cool Icons selected by its own id `cool-theme-kit-icons`: the earlier id `a-file-icon-vscode` shows the original. The original can be mixed in as a layer: see [With the original Atom Material Icons](#with-the-original-atom-material-icons). |
+| Next to the original Atom Material Icons | Everything, with Cool Icons selected by its own id `cool-theme-kit-icons` and Cool Material Icons by `cool-material-product-icons`: the earlier ids `a-file-icon-vscode` and `a-file-icon-vscode-product-icon-theme` show the original. The original can be mixed in as a layer by those ids: see [With the original Atom Material Icons](#with-the-original-atom-material-icons) and [Mixing product icon themes](#mixing-product-icon-themes). |
 
 ### VS Code profiles
 

@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file. Dates are d
 
 #### Unreleased
 
+- feat: Cool Material Icons has its own product icon theme id, `cool-material-product-icons`. The earlier id
+  `a-file-icon-vscode-product-icon-theme` still selects it ("for earlier settings" in the picker), but the original
+  Atom Material Icons has that id too, for its own product icon theme, and VS Code shows the original when both are
+  installed. As a layer of Cool Islands Icons, the earlier id is now the product icon theme of the original when it is
+  installed, and Cool Material Icons otherwise, so the layers written before keep working; `cool-material-product-icons`
+  always mixes Cool Material Icons. The Mix Themes page lists Cool Material Icons once, by its own id, and leaves out
+  the themes of the old `cool-icon-vscode` extension.
+
+#### 1.5.0 (2026-11-22)
+
 - feat: `iconThemeByName` takes the id of Cool Icons itself, `cool-theme-kit-icons`: the name gets back the icon of
   Cool Icons as it is before the layers, over an `override` layer (the original Atom Material Icons first, with the
   icons of Cool Icons you prefer for some names). The Mix Themes page offers Cool Icons in its "By name" list.

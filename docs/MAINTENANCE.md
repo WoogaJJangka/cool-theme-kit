@@ -165,7 +165,11 @@ Cool Theme Kit 을 고칠 때 지키는 규칙과, 그 규칙을 지키는지 �
       (`atomMaterialIcons.test.ts`).
     - 명령은 하나씩 등록한다(`registerCommands`): 이미 있는 id 는 출력 채널에 경고만 남기고 넘어간다(그 id 는 원본 명령이 같은 설정을
       고친다). 한꺼번에 등록하면 첫 충돌에서 나머지 명령과 활성화(첫 테마 생성)까지 멈췄다(2026-11-22 스모크가 찾음).
-    - 제품 아이콘 테마 Cool Material Icons 는 아직 원본과 id 가 같다(원본이 설치돼 있으면 그 id 는 원본 것).
+    - 제품 아이콘 테마 Cool Material Icons 도 겹치지 않는 id `cool-material-product-icons`(`MATERIAL_PRODUCT_THEME_ID`)를 갖고, 옛 id
+      `a-file-icon-vscode-product-icon-theme`(`EARLIER_MATERIAL_PRODUCT_THEME_ID`)는 두 번째 항목("for earlier settings")으로 남긴다.
+      섞기 목록(`listProductThemes`)에는 우리 것은 새 id 로만 들어가고(옛 사본 `cool-icon-vscode` 는 통째로 빠짐), 옛 id 는 원본 테마다.
+      층·이름의 id 는 `findProductTheme` 으로만 찾는다: 옛 id 는 원본이 설치돼 있으면 원본, 없으면 VS Code 처럼 우리 Cool Material Icons
+      (그 id 로 써 둔 예전 설정이 그대로 섞이고, 글꼴 폴더 `layers/product/<옛 id>/` 도 그대로).
 
 ### 함께 확인하는 확장
 
@@ -178,7 +182,7 @@ Cool Theme Kit 을 고칠 때 지키는 규칙과, 그 규칙을 지키는지 �
 | `file-icons.file-icons` | 아이콘(글꼴) | 글꼴 복사, 글리프별 `fontId` |
 | `dracula-theme.theme-dracula` | 색 | UI override 가 Islands Dark 에 들어감 |
 | `miguelsolorio.fluent-icons` | 제품 아이콘 | 글꼴을 `dist/layers/product/` 로 복사 |
-| `AtomMaterial.a-file-icon-vscode` | 아이콘(SVG), 원본 | 우리 옛 id·설정과 같은 이름(규칙 11): 층으로 섞임, 우리 기본값 유지 |
+| `AtomMaterial.a-file-icon-vscode` | 아이콘(SVG)·제품 아이콘, 원본 | 우리 옛 id·설정과 같은 이름(규칙 11): 층으로 섞임(제품 아이콘은 옛 id 로, Cool Material Icons 는 새 id 로 같이), 우리 기본값 유지 |
 
 - 사용자가 문제를 신고한 확장, 새 형식(예: 다른 글꼴 형식)을 지원하게 된 확장은 이 목록에 넣고 단위 테스트 fixture 도 만든다.
 - 사람이 확인할 것(릴리스 전): 격리 프로필(CLAUDE.md "확인 방법", `--shared-data-dir` 포함)에 VSIX 와 문제 확장을 설치해서
