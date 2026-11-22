@@ -18,6 +18,31 @@
     { "line": 12, "text": "\\n", "key": "PY.VALID_STRING_ESCAPE" },
     { "line": 13, "text": "print", "key": "PY.BUILTIN_NAME" },
     { "line": 13, "text": "sep", "key": "PY.KEYWORD_ARGUMENT" },
-    { "line": 14, "text": "return", "key": "PY.KEYWORD" }
+    { "line": 14, "text": "return", "key": "PY.KEYWORD" },
+    {
+      "line": 21,
+      "text": "dict",
+      "key": "PY.BUILTIN_NAME",
+      "todo": "a subscripted name (dict[…], list[…]) has no builtin scope in the grammar (the semantic token class.builtin of Pylance colors it)"
+    },
+    { "line": 24, "text": "0x10", "key": "PY.NUMBER" },
+    { "line": 31, "text": "classmethod", "key": "PY.DECORATOR" },
+    {
+      "line": 32,
+      "text": "list",
+      "key": "PY.BUILTIN_NAME",
+      "todo": "a subscripted name (dict[…], list[…]) has no builtin scope in the grammar (the semantic token class.builtin of Pylance colors it)"
+    },
+    { "line": 35, "text": "property", "key": "PY.DECORATOR" },
+    { "line": 41, "text": "r\"^https?://(\\w+)$\"", "key": "PY.STRING.U" },
+    { "line": 43, "text": "f\"", "key": "PY.STRING.U" },
+    { "line": 43, "text": "10", "key": "PY.NUMBER", "todo": "the grammar gives the whole format spec (:>10) one scope" },
+    { "line": 45, "text": "b\"", "key": "PY.STRING.B" },
+    {
+      "line": 45,
+      "text": "rb\"\\d\"",
+      "key": "PY.STRING.B",
+      "todo": "the grammar reads rb\"…\" as a regex like r\"…\": the same scopes as a raw string"
+    }
   ]
 }

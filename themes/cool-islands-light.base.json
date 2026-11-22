@@ -1238,6 +1238,144 @@
       }
     },
     {
+      "name": "Python string prefix",
+      "scope": [
+        "storage.type.string.python"
+      ],
+      "settings": {
+        "fontStyle": "",
+        "foreground": "#067d17"
+      }
+    },
+    {
+      "name": "Python bytes prefix and quotes",
+      "scope": [
+        "string.quoted.binary.single.python storage.type.string.python",
+        "string.quoted.binary.single.python punctuation.definition.string.begin.python",
+        "string.quoted.binary.single.python punctuation.definition.string.end.python",
+        "string.quoted.binary.multi.python storage.type.string.python",
+        "string.quoted.binary.multi.python punctuation.definition.string.begin.python",
+        "string.quoted.binary.multi.python punctuation.definition.string.end.python"
+      ],
+      "settings": {
+        "fontStyle": "",
+        "foreground": "#8a822d"
+      }
+    },
+    {
+      "name": "Python number prefix",
+      "scope": [
+        "storage.type.number.python",
+        "storage.type.imaginary.number.python"
+      ],
+      "settings": {
+        "fontStyle": "",
+        "foreground": "#1750eb"
+      }
+    },
+    {
+      "name": "Python builtin decorator",
+      "scope": [
+        "meta.function.decorator.python support.type.python",
+        "meta.function.decorator.python support.function.builtin.python"
+      ],
+      "settings": {
+        "fontStyle": "",
+        "foreground": "#9e880d"
+      }
+    },
+    {
+      "name": "Python raw string",
+      "scope": [
+        "string.regexp.quoted.single.python comment.regexp",
+        "string.regexp.quoted.single.python constant.character.escape.regexp",
+        "string.regexp.quoted.single.python constant.character.set.regexp",
+        "string.regexp.quoted.single.python constant.character.unicode.regexp",
+        "string.regexp.quoted.single.python constant.other.set.regexp",
+        "string.regexp.quoted.single.python entity.name.tag.backreference.regexp",
+        "string.regexp.quoted.single.python entity.name.tag.named.backreference.regexp",
+        "string.regexp.quoted.single.python entity.name.tag.named.group.regexp",
+        "string.regexp.quoted.single.python keyword.operator.conditional.negative.regexp",
+        "string.regexp.quoted.single.python keyword.operator.conditional.regexp",
+        "string.regexp.quoted.single.python keyword.operator.disjunction.regexp",
+        "string.regexp.quoted.single.python keyword.operator.lookahead.negative.regexp",
+        "string.regexp.quoted.single.python keyword.operator.lookahead.regexp",
+        "string.regexp.quoted.single.python keyword.operator.lookbehind.negative.regexp",
+        "string.regexp.quoted.single.python keyword.operator.lookbehind.regexp",
+        "string.regexp.quoted.single.python keyword.operator.negation.regexp",
+        "string.regexp.quoted.single.python keyword.operator.quantifier.regexp",
+        "string.regexp.quoted.single.python punctuation.character.set.begin.regexp",
+        "string.regexp.quoted.single.python punctuation.character.set.end.regexp",
+        "string.regexp.quoted.single.python punctuation.comment.begin.regexp",
+        "string.regexp.quoted.single.python punctuation.comment.end.regexp",
+        "string.regexp.quoted.single.python punctuation.parenthesis.backreference.named.begin.regexp",
+        "string.regexp.quoted.single.python punctuation.parenthesis.backreference.named.end.regexp",
+        "string.regexp.quoted.single.python punctuation.parenthesis.begin.regexp",
+        "string.regexp.quoted.single.python punctuation.parenthesis.conditional.begin.regexp",
+        "string.regexp.quoted.single.python punctuation.parenthesis.conditional.end.regexp",
+        "string.regexp.quoted.single.python punctuation.parenthesis.end.regexp",
+        "string.regexp.quoted.single.python punctuation.parenthesis.lookahead.begin.regexp",
+        "string.regexp.quoted.single.python punctuation.parenthesis.lookahead.end.regexp",
+        "string.regexp.quoted.single.python punctuation.parenthesis.lookbehind.begin.regexp",
+        "string.regexp.quoted.single.python punctuation.parenthesis.lookbehind.end.regexp",
+        "string.regexp.quoted.single.python punctuation.parenthesis.named.begin.regexp",
+        "string.regexp.quoted.single.python punctuation.parenthesis.named.end.regexp",
+        "string.regexp.quoted.single.python punctuation.parenthesis.non-capturing.begin.regexp",
+        "string.regexp.quoted.single.python punctuation.parenthesis.non-capturing.end.regexp",
+        "string.regexp.quoted.single.python storage.modifier.flag.regexp",
+        "string.regexp.quoted.single.python support.other.escape.special.regexp",
+        "string.regexp.quoted.single.python support.other.match.any.regexp",
+        "string.regexp.quoted.single.python support.other.match.begin.regexp",
+        "string.regexp.quoted.single.python support.other.match.end.regexp",
+        "string.regexp.quoted.single.python support.other.parenthesis.regexp",
+        "string.regexp.quoted.multi.python comment.regexp",
+        "string.regexp.quoted.multi.python constant.character.escape.regexp",
+        "string.regexp.quoted.multi.python constant.character.set.regexp",
+        "string.regexp.quoted.multi.python constant.character.unicode.regexp",
+        "string.regexp.quoted.multi.python constant.other.set.regexp",
+        "string.regexp.quoted.multi.python entity.name.tag.backreference.regexp",
+        "string.regexp.quoted.multi.python entity.name.tag.named.backreference.regexp",
+        "string.regexp.quoted.multi.python entity.name.tag.named.group.regexp",
+        "string.regexp.quoted.multi.python keyword.operator.conditional.negative.regexp",
+        "string.regexp.quoted.multi.python keyword.operator.conditional.regexp",
+        "string.regexp.quoted.multi.python keyword.operator.disjunction.regexp",
+        "string.regexp.quoted.multi.python keyword.operator.lookahead.negative.regexp",
+        "string.regexp.quoted.multi.python keyword.operator.lookahead.regexp",
+        "string.regexp.quoted.multi.python keyword.operator.lookbehind.negative.regexp",
+        "string.regexp.quoted.multi.python keyword.operator.lookbehind.regexp",
+        "string.regexp.quoted.multi.python keyword.operator.negation.regexp",
+        "string.regexp.quoted.multi.python keyword.operator.quantifier.regexp",
+        "string.regexp.quoted.multi.python punctuation.character.set.begin.regexp",
+        "string.regexp.quoted.multi.python punctuation.character.set.end.regexp",
+        "string.regexp.quoted.multi.python punctuation.comment.begin.regexp",
+        "string.regexp.quoted.multi.python punctuation.comment.end.regexp",
+        "string.regexp.quoted.multi.python punctuation.parenthesis.backreference.named.begin.regexp",
+        "string.regexp.quoted.multi.python punctuation.parenthesis.backreference.named.end.regexp",
+        "string.regexp.quoted.multi.python punctuation.parenthesis.begin.regexp",
+        "string.regexp.quoted.multi.python punctuation.parenthesis.conditional.begin.regexp",
+        "string.regexp.quoted.multi.python punctuation.parenthesis.conditional.end.regexp",
+        "string.regexp.quoted.multi.python punctuation.parenthesis.end.regexp",
+        "string.regexp.quoted.multi.python punctuation.parenthesis.lookahead.begin.regexp",
+        "string.regexp.quoted.multi.python punctuation.parenthesis.lookahead.end.regexp",
+        "string.regexp.quoted.multi.python punctuation.parenthesis.lookbehind.begin.regexp",
+        "string.regexp.quoted.multi.python punctuation.parenthesis.lookbehind.end.regexp",
+        "string.regexp.quoted.multi.python punctuation.parenthesis.named.begin.regexp",
+        "string.regexp.quoted.multi.python punctuation.parenthesis.named.end.regexp",
+        "string.regexp.quoted.multi.python punctuation.parenthesis.non-capturing.begin.regexp",
+        "string.regexp.quoted.multi.python punctuation.parenthesis.non-capturing.end.regexp",
+        "string.regexp.quoted.multi.python storage.modifier.flag.regexp",
+        "string.regexp.quoted.multi.python support.other.escape.special.regexp",
+        "string.regexp.quoted.multi.python support.other.match.any.regexp",
+        "string.regexp.quoted.multi.python support.other.match.begin.regexp",
+        "string.regexp.quoted.multi.python support.other.match.end.regexp",
+        "string.regexp.quoted.multi.python support.other.parenthesis.regexp"
+      ],
+      "settings": {
+        "fontStyle": "",
+        "foreground": "#067d17"
+      }
+    },
+    {
       "name": "Python function",
       "scope": [
         "meta.function.python entity.name.function.python"

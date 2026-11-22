@@ -46,7 +46,8 @@ export class ColorThemeGenerator {
     const written: string[] = [];
     for (const info of COLOR_THEMES) {
       const path = join(this.paths.dist, info.file);
-      const content = JSON.stringify(this.createTheme(info, mix), undefined, 2);
+      // without indentation: a quarter less for VS Code to read (themes/*.base.json stay indented for the diffs)
+      const content = JSON.stringify(this.createTheme(info, mix));
       if (existsSync(path) && readFileSync(path, 'utf8') === content) continue;
       writeFileAtomic(path, content);
       written.push(info.label);
