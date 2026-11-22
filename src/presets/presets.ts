@@ -5,7 +5,7 @@
  * A preset writes only the settings it lists, to the user settings; `null` takes the user value away (the default).
  * The names and descriptions are `preset.<id>.name` / `preset.<id>.description` in the locales.
  */
-import { EXTENSION_KEY } from 'src/helpers/constants';
+import { EXTENSION_KEY, ICON_THEME_ID } from 'src/helpers/constants';
 import { compareCodeUnits } from 'src/helpers/utils';
 import { ISLANDS_PRODUCT_THEME_ID } from 'src/productIcons/islandsProductTheme';
 import { COLOR_THEMES } from 'src/themes/colorThemes';
@@ -31,7 +31,7 @@ const kit = (key: string) => `${EXTENSION_KEY}.${key}`;
 /** The three themes of the kit, with the given color theme */
 const jetbrains = (colorTheme: string) => ({
   'workbench.colorTheme': colorTheme,
-  'workbench.iconTheme': EXTENSION_KEY,
+  'workbench.iconTheme': ICON_THEME_ID,
   'workbench.productIconTheme': ISLANDS_PRODUCT_THEME_ID,
 });
 
@@ -112,7 +112,7 @@ const PRESETS: Preset[] = [
     group: 'icons',
     id: 'vscodeIconsFill',
     settings: {
-      'workbench.iconTheme': EXTENSION_KEY,
+      'workbench.iconTheme': ICON_THEME_ID,
       [kit('iconThemeLayers')]: ['vscode-icons'],
     },
   },

@@ -753,6 +753,13 @@
       {
         "_watch": true,
         "description": "Cool Theme Kit",
+        "id": "cool-theme-kit-icons",
+        "label": "Cool Icons",
+        "path": "./dist/a-file-icon-vscode-icon-theme.json"
+      },
+      {
+        "_watch": true,
+        "description": "%iconTheme.earlierId.description%",
         "id": "a-file-icon-vscode",
         "label": "Cool Icons",
         "path": "./dist/a-file-icon-vscode-icon-theme.json"

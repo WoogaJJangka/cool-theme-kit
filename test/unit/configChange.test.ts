@@ -2,7 +2,7 @@ import { strict as assert } from 'node:assert';
 import { cpSync, existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, symlinkSync, utimesSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { basename, dirname, join } from 'node:path';
-import { JSON_FILE_NAME, JSON_PRODUCT_FILE_NAME } from 'src/helpers/constants';
+import { EXTENSION_KEY, ICON_THEME_ID, JSON_FILE_NAME, JSON_PRODUCT_FILE_NAME } from 'src/helpers/constants';
 import { writeFileAtomic } from 'src/helpers/fsUtils';
 import { configChangeDetector } from 'src/services/ConfigChangeDetector';
 import { configService } from 'src/services/ConfigService';
@@ -694,6 +694,21 @@ describe('ConfigChangeDetector', () => {
       assert.equal(theme.folderNames?.src, own.folderNames?.src);
       assert.equal(theme.folderNames?.['fb-folder'], undefined);
       assert.equal(theme.folder, own.folder);
+    });
+
+    it('mixes in the original Atom Material Icons, whose theme has the earlier id of this theme, and not this theme', () => {
+      const own = ownTheme();
+      installTheme(EXTENSION_KEY, { ...fallbackTheme, file: 'fb-file', folder: 'fb-folder' });
+      applySettings({ iconThemeLayers: [{ files: 'override', folders: 'override', theme: EXTENSION_KEY }, ICON_THEME_ID] });
+      const theme = readTheme();
+
+      assert.ok(theme.fileExtensions?.py?.startsWith('layer-'), theme.fileExtensions?.py);
+      assert.ok(theme.fileNames?.['package.json']?.startsWith('layer-'));
+      assert.ok(theme.file?.startsWith('layer-'));
+      assert.ok(theme.folderNames?.src?.startsWith('layer-'));
+      // a name only this theme knows keeps its icon
+      assert.equal(theme.fileExtensions?.ts, own.fileExtensions?.ts);
+      assert.ok(theme.layerThemes?.includes(`test.${EXTENSION_KEY}@`), theme.layerThemes);
     });
 
     it('gives the folder icons of an override layer, its default ones too', () => {

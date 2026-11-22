@@ -80,7 +80,7 @@ const settings = (colorTheme) => ({
   'update.mode': 'none',
   'window.commandCenter': true,
   'workbench.colorTheme': colorTheme,
-  'workbench.iconTheme': 'a-file-icon-vscode',
+  'workbench.iconTheme': 'cool-theme-kit-icons',
   'workbench.layoutControl.enabled': false,
   'workbench.productIconTheme': 'cool-islands-product-icons',
   'workbench.secondarySideBar.defaultVisibility': 'hidden',

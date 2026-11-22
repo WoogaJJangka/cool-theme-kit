@@ -1,5 +1,20 @@
 export const ICON_THEME_KEY = 'workbench.iconTheme';
+/**
+ * Key of the settings, and the earlier id of the file icon theme. The original Atom Material Icons
+ * (AtomMaterial.a-file-icon-vscode) contributes a theme and settings with the same ids: with both installed, VS Code
+ * keeps the ones of the extension whose folder name comes first, theirs.
+ */
 export const EXTENSION_KEY = 'a-file-icon-vscode';
+/**
+ * Id of the file icon theme (`workbench.iconTheme`) the kit selects: no other extension contributes it. EXTENSION_KEY
+ * still selects the same theme while no other extension contributes that id.
+ */
+export const ICON_THEME_ID = 'cool-theme-kit-icons';
+/**
+ * The id of this extension from 1.0.0 to 1.3.0. It was removed from the Marketplace, and an installed copy contributes the
+ * same settings and theme ids as this one.
+ */
+export const OLD_EXTENSION_ID = 'woogajjangka.cool-icon-vscode';
 /** `publisher` of package.json: the extension id is `publisher.name`, so keep these three in sync (see packageIdentity.test.ts) */
 export const PUBLISHER_ID = 'woogajjangka';
 /** `name` of package.json. Not EXTENSION_KEY: the marketplace needs a name that is unique across publishers */

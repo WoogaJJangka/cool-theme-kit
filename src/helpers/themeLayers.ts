@@ -1,4 +1,4 @@
-import { EXTENSION_KEY } from 'src/helpers/constants';
+import { ICON_THEME_ID } from 'src/helpers/constants';
 import { compareCodeUnits, normalizeName, trimTrailingSlashes } from 'src/helpers/utils';
 
 import type { AtomConfig, IconThemeLayer, LayerMode } from 'src/@types/config';
@@ -30,7 +30,8 @@ export type LayerTheme = {
 export type NormalizedLayer = { files: LayerMode; folders: LayerMode; theme: string };
 
 /**
- * The valid layers of the setting, each theme once (the first one wins). This theme and empty ids are skipped.
+ * The valid layers of the setting, each theme once (the first one wins). This theme and empty ids are skipped (the
+ * earlier id of this theme is the theme of the original Atom Material Icons, which can be a layer).
  */
 export const normalizeLayers = (layers: unknown): NormalizedLayer[] => {
   if (!Array.isArray(layers)) return [];
@@ -40,7 +41,7 @@ export const normalizeLayers = (layers: unknown): NormalizedLayer[] => {
   for (const layer of layers as unknown[]) {
     const value = typeof layer === 'string' ? { theme: layer } : (layer as Partial<Exclude<IconThemeLayer, string>>);
     const theme = typeof value?.theme === 'string' ? value.theme.trim() : '';
-    if (!theme || theme === EXTENSION_KEY || seen.has(theme)) continue;
+    if (!theme || theme === ICON_THEME_ID || seen.has(theme)) continue;
 
     seen.add(theme);
     result.push({ files: mode(value.files), folders: mode(value.folders), theme });
@@ -76,7 +77,7 @@ export const normalizeByName = (byName: unknown): Array<{ target: NameTarget; th
   return Object.entries(byName as Record<string, unknown>).flatMap(([key, theme]) => {
     const target = parseNameKey(key);
     const id = typeof theme === 'string' ? theme.trim() : '';
-    return target && id && id !== EXTENSION_KEY ? [{ target, theme: id }] : [];
+    return target && id && id !== ICON_THEME_ID ? [{ target, theme: id }] : [];
   });
 };
 

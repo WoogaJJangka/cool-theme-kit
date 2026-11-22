@@ -1,7 +1,8 @@
 import i18next from 'i18next';
-import { EXTENSION_KEY, ICON_THEME_KEY } from 'src/helpers/constants';
+import { EXTENSION_KEY, ICON_THEME_ID, ICON_THEME_KEY } from 'src/helpers/constants';
 import { ICON_SETTING_KEYS } from 'src/@types/config';
 import { isDeepEqual } from 'src/helpers/utils';
+import { isOwnIconTheme } from 'src/helpers/vscodeUtils';
 import { getDefaultConfig } from 'src/icons/configUtils';
 import { DEFAULT_ACCENT, normalizeAccent, normalizeAccentTargets } from 'src/themes/accent';
 import { logger } from 'src/services/LoggingService';
@@ -271,17 +272,19 @@ export class ConfigService implements AtomConfig {
    * Activate the plugin icons by settings the icon workbench
    */
   public activateIcons(): void {
-    this.iconTheme = EXTENSION_KEY;
+    this.iconTheme = ICON_THEME_ID;
   }
 
   /**
-   * Get a value from the configuration
-   * @param {keyof AtomConfig} key
-   * @returns {any | undefined} the value to get
-   * @private
+   * The value the settings give to a key of the configuration, undefined when none does: the getters then use the
+   * defaults of this extension (configUtils), not the default VS Code registered. With the original Atom Material Icons
+   * installed, VS Code registers its schema of the same keys first and keeps its defaults (`activeIconPacks`).
    */
   public getConfigValue<T>(key: keyof AtomConfig): T | undefined {
-    return this.getPluginConfig().get<T>(key);
+    const config = this.getPluginConfig();
+    const inspected = config.inspect<T>(key);
+    if (!inspected) return config.get<T>(key);
+    return inspected.workspaceFolderValue ?? inspected.workspaceValue ?? inspected.globalValue;
   }
 
   /**
@@ -396,12 +399,13 @@ export class ConfigService implements AtomConfig {
   }
 
   /**
-   * Checks if the plugin is activated
+   * Checks if the file icon theme VS Code shows is this one (not the original Atom Material Icons, which has the
+   * earlier id of this theme)
    * @returns {boolean}
    * @private
    */
   private isActivated(): boolean {
-    return this.iconTheme === EXTENSION_KEY;
+    return isOwnIconTheme(this.iconTheme);
   }
 
   /**

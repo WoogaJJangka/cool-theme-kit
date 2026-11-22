@@ -471,6 +471,27 @@ The default is `["material-icon-theme"]`: install the
 [Material Icon Theme](https://marketplace.visualstudio.com/items?itemName=PKief.material-icon-theme) and its icons fill
 the gaps. An empty list uses this theme only.
 
+### With the original Atom Material Icons
+
+The original [Atom Material Icons](https://marketplace.visualstudio.com/items?itemName=AtomMaterial.a-file-icon-vscode)
+has the theme id `a-file-icon-vscode`, the earlier id of Cool Icons, which still selects it. With both extensions
+installed, VS Code shows the original for that id. Select Cool Icons by its own id, `cool-theme-kit-icons` (the **Cool Icons**
+entry of the file icon theme picker that is not marked "for earlier settings"). The original is then a layer like any
+other, by its id. To show its icons first and Cool Icons for the names it does not know:
+
+```json
+{
+  "workbench.iconTheme": "cool-theme-kit-icons",
+  "a-file-icon-vscode.iconThemeLayers": [
+    { "theme": "a-file-icon-vscode", "files": "override", "folders": "override" },
+    "material-icon-theme"
+  ]
+}
+```
+
+The two extensions also read the same `a-file-icon-vscode.*` settings. Cool Theme Kit uses its own defaults for the ones
+you leave unset (the original has other default icon packs).
+
 ### One name from another theme
 
 `iconThemeByName` gives a file name, an extension (`*.ext`) or a folder name (ending with `/`) the icon another installed
@@ -696,6 +717,7 @@ Some options of the JetBrains plugin cannot be built with the VS Code icon theme
 | A read-only install (system-wide install, read-only folder) | The same as the web: the default themes work. A notice says once (per version) that the settings are not applied, instead of an error at every change. |
 | An untrusted folder (Restricted Mode)   | Everything, except the `filesAssociations`, `foldersAssociations` and `languagesAssociations` of the folder's settings, which may point to SVG files: only those of your user settings apply until you trust the folder. |
 | Several VS Code profiles                | Everything, with the same theme settings in every profile. With other values, the profiles overwrite each other's theme: see [VS Code profiles](#vs-code-profiles). |
+| Next to the original Atom Material Icons | Everything, with Cool Icons selected by its own id `cool-theme-kit-icons`: the earlier id `a-file-icon-vscode` shows the original. The original can be mixed in as a layer: see [With the original Atom Material Icons](#with-the-original-atom-material-icons). |
 
 ### VS Code profiles
 

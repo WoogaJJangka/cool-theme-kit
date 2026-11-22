@@ -1,6 +1,6 @@
 import { readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
-import { EXTENSION_ID, EXTENSION_KEY, JSON_FILE_NAME, JSON_PRODUCT_FILE_NAME } from 'src/helpers/constants';
+import { EXTENSION_ID, EXTENSION_KEY, ICON_THEME_ID, JSON_FILE_NAME, JSON_PRODUCT_FILE_NAME, OLD_EXTENSION_ID } from 'src/helpers/constants';
 import { usedThemeIds } from 'src/helpers/themeLayers';
 import { isInsideFolder } from 'src/helpers/themePaths';
 import { env, Uri, extensions, workspace } from 'vscode';
@@ -15,6 +15,9 @@ type ContributedIconTheme = { id?: unknown; path?: unknown };
 type ContributedLanguage = { extensions?: unknown; filenames?: unknown; id?: unknown };
 
 const strings = (value: unknown): string[] => (Array.isArray(value) ? value.filter((item) => typeof item === 'string') : []);
+
+/** This extension and its old copy: their themes are not mixed with this theme */
+const isOwnExtension = (id: string) => [EXTENSION_ID, OLD_EXTENSION_ID].includes(id.toLowerCase());
 
 /**
  * Open a browser to the given url
@@ -74,15 +77,31 @@ export const getProductThemeFile = (): ProductConfiguration => {
   }
 };
 /**
+ * Whether the file icon theme VS Code shows for this `workbench.iconTheme` value is this theme: its id, or its earlier
+ * id while no other installed extension contributes a theme with that id (the original Atom Material Icons does, and VS
+ * Code then shows theirs).
+ */
+export const isOwnIconTheme = (id: string): boolean => {
+  if (id === ICON_THEME_ID) return true;
+  if (id !== EXTENSION_KEY) return false;
+
+  return !extensions.all.some((extension) => {
+    if (extension.id.toLowerCase() === EXTENSION_ID.toLowerCase()) return false;
+    const themes: ContributedIconTheme[] = extension.packageJSON?.contributes?.iconThemes ?? [];
+    return Array.isArray(themes) && themes.some((theme) => theme?.id === id);
+  });
+};
+
+/**
  * The installed file icon theme with the given id (`workbench.iconTheme` value), to mix with this theme.
- * Undefined when the id is empty, is this theme, or no installed extension contributes it (a theme file outside the
- * folder of its extension is not used).
+ * Undefined when the id is empty, is this theme, or no other installed extension contributes it (a theme file outside
+ * the folder of its extension is not used). The earlier id of this theme is the theme of the original Atom Material Icons.
  */
 export const findIconTheme = (id: string): LayerTheme | undefined => {
-  if (!id || id === EXTENSION_KEY) return undefined;
+  if (!id || id === ICON_THEME_ID) return undefined;
 
   for (const extension of extensions.all) {
-    if (extension.id.toLowerCase() === EXTENSION_ID.toLowerCase()) continue;
+    if (isOwnExtension(extension.id)) continue;
 
     const themes: ContributedIconTheme[] = extension.packageJSON?.contributes?.iconThemes ?? [];
     const theme = Array.isArray(themes) ? themes.find((item) => item?.id === id && typeof item.path === 'string') : undefined;
@@ -105,20 +124,20 @@ export const findIconTheme = (id: string): LayerTheme | undefined => {
 export type InstalledIconTheme = { extensionPath: string; id: string; label: string; path: string };
 
 /**
- * The file icon themes of the other installed extensions, which can be mixed with this theme.
- * A label still written as a `%key%` of the extension's translations shows the theme id instead. A theme file outside
- * the folder of its extension is left out.
+ * The file icon themes of the other installed extensions, which can be mixed with this theme (the original Atom Material
+ * Icons among them, with the earlier id of this theme). A label still written as a `%key%` of the extension's
+ * translations shows the theme id instead. A theme file outside the folder of its extension is left out.
  */
 export const listIconThemes = (): InstalledIconTheme[] => {
   const result: InstalledIconTheme[] = [];
   for (const extension of extensions.all) {
-    if (extension.id.toLowerCase() === EXTENSION_ID.toLowerCase()) continue;
+    if (isOwnExtension(extension.id)) continue;
 
     const themes: Array<ContributedIconTheme & { label?: unknown }> = extension.packageJSON?.contributes?.iconThemes ?? [];
     if (!Array.isArray(themes)) continue;
 
     for (const theme of themes) {
-      if (typeof theme?.id !== 'string' || typeof theme.path !== 'string' || theme.id === EXTENSION_KEY) continue;
+      if (typeof theme?.id !== 'string' || typeof theme.path !== 'string' || theme.id === ICON_THEME_ID) continue;
       if (result.some((item) => item.id === theme.id)) continue;
 
       const path = join(extension.extensionPath, theme.path);

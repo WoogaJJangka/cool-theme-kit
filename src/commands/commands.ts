@@ -1,5 +1,5 @@
 import i18next from 'i18next';
-import { EXTENSION_KEY } from 'src/helpers/constants';
+import { EXTENSION_KEY, ICON_THEME_ID } from 'src/helpers/constants';
 import { isValidHexColorCode } from 'src/helpers/utils';
 import { iconPackPicker } from 'src/pickers';
 import { accentColorPicker } from 'src/pickers/AccentColorPicker';
@@ -110,7 +110,7 @@ const removeJetBrainsFonts = async () => {
 /** The `workbench` setting and value of each theme of the kit, chosen one by one from the walkthrough */
 const KIT_THEMES = new Map<unknown, [setting: string, value: string]>([
   ['dark', ['colorTheme', COLOR_THEMES[0].label]],
-  ['icons', ['iconTheme', EXTENSION_KEY]],
+  ['icons', ['iconTheme', ICON_THEME_ID]],
   ['light', ['colorTheme', COLOR_THEMES[1].label]],
   ['product', ['productIconTheme', ISLANDS_PRODUCT_THEME_ID]],
 ]);

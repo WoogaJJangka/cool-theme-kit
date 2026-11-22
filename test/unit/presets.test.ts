@@ -1,7 +1,7 @@
 import { strict as assert } from 'node:assert';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { EXTENSION_KEY } from 'src/helpers/constants';
+import { EXTENSION_KEY, ICON_THEME_ID } from 'src/helpers/constants';
 import { initI18next } from 'src/i18n/i18next';
 import { PRESET_GROUPS, PRESET_SETTING_IDS, PRESETS } from 'src/presets/presets';
 import { ISLANDS_PRODUCT_THEME_ID } from 'src/productIcons/islandsProductTheme';
@@ -90,7 +90,7 @@ describe('theme combinations (presets)', () => {
         const { settings } = preset;
         const color = settings['workbench.colorTheme'];
         if (color !== undefined) assert.ok(COLOR_THEMES.some((info) => info.label === color), `${preset.id} ${String(color)}`);
-        if ('workbench.iconTheme' in settings) assert.equal(settings['workbench.iconTheme'], EXTENSION_KEY);
+        if ('workbench.iconTheme' in settings) assert.equal(settings['workbench.iconTheme'], ICON_THEME_ID);
         if ('workbench.productIconTheme' in settings) assert.equal(settings['workbench.productIconTheme'], ISLANDS_PRODUCT_THEME_ID);
         const accent = settings[`${EXTENSION_KEY}.accentColor`];
         if (accent !== undefined && accent !== null) assert.equal(normalizeAccent(accent), accent, preset.id);
@@ -160,7 +160,7 @@ describe('theme combinations (presets)', () => {
       quickPick.fireActive(itemOf('materialGreen'));
       await wait(300);
       assert.equal(testState.config['workbench.colorTheme'], 'Cool Islands Dark');
-      assert.equal(testState.config['workbench.iconTheme'], EXTENSION_KEY);
+      assert.equal(testState.config['workbench.iconTheme'], ICON_THEME_ID);
       // the layers and targets wait for the choice
       assert.equal(testState.config[`${EXTENSION_KEY}.accentTargets`], undefined);
 

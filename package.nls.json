@@ -91,6 +91,7 @@
   "configuration.title.fonts": "Fonts",
   "configuration.title.icons": "File Icons",
   "configuration.title.product": "Product Icons",
+  "iconTheme.earlierId.description": "Cool Theme Kit (for earlier settings)",
   "walkthrough.colors.description": "The colors of the JetBrains Islands Dark and Islands Light themes, for the workbench and the syntax.\n[Use Cool Islands Dark](command:a-file-icon-vscode.useTheme?%5B%22dark%22%5D)\n[Use Cool Islands Light](command:a-file-icon-vscode.useTheme?%5B%22light%22%5D)",
   "walkthrough.colors.title": "Color theme: Cool Islands",
   "walkthrough.description": "Choose the parts of the JetBrains look you want: each one is separate, and none is applied until you choose it.",

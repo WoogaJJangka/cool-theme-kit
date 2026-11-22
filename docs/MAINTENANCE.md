@@ -151,6 +151,18 @@ Cool Theme Kit 을 고칠 때 지키는 규칙과, 그 규칙을 지키는지 �
     테마 설정을 남기고, `services/ProfileConflictService` 가 다른 프로필의 파일을 다시 쓴 창에서 다른 설정을 출력 채널에 매번, 알림으로 한 번
     (프로필·설정 묶음마다) 알린다. 공유된 설정(`applyToAllProfiles`), 워크스페이스 값, 이 창에서 방금 바꾼 값은 충돌로 치지 않는다.
     테마를 바꾸는 설정을 새로 만들면 `THEME_SETTING_KEYS`(`@types/config.ts`)와 README "VS Code profiles" 목록에 넣는다(`profileConflict.test.ts` 가 지킴).
+11. **원본 Atom Material Icons(`AtomMaterial.a-file-icon-vscode`)와 같이 설치될 때**(2026-11-22 사용자 PC 에서 확인): 원본은 파일 아이콘
+    테마 id `a-file-icon-vscode`·제품 아이콘 테마 id `a-file-icon-vscode-product-icon-theme`·설정 `a-file-icon-vscode.*` 12개를 우리와 같은
+    이름으로 기여한다. VS Code 는 확장을 폴더 이름순(`atommaterial…` < `woogajjangka…`)으로 등록해서 같은 테마 id 는 원본 것을 고르고
+    (`findThemeBySettingsId` 는 첫 번째), 같은 설정은 원본 스키마(기본값)를 남긴다. 그래서:
+    - 우리 파일 아이콘 테마는 겹치지 않는 id `cool-theme-kit-icons`(`ICON_THEME_ID`)로 고른다. `useTheme`·프리셋·`activateIcons` 는 이 id 를
+      쓰고, 옛 id 는 예전 설정을 위해 두 번째 항목("for earlier settings")으로 남긴다. "우리 테마가 선택됐나"는 `isOwnIconTheme` 으로만 본다
+      (옛 id 는 다른 확장이 그 id 를 기여하지 않을 때만 우리 것).
+    - 섞기에서 `a-file-icon-vscode` 는 원본 테마다(우리 확장·옛 사본 `cool-icon-vscode` 는 층이 되지 않는다, 건너뛰는 id 는 `ICON_THEME_ID`).
+    - 설정 getter 는 사용자가 정한 값(`inspect` 의 폴더·워크스페이스·사용자 값)만 읽고, 없으면 `getDefaultConfig()` 를 쓴다. `get()` 은 원본이
+      등록한 기본값(`activeIconPacks` = angular·rails)을 돌려준다. 그래서 `package.json` 기본값과 `getDefaultConfig()` 는 같아야 한다
+      (`atomMaterialIcons.test.ts`).
+    - 제품 아이콘 테마 Cool Material Icons 는 아직 원본과 id 가 같다(원본이 설치돼 있으면 그 id 는 원본 것).
 
 ### 함께 확인하는 확장
 
@@ -163,6 +175,7 @@ Cool Theme Kit 을 고칠 때 지키는 규칙과, 그 규칙을 지키는지 �
 | `file-icons.file-icons` | 아이콘(글꼴) | 글꼴 복사, 글리프별 `fontId` |
 | `dracula-theme.theme-dracula` | 색 | UI override 가 Islands Dark 에 들어감 |
 | `miguelsolorio.fluent-icons` | 제품 아이콘 | 글꼴을 `dist/layers/product/` 로 복사 |
+| `AtomMaterial.a-file-icon-vscode` | 아이콘(SVG), 원본 | 우리 옛 id·설정과 같은 이름(규칙 11): 층으로 섞임, 우리 기본값 유지 |
 
 - 사용자가 문제를 신고한 확장, 새 형식(예: 다른 글꼴 형식)을 지원하게 된 확장은 이 목록에 넣고 단위 테스트 fixture 도 만든다.
 - 사람이 확인할 것(릴리스 전): 격리 프로필(CLAUDE.md "확인 방법", `--shared-data-dir` 포함)에 VSIX 와 문제 확장을 설치해서

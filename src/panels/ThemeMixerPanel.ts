@@ -1,10 +1,10 @@
 import { randomBytes } from 'node:crypto';
 import { join } from 'node:path';
 import i18next from 'i18next';
-import { EXTENSION_KEY, JSON_FILE_NAME } from 'src/helpers/constants';
+import { EXTENSION_KEY, ICON_THEME_ID, JSON_FILE_NAME } from 'src/helpers/constants';
 import { normalizeByName, normalizeLayers, parseNameKey, pinnedTheme, serializeLayers } from 'src/helpers/themeLayers';
 import { ThemePreview } from 'src/helpers/themePreview';
-import { getExtensionPath, getLanguageLookup, listIconThemes } from 'src/helpers/vscodeUtils';
+import { getExtensionPath, getLanguageLookup, isOwnIconTheme, listIconThemes } from 'src/helpers/vscodeUtils';
 import { colorMixerState } from 'src/panels/colorMixerState';
 import { productMixerState } from 'src/panels/productMixerState';
 import { ISLANDS_PRODUCT_THEME_ID } from 'src/productIcons/islandsProductTheme';
@@ -423,7 +423,7 @@ export class ThemeMixerPanel {
     const languages = getLanguageLookup();
     const light = [ColorThemeKind.Light, ColorThemeKind.HighContrastLight].includes(window.activeColorTheme.kind);
     const extensionPath = getExtensionPath();
-    const result = new ThemePreview({ extensionPath, id: EXTENSION_KEY, path: join(extensionPath, 'dist', JSON_FILE_NAME) }, languages);
+    const result = new ThemePreview({ extensionPath, id: ICON_THEME_ID, path: join(extensionPath, 'dist', JSON_FILE_NAME) }, languages);
     const previews = new Map(
       themes.filter((theme) => columnIds.includes(theme.id)).map((theme) => [theme.id, new ThemePreview(theme, languages)]),
     );
@@ -475,7 +475,7 @@ export class ThemeMixerPanel {
     for (const font of product.fonts) fonts.set(font.key, font);
 
     return {
-      active: configService.iconTheme === EXTENSION_KEY,
+      active: isOwnIconTheme(configService.iconTheme),
       byName,
       colorActive: COLOR_THEMES.some((info) => info.label === selectedColorTheme),
       colors,

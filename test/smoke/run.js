@@ -31,6 +31,8 @@ const COMPAT_EXTENSIONS = [
   'file-icons.file-icons',
   'dracula-theme.theme-dracula',
   'miguelsolorio.fluent-icons',
+  // the original of this fork: the same theme id as the earlier one of Cool Icons, and the same settings
+  'AtomMaterial.a-file-icon-vscode',
 ];
 
 /** What the extension reads at runtime is copied, the large read-only folders are linked */

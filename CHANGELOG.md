@@ -2,7 +2,18 @@
 
 All notable changes to this project will be documented in this file. Dates are displayed in UTC.
 
-#### Unreleased
+#### 1.4.0 (2026-11-22)
+
+Cool Icons next to the original Atom Material Icons (its own theme id, the original as a layer), more languages
+compared character by character with the JetBrains IDEs, and the colors of the TypeScript semantic tokens.
+
+- feat: Cool Icons has its own theme id, `cool-theme-kit-icons`, which the Get Started buttons, the theme combinations
+  and the welcome notice select. The earlier id `a-file-icon-vscode` still selects it ("for earlier settings" in the
+  picker), but the original Atom Material Icons has that id too, and VS Code shows the original when both are
+  installed. The original can now be mixed in as a layer by that id: `{ "theme": "a-file-icon-vscode", "files":
+  "override", "folders": "override" }` shows its icons first and Cool Icons for the names it does not know.
+- fix: next to the original Atom Material Icons, the settings you leave unset keep the defaults of Cool Theme Kit
+  (VS Code kept the defaults of the original, whose icon packs are only Angular and Rails).
 
 - fix: with the TypeScript server built into VS Code, `this.options` of a readonly property has the text color, a
   readonly parameter of a constructor (a parameter property) the field color, and a method declaration the member
