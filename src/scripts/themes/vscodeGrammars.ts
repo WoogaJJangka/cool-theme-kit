@@ -9,6 +9,7 @@ import { dirname, join } from 'node:path';
 import { createOnigScanner, createOnigString, loadWASM } from 'vscode-oniguruma';
 import { INITIAL, parseRawGrammar, Registry } from 'vscode-textmate';
 import { extensionRoot, THEMES_FOLDER } from 'src/themes/colorThemes';
+import { compareCodeUnits } from 'src/helpers/utils';
 import { DEFAULT_RULES, SUPER_TYPES } from 'src/themes/semanticTokens';
 
 import type { LineToken } from 'src/themes/colorCheck';
@@ -111,7 +112,7 @@ const loadSemanticContributions = async (version: string) => {
   const extensions = findExtensionsFolder(await downloadAndUnzipVSCode(version));
   const defaults: DefaultRule[] = [...DEFAULT_RULES];
   const superTypes: Record<string, string> = { ...SUPER_TYPES };
-  for (const name of readdirSync(extensions).sort()) {
+  for (const name of readdirSync(extensions).sort(compareCodeUnits)) {
     const manifest = join(extensions, name, 'package.json');
     if (!existsSync(manifest)) continue;
     const contributes = (JSON.parse(readFileSync(manifest, 'utf8')) as { contributes?: SemanticContributions }).contributes ?? {};
