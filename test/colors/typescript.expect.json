@@ -6,12 +6,20 @@
     { "line": 2, "text": "import", "key": "DEFAULT_KEYWORD" },
     { "line": 2, "text": "'node:path'", "key": "DEFAULT_STRING" },
     { "line": 4, "text": "interface", "key": "DEFAULT_KEYWORD" },
+    { "line": 4, "text": "Options", "key": "DEFAULT_INTERFACE_NAME" },
     { "line": 5, "text": "string", "key": "DEFAULT_KEYWORD" },
     { "line": 5, "text": "name", "key": "DEFAULT_INSTANCE_FIELD" },
     { "line": 9, "text": "/** Doc comment */", "key": "DEFAULT_DOC_COMMENT" },
     { "line": 10, "text": "class", "key": "DEFAULT_KEYWORD" },
     { "line": 10, "text": "Runner", "key": "DEFAULT_CLASS_NAME" },
     { "line": 10, "text": "T", "key": "IDE.TS.TYPE_PARAMETER" },
+    {
+      "line": 10,
+      "text": "Disposable",
+      "key": "TEXT",
+      "todo": "neither the IDE nor the TypeScript server resolves Disposable (not in the default lib): the IDE draws an unresolved name as text, VS Code keeps the class color of the grammar",
+      "semantic": "the TypeScript server gives an unresolved name no semantic token"
+    },
     { "line": 11, "text": "3", "key": "DEFAULT_NUMBER" },
     {
       "line": 11,
@@ -25,7 +33,9 @@
       "key": "DEFAULT_INSTANCE_FIELD",
       "todo": "a parameter property is a parameter to the grammar"
     },
+    { "line": 13, "text": "Options", "key": "DEFAULT_INTERFACE_NAME" },
     { "line": 15, "text": "run", "key": "JS.INSTANCE_MEMBER_FUNCTION" },
+    { "line": 15, "text": "Promise", "key": "DEFAULT_INTERFACE_NAME" },
     { "line": 15, "text": "input", "key": "TEXT" },
     { "line": 16, "text": "const", "key": "DEFAULT_KEYWORD" },
     { "line": 16, "text": "/", "key": "JS.REGEXP" },
