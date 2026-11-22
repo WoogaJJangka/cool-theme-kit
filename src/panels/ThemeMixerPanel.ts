@@ -27,6 +27,8 @@ import type { InstalledIconTheme } from 'src/helpers/vscodeUtils';
 import type { Disposable, ExtensionContext, Webview, WebviewPanel } from 'vscode';
 
 const VIEW_TYPE = `${EXTENSION_KEY}.themeMixer`;
+/** The name of this file icon theme in the pickers */
+const OWN_LABEL = 'Cool Icons';
 const SAMPLES_KEY = 'themeMixer.samples';
 const MAX_SAMPLES = 80;
 const MODES = new Set<unknown>(['fill', 'off', 'override']);
@@ -414,7 +416,8 @@ export class ThemeMixerPanel {
     const byName = Object.entries(byNameSetting)
       .filter((entry): entry is [string, string] => typeof entry[1] === 'string')
       .map(([key, theme]) => ({ key, theme }));
-    const usedByName = normalizeByName(byNameSetting).map((entry) => entry.theme);
+    // a name pinned to this theme has no column: the result column shows its icon
+    const usedByName = normalizeByName(byNameSetting).map((entry) => entry.theme).filter((id) => id !== ICON_THEME_ID);
 
     // the themes in use first, then the other installed ones
     const columnIds = [...new Set([...layers.map((layer) => layer.theme), ...usedByName, ...themes.map((theme) => theme.id)])];
@@ -487,6 +490,8 @@ export class ThemeMixerPanel {
         weight: font.weight,
       })),
       layers: layers.map((layer) => ({ ...layer, installed: installed(layer.theme), label: label(layer.theme) })),
+      // a name can be given back the icon of this theme (iconThemeByName), not this theme added as a layer
+      own: { id: ICON_THEME_ID, label: OWN_LABEL },
       product: { ...product, fonts: undefined },
       productActive: workspace.getConfiguration('workbench').get<string>('productIconTheme') === ISLANDS_PRODUCT_THEME_ID,
       rows,

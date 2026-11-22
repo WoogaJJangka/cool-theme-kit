@@ -52,6 +52,7 @@
   const sendByName = () => send({ byName: state.byName, type: 'byName' });
 
   const label = (/** @type {string} */ id) => {
+    if (state.own && id === state.own.id) return state.own.label;
     const theme = state.themes.find((/** @type {any} */ item) => item.id === id);
     return theme ? theme.label : id;
   };
@@ -96,8 +97,10 @@
    * @param {string} selected
    * @param {string[]} exclude
    */
-  const themeSelect = (selected, exclude = []) => {
+  const themeSelect = (selected, exclude = [], withOwn = false) => {
     const ids = state.themes.map((/** @type {any} */ theme) => theme.id).filter((/** @type {string} */ id) => !exclude.includes(id));
+    // this theme itself: only for a name (iconThemeByName), as its own icon before the layers
+    if (withOwn && state.own) ids.unshift(state.own.id);
     if (selected && !ids.includes(selected)) ids.unshift(selected);
     return /** @type {HTMLSelectElement} */ (
       h('select', {}, ids.map((/** @type {string} */ id) => h('option', { selected: id === selected, text: label(id), value: id })))
@@ -163,7 +166,7 @@
 
   const byNameSection = () => {
     const rows = state.byName.map((/** @type {any} */ entry, /** @type {number} */ index) => {
-      const select = themeSelect(entry.theme);
+      const select = themeSelect(entry.theme, [], true);
       select.addEventListener('change', () => { entry.theme = select.value; sendByName(); });
       return h('tr', {}, [
         h('td', {}, [h('code', { text: entry.key })]),
@@ -175,7 +178,7 @@
     });
 
     const input = /** @type {HTMLInputElement} */ (h('input', { placeholder: t('namePlaceholder'), type: 'text' }));
-    const select = state.themes.length > 0 ? themeSelect(state.themes[0].id) : undefined;
+    const select = themeSelect(state.themes[0]?.id ?? state.own?.id, [], true);
     const add = () => {
       const key = input.value.trim();
       if (!key || !select) return;

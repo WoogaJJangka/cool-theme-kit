@@ -516,6 +516,22 @@ theme shows for it, or that theme's default icon when it has none. It wins over 
 Like `*.ext` in `filesAssociations`, an extension does not replace the icon of the specific file names this theme knows
 with that extension.
 
+The id of Cool Icons itself, `cool-theme-kit-icons`, gives a name back the icon of this theme, as it is before the layers.
+With another theme as an `override` layer, it keeps the icons of Cool Icons you prefer for some names:
+
+```json
+{
+  "a-file-icon-vscode.iconThemeLayers": [{ "theme": "a-file-icon-vscode", "files": "override", "folders": "override" }],
+  "a-file-icon-vscode.iconThemeByName": {
+    "code_of_conduct.md": "cool-theme-kit-icons",
+    "*.py": "cool-theme-kit-icons"
+  }
+}
+```
+
+An `override` layer gives a name the icon that theme alone shows for it, found by its extension too: there,
+`code_of_conduct.md` gets the Markdown icon of the original Atom Material Icons instead of the specific one of Cool Icons.
+
 The icons of the other themes get the opacity, saturation and monochrome filters of this theme, and are updated when
 those themes or their settings change. Folders only come from other themes with the `specific` folder theme, and files
 not at all with `hideFileIcons`.

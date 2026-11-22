@@ -50,7 +50,7 @@
   "configuration.colorThemeLayers.syntax": "문법 색(토큰·semantic 색)을 섞는 방식입니다.",
   "configuration.colorThemeLayers.theme": "설치된 색 테마의 id(`workbench.colorTheme` 값)입니다.",
   "configuration.colorThemeLayers.ui": "워크벤치 색을 섞는 방식입니다.",
-  "configuration.iconThemeByName": "파일 이름, `*.ext`, `folder/` → 그 아이콘을 가져올 설치된 파일 아이콘 테마의 id. 다른 모든 것보다 우선합니다.",
+  "configuration.iconThemeByName": "파일 이름, `*.ext`, `folder/` → 그 아이콘을 가져올 설치된 파일 아이콘 테마의 id. 다른 모든 것보다 우선합니다. `cool-theme-kit-icons` 는 Cool Icons 자신의 아이콘(층을 섞기 전)으로 돌려놓습니다.",
   "configuration.iconThemeLayers": "이 테마와 섞을, 설치된 다른 파일 아이콘 테마입니다. 앞에 있는 것이 우선합니다. 항목은 테마 id(`workbench.iconTheme` 값, 예: `material-icon-theme`)이거나, 그 id와 파일·폴더를 섞는 방식을 적은 객체입니다. 비우면 이 테마만 씁니다.",
   "configuration.iconThemeLayers.files": "파일에서 이 테마와 섞는 방식.",
   "configuration.iconThemeLayers.folders": "폴더에서 이 테마와 섞는 방식.",

@@ -121,16 +121,17 @@ describe('next to the original Atom Material Icons', () => {
       assert.deepEqual(listIconThemes(), []);
     });
 
-    it('keeps the earlier id in the settings and skips the id of this theme', () => {
+    it('keeps the earlier id in the settings, and the id of this theme only for a name', () => {
       const layers = [{ files: 'override', folders: 'override', theme: EXTENSION_KEY }, ICON_THEME_ID, 'material-icon-theme'];
       assert.deepEqual(
         normalizeLayers(layers).map((layer) => layer.theme),
         [EXTENSION_KEY, 'material-icon-theme'],
       );
       const byName = { '*.md': ICON_THEME_ID, 'README.md': EXTENSION_KEY };
+      // a name pinned to this theme gets its own icon back; this theme is not another installed theme to read
       assert.deepEqual(
         normalizeByName(byName).map((entry) => entry.theme),
-        [EXTENSION_KEY],
+        [ICON_THEME_ID, EXTENSION_KEY],
       );
       assert.deepEqual(usedThemeIds({ iconThemeByName: byName, iconThemeLayers: layers as AtomConfig['iconThemeLayers'] }), [
         EXTENSION_KEY,

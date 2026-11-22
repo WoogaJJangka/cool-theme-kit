@@ -101,6 +101,8 @@
     모르는 이름만, 이름·확장자 접미사·언어·폴더 이름의 마지막 조각으로 판단) / `override`(그 테마가 아이콘을 주는 이름은
     전부 그 테마, 기본 파일·폴더 아이콘도) / `off`. `iconThemeByName`: `파일이름`·`*.ext`·`폴더/` → 테마 id.
   - 우선순위: byName > override 층(앞이 이김, 사용자 `*Associations` 이름은 건드리지 않음) > Atom > fill 층(앞이 이김).
+    byName 값이 우리 id `cool-theme-kit-icons` 면 층을 섞기 전 우리 아이콘으로 되돌린다(`ThemeLayerGenerator` 가 섞기 전 사본 `own` 을 읽음,
+    섞기 화면은 이 id 를 열 없이 이름별 선택지로만 보여 줌). override 층은 그 테마만 쓸 때 VS Code 가 보여 줄 아이콘(확장자로 찾은 것 포함)을 쓴다.
   - 이름 해석은 VS Code 와 같게(파일 이름 > 긴 확장자부터 > 언어). 밝은·고대비 변형은 같은 항목의 것만 쓰고 없으면
     우리 변형을 지운다. SVG 는 필터 적용 복사, Seti 같은 글꼴 테마는 글꼴을 `dist/layers` 에 복사하고 글리프마다
     `fontId`·`fontSize` 를 명시(VS Code 는 첫 글꼴을 모든 아이콘의 기본으로 씀). `dist/layers` 정리(`ThemeLayerGenerator.clean`)는 파일만 지운다:
