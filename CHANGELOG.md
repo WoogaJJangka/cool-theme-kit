@@ -2,8 +2,19 @@
 
 All notable changes to this project will be documented in this file. Dates are displayed in UTC.
 
-#### Unreleased
+#### 1.0.1 (2026-11-22)
 
+Python compared character by character with PyCharm, the icons of the pickers, VS Code profiles that overwrote each
+other's theme, and README images of today's extension.
+
+- fix: Python colors compared character by character with a PyCharm 2026.3 without plugins (`test/colors/ide`): the
+  prefix of a string (`f`, `r`, `u`) has the string color, the prefix and quotes of bytes the bytes color, the `0x`
+  of a hex number is the number, a builtin used as a decorator (`@classmethod`, `@property`) is a decorator, and a
+  raw string has the string color all through (PyCharm draws the regex of `re.compile` that way too). The color
+  themes are written without indentation, a quarter less for VS Code to read.
+- fix: the icon pack, arrow style and folder theme pickers show their own icons again. The font of these icons was
+  made again upstream (2024) without updating their code points, so the pickers showed other icons (Angelscript for
+  Angular, Pest for React); a test now checks each one against its name in the font.
 - fix: VS Code profiles with other Cool Theme Kit settings no longer overwrite each other's theme in silence. All the
   profiles share the theme files of the extension, so a window of one profile generated them again over the theme of
   the other one at every start (icons and colors switching, a reload notice each time). The window that does it now
@@ -15,6 +26,8 @@ All notable changes to this project will be documented in this file. Dates are d
   their ids (`a-file-icon-vscode`, `a-file-icon-vscode-product-icon-theme`), and the settings of the kit no longer
   start with "A-file-icon-vscode:" when you browse them in the Settings editor. The ids stay, so your settings keep
   working; a search in the Settings editor still shows the key of each setting.
+- docs: the README shows today's command palette and pickers instead of the 2023 images of Atom Material Icons
+  (`bun run screenshots` captures them too).
 
 #### 1.0.0 (2026-11-22)
 
