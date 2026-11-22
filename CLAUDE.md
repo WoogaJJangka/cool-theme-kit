@@ -150,13 +150,17 @@
   CSS·SQL(닫힌 플러그인)은 WebStorm 서식 복사 색의 공개 키(선택자·함수 = HTML 태그 이름, 속성 이름 = HTML 속성 이름, 값 키워드·단위 = 문자열, SQL 함수 = 정적 메서드).
   **IDE 와 비교는 서식 복사로**(`bun run compare:ide`, `test/colors/ide/<샘플>.<IDE>.<dark|light>.rtf`): IDE 에서 샘플을 열고 Edit > Select All → Edit > Copy
   (서식 있는 복사가 기본) → STA PowerShell 로 클립보드의 'Rich Text Format' 을 저장. 글자마다 정확한 색이 나온다(화면 픽셀은 ClearType 때문에 못 씀,
-  검사(inspection) 색은 안 들어감). 사용자 PyCharm 에는 **무지개 괄호 플러그인**이 있어 괄호·`<>`·CDATA 표시가 깊이별 색이다(예전 화면 판단 "CDATA = 태그 색,
+  검사 색은 대부분 안 들어가지만 안 쓰는 이름의 회색은 들어간다: 비교에서 그 줄은 무시). 사용자 PyCharm 에는 **무지개 괄호 플러그인**이 있어 괄호·`<>`·CDATA 표시가 깊이별 색이다(예전 화면 판단 "CDATA = 태그 색,
   네임스페이스 접두사 = 이름 색"은 이것 때문에 틀렸다) → 기준 캡처는 플러그인 없는 WebStorm·PhpStorm·RubyMine 에서. 이 IDE 들은 캡처 뒤 지웠다(2026-11-22): 다시 캡처하려면 설치부터(체험판).
   IDE 띄우기: computer-use `open_application`(클릭 권한만: 메뉴는 햄버거 → Edit 위에 마우스 → 항목 클릭, 선택이 없으면 Select All 위치가 한 칸 위,
   항목 위치는 매번 스크린샷으로 확인). 열 프로젝트는 IDE 설정 `options/recentProjects.xml`(마지막 열린 것)·`trusted-paths.xml` 을 백업 후 고쳐서
   `D:\dev\sandbox\jetbrains-colors` 를 열고, 끝나면 백업으로 되돌린다. 밝은 테마는 Settings > Appearance > Theme = Islands Light(편집기 scheme 이름은 "Light"),
   끝나면 `laf.xml` 을 지우고 `colors.scheme.xml` 을 되돌린다. 창 닫기는 File > Exit → Exit 확인(창 X 는 스냅 레이아웃에 걸림).
-  PyCharm 은 pycharm MCP `open_file_in_editor` 로 연다(열린 프로젝트 폴더에 샘플 복사).
+  PyCharm 은 pycharm MCP `open_file_in_editor` 로 연다(열린 프로젝트 폴더에 샘플 복사). 플러그인 없는 Python 캡처(2026-11-22)는 **격리 PyCharm**:
+  scratchpad 에 `idea.properties`(`idea.config/system/plugins/log.path`)를 두고 PowerShell 에서 `$env:PYCHARM_PROPERTIES=…; Start-Process pycharm64.exe <폴더> <파일>`
+  (창이 뜬다, 사용자 PyCharm 설정은 그대로). 인터프리터는 배너의 Add Local Interpreter → **Select existing** → Conda → `miniconda3` base
+  (기본값 Generate new = venv 는 누르지 않는다, 기본 Conda 환경은 Anaconda Desktop 내부용이라 바꾼다). builtin 색은 인터프리터가 있어야 나온다.
+  Python 의 `re.compile(r"…")` 정규식은 `import re` 가 있어야 주입되지만 Islands 는 그것도 문자열 색으로 그린다(배경만).
 - 색 테마 섞기(`src/themes/colorLayers.ts` 순수 엔진, `readColorTheme.ts` JSONC·`include`·`tokenColors` 경로 읽기,
   `services/ColorThemeService.ts` 설치된 테마 목록·섞기·다시 로드 알림): `colorThemeLayers`(테마 id 또는 `{theme, ui, syntax, applyTo}`,
   `fill`/`override`/`off`, 같은 종류의 Islands 에만 — `applyTo` 로 바꿈)·`colorThemeByKey`(색 id glob, `scope:`, `semantic:`).

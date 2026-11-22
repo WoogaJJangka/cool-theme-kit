@@ -1,0 +1,466 @@
+{\rtf1\ansi\deff0{\colortbl;\red188\green190\blue196;\red25\green26\blue28;\red207\green142\blue109;\red42\green172\blue184;\red122\green126\blue133;\red179\green174\blue96;\red95\green130\blue107;\red86\green168\blue245;\red148\green85\blue141;\red136\green136\blue198;\red111\green115\blue122;\red106\green171\blue115;\red170\green73\blue38;\red178\green0\blue178;\red41\green60\blue64;\red165\green194\blue97;}
+{\fonttbl{\f1\fmodern JetBrains Mono;}{\f2\fmodern Courier New;}}
+
+\s0\box\cbpat2\cb2\cf1\fs20
+\cf3
+\f1
+\i0\b0
+
+import \cf1
+
+os\line
+\cf3
+
+from \cf1
+
+typing \cf3
+
+import \cf1
+
+Any\line
+
+\line
+
+MAX_SIZE = \cf4
+
+10  \cf5
+
+# \f2
+
+\u54620?\u44544? \u51452?\u49437?\line
+
+\line
+
+\line
+\cf6
+\f1
+
+@dataclass\line
+\cf3
+
+class \cf1
+
+Greeter(Base):\line
+
+    \cf7
+\i\b0
+
+"""\f2
+
+\u51064?\u49324?\u54616?\u45716? \u53364?\u47000?\u49828?\f1
+
+."""\line
+
+\line
+
+    \cf3
+\i0\b0
+
+def \cf8
+
+greet\cf1
+
+(\cf9
+
+self\cf1
+
+, name: \cf10
+
+str\cf1
+
+, \cf11
+
+times=2\cf1
+
+) -> \cf10
+
+str\cf1
+
+:\line
+
+        text = \cf12
+
+f"Hello \cf3
+
+\{\cf1
+
+name\cf3
+
+\}\\n\cf12
+
+"\line
+
+        \cf10
+
+print\cf1
+
+(\cf10
+
+len\cf1
+
+(text), \cf13
+
+sep\cf1
+
+=\cf12
+
+""\cf1
+
+)\line
+
+        \cf3
+
+return \cf9
+
+self\cf1
+
+.prefix + text\line
+
+\line
+
+\line
+\cf3
+
+import \cf1
+
+asyncio\line
+\cf3
+
+import \cf1
+
+re\line
+
+\line
+
+\line
+\cf3
+
+class \cf1
+
+Counter(\cf10
+
+dict\cf1
+
+[\cf10
+
+str\cf1
+
+, \cf10
+
+int\cf1
+
+]):\line
+
+    \cf7
+\i\b0
+
+"""\f2
+
+\u49464?\u45716? \u53364?\u47000?\u49828?\f1
+
+."""\line
+
+\line
+
+    \cf1
+\i0\b0
+
+LIMIT: \cf10
+
+int \cf1
+
+= \cf4
+
+0x10\line
+
+    \cf1
+
+enabled = \cf3
+
+True\line
+
+\line
+
+    def \cf14
+
+__init__\cf1
+
+(\cf9
+
+self\cf1
+
+, *args, **kwargs) -> \cf3
+
+None\cf1
+
+:\line
+
+        \cf10
+
+super\cf1
+
+().\cf14
+
+__init__\cf1
+
+(*args, **kwargs)\line
+
+        \cf9
+
+self\cf1
+
+.total = \cf4
+
+0\line
+
+\line
+
+    \cf6
+
+@classmethod\line
+
+    \cf3
+
+def \cf8
+
+create\cf1
+
+(\cf9
+
+cls\cf1
+
+, items: \cf10
+
+list\cf1
+
+[\cf10
+
+str\cf1
+
+] | \cf3
+
+None \cf1
+
+= \cf3
+
+None\cf1
+
+) -> \cf12
+
+"\chcbpat15\cb15
+
+Counter\plain\fs20\f1
+\cf12
+\i0\b0
+\cb2
+
+"\cf1
+
+:\line
+
+        \cf3
+
+return \cf9
+
+cls\cf1
+
+(\{item: \cf4
+
+1 \cf3
+
+for \cf1
+
+item \cf3
+
+in \cf1
+
+items \cf3
+
+or \cf1
+
+[]\})\line
+
+\line
+
+    \cf6
+
+@property\line
+
+    \cf3
+
+def \cf8
+
+size\cf1
+
+(\cf9
+
+self\cf1
+
+):\line
+
+        \cf3
+
+return \cf10
+
+sum\cf1
+
+(value \cf3
+
+for \cf1
+
+value \cf3
+
+in \cf9
+
+self\cf1
+
+.values() \cf3
+
+if \cf1
+
+value > \cf4
+
+0\cf1
+
+)\line
+
+\line
+
+\line
+\cf3
+
+async def \cf8
+
+fetch\cf1
+
+(url: \cf10
+
+str\cf1
+
+, *, timeout: \cf10
+
+float \cf1
+
+= \cf4
+
+1.5e3\cf1
+
+) -> \cf10
+
+bytes\cf1
+
+:\line
+
+    pattern = re.compile(\cf12
+
+r"\chcbpat15\cb15
+
+^https?://(\\w+)$\plain\fs20\f1
+\cf12
+\i0\b0
+\cb2
+
+"\cf1
+
+)\line
+
+    \cf3
+
+if \cf1
+
+(found := pattern.match(url)) \cf3
+
+is None\cf1
+
+:\line
+
+        \cf3
+
+raise \cf10
+
+ValueError\cf1
+
+(\cf12
+
+f"\f2
+
+\u51096?\u47803?\u46108? \u51452?\u49548?\f1
+
+: \cf3
+
+\{\cf1
+
+url\cf3
+
+!r:>\cf4
+
+10\cf3
+
+\}\cf12
+
+"\cf1
+
+)\line
+
+    \cf3
+
+await \cf1
+
+asyncio.sleep(timeout)\line
+
+    data = \cf16
+
+b"\cf3
+
+\\x00\\xff\cf16
+
+" \cf1
+
++ \cf16
+
+rb"\\d"\line
+
+    \cf11
+
+callback \cf1
+
+= \cf3
+
+lambda \cf1
+
+value: \cf3
+
+not \cf1
+
+value \cf3
+
+and False\line
+
+    match \cf1
+
+found.group(\cf4
+
+1\cf1
+
+):\line
+
+        \cf3
+
+case \cf12
+
+"a" \cf1
+
+| \cf12
+
+"b"\cf1
+
+:\line
+
+            \cf3
+
+pass\line
+
+    return \cf1
+
+data\line
+\par}

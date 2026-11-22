@@ -13,6 +13,51 @@ const JS_MEMBER_FUNCTION = ['JS.INSTANCE_MEMBER_FUNCTION', 'DEFAULT_INSTANCE_MET
 const JS_GLOBAL_VARIABLE = ['JS.GLOBAL_VARIABLE', 'DEFAULT_GLOBAL_VARIABLE'];
 const JS_LANGUAGES = ['javascript', 'javascriptreact', 'typescript', 'typescriptreact'];
 const JS_TYPE_PARAMETER = ['IDE.TS.TYPE_PARAMETER', 'TYPE_PARAMETER_NAME_ATTRIBUTES'];
+/** The scopes of the Python grammar (MagicRegExp) inside a raw string, which it reads as a regular expression */
+const PY_REGEXP_PARTS = [
+  'comment.regexp',
+  'constant.character.escape.regexp',
+  'constant.character.set.regexp',
+  'constant.character.unicode.regexp',
+  'constant.other.set.regexp',
+  'entity.name.tag.backreference.regexp',
+  'entity.name.tag.named.backreference.regexp',
+  'entity.name.tag.named.group.regexp',
+  'keyword.operator.conditional.negative.regexp',
+  'keyword.operator.conditional.regexp',
+  'keyword.operator.disjunction.regexp',
+  'keyword.operator.lookahead.negative.regexp',
+  'keyword.operator.lookahead.regexp',
+  'keyword.operator.lookbehind.negative.regexp',
+  'keyword.operator.lookbehind.regexp',
+  'keyword.operator.negation.regexp',
+  'keyword.operator.quantifier.regexp',
+  'punctuation.character.set.begin.regexp',
+  'punctuation.character.set.end.regexp',
+  'punctuation.comment.begin.regexp',
+  'punctuation.comment.end.regexp',
+  'punctuation.parenthesis.backreference.named.begin.regexp',
+  'punctuation.parenthesis.backreference.named.end.regexp',
+  'punctuation.parenthesis.begin.regexp',
+  'punctuation.parenthesis.conditional.begin.regexp',
+  'punctuation.parenthesis.conditional.end.regexp',
+  'punctuation.parenthesis.end.regexp',
+  'punctuation.parenthesis.lookahead.begin.regexp',
+  'punctuation.parenthesis.lookahead.end.regexp',
+  'punctuation.parenthesis.lookbehind.begin.regexp',
+  'punctuation.parenthesis.lookbehind.end.regexp',
+  'punctuation.parenthesis.named.begin.regexp',
+  'punctuation.parenthesis.named.end.regexp',
+  'punctuation.parenthesis.non-capturing.begin.regexp',
+  'punctuation.parenthesis.non-capturing.end.regexp',
+  'storage.modifier.flag.regexp',
+  'support.other.escape.special.regexp',
+  'support.other.match.any.regexp',
+  'support.other.match.begin.regexp',
+  'support.other.match.end.regexp',
+  'support.other.parenthesis.regexp',
+];
+
 /** The regexp scopes of the TypeScript and JavaScript grammars inside a regex literal */
 const JS_REGEXP_PARTS = [
   'constant.character.control.regexp',
@@ -98,6 +143,29 @@ export const TOKEN_RULES: TokenRule[] = [
   { from: ['PY.DECORATOR', 'DEFAULT_METADATA'], name: 'Python decorator', scope: ['meta.function.decorator.python', 'entity.name.function.decorator.python', 'punctuation.definition.decorator.python'] },
   { from: ['PY.DOC_COMMENT', 'DEFAULT_DOC_COMMENT'], name: 'Python docstring', scope: ['string.quoted.docstring.multi.python', 'string.quoted.docstring.single.python', 'string.quoted.docstring punctuation.definition.string.begin.python', 'string.quoted.docstring punctuation.definition.string.end.python'] },
   { from: ['PY.STRING.B', 'DEFAULT_STRING'], name: 'Python bytes', scope: ['string.quoted.binary.single.python', 'string.quoted.binary.multi.python'] },
+  // Captured in PyCharm 2026.3 (2026-11-22): the prefix of a string (f, r, u) is part of the string, the prefix and quotes
+  // of bytes have the bytes color, the 0x of a number and the j of an imaginary number are the number, and a builtin
+  // used as a decorator (@classmethod, @property) is a decorator. The full scope names: a rule with a parent scope wins
+  // over another only when their last scopes are as long.
+  { from: ['PY.STRING.U', 'DEFAULT_STRING'], name: 'Python string prefix', scope: ['storage.type.string.python'] },
+  {
+    from: ['PY.STRING.B', 'DEFAULT_STRING'],
+    name: 'Python bytes prefix and quotes',
+    scope: ['single', 'multi'].flatMap((kind) =>
+      ['storage.type.string.python', 'punctuation.definition.string.begin.python', 'punctuation.definition.string.end.python'].map(
+        (part) => `string.quoted.binary.${kind}.python ${part}`
+      )
+    ),
+  },
+  { from: ['PY.NUMBER', 'DEFAULT_NUMBER'], name: 'Python number prefix', scope: ['storage.type.number.python', 'storage.type.imaginary.number.python'] },
+  { from: ['PY.DECORATOR', 'DEFAULT_METADATA'], name: 'Python builtin decorator', scope: ['meta.function.decorator.python support.type.python', 'meta.function.decorator.python support.function.builtin.python'] },
+  // The grammar reads every raw string as a regular expression. PyCharm draws a raw string in the string color, the regex
+  // of re.compile too (its injected regex only gets a background; captured 2026-11-22, as WebStorm does for JS regexes)
+  {
+    from: ['PY.STRING.U', 'DEFAULT_STRING'],
+    name: 'Python raw string',
+    scope: ['single', 'multi'].flatMap((kind) => PY_REGEXP_PARTS.map((part) => `string.regexp.quoted.${kind}.python ${part}`)),
+  },
   { from: ['PY.FUNC_DEFINITION', 'DEFAULT_FUNCTION_DECLARATION'], name: 'Python function', scope: ['meta.function.python entity.name.function.python'] },
   { from: ['PY.CLASS_DEFINITION', 'DEFAULT_CLASS_NAME', 'TEXT'], name: 'Python class', scope: ['entity.name.type.class.python'] },
 
@@ -260,8 +328,9 @@ export const TOKEN_RULES: TokenRule[] = [
   { from: ['XML_ATTRIBUTE_NAME', 'DEFAULT_ATTRIBUTE'], name: 'XML prologue name', scope: ['meta.tag.preprocessor.xml entity.name.tag.xml'] },
   { from: ['HTML_CUSTOM_TAG_NAME', 'HTML_TAG_NAME', 'DEFAULT_KEYWORD'], name: 'HTML custom element', scope: ['meta.tag.custom entity.name.tag'] },
 
-  // Regular expressions (keys and fallbacks of RegExpHighlighter.java), for the regex scopes of the TypeScript,
-  // JavaScript and Python grammars. Plain characters are strings; brackets and parentheses have the brace color.
+  // Regular expressions (keys and fallbacks of RegExpHighlighter.java), for the regex scopes of the grammars that the
+  // rules of a language do not take over (JS regex literals and Python raw strings have one color, above and below).
+  // Plain characters are strings; brackets and parentheses have the brace color.
   { from: ['REGEXP.CHARACTER', 'DEFAULT_STRING'], name: 'Regex', scope: ['string.regexp', 'constant.other.character-class.set.regexp', 'constant.other.character-class.range.regexp', 'constant.other.set.regexp', 'constant.character.set.regexp'] },
   { from: ['REGEXP.CHAR_CLASS', 'DEFAULT_ENTITY'], name: 'Regex class', scope: ['constant.other.character-class.regexp', 'support.other.escape.special.regexp'] },
   { from: ['REGEXP.DOT', 'DEFAULT_DOT', 'TEXT'], name: 'Regex dot', scope: ['support.other.match.any.regexp'] },
