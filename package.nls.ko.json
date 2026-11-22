@@ -91,6 +91,7 @@
   "configuration.title.fonts": "글꼴",
   "configuration.title.icons": "파일 아이콘",
   "configuration.title.product": "제품 아이콘",
+  "iconTheme.earlierId.description": "Cool Theme Kit (예전 설정용)",
   "walkthrough.colors.description": "JetBrains Islands Dark·Islands Light 테마의 색입니다. 작업 화면과 코드 색 모두 들어 있습니다.\n[Cool Islands Dark 쓰기](command:a-file-icon-vscode.useTheme?%5B%22dark%22%5D)\n[Cool Islands Light 쓰기](command:a-file-icon-vscode.useTheme?%5B%22light%22%5D)",
   "walkthrough.colors.title": "색 테마: Cool Islands",
   "walkthrough.description": "JetBrains 모양에서 원하는 것만 고르세요. 하나씩 따로 적용되고, 고르기 전에는 아무것도 바뀌지 않습니다.",

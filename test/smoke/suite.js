@@ -12,6 +12,8 @@ const vscode = require('vscode');
 
 const EXTENSION_ID = 'woogajjangka.cool-theme-kit';
 const KEY = 'a-file-icon-vscode';
+/** `workbench.iconTheme` of this theme (KEY is its earlier id, which the original Atom Material Icons has too) */
+const ICON_THEME = 'cool-theme-kit-icons';
 
 /**
  * Memory budget: what the extension host keeps more after the cycles than before them (after a garbage collection).
@@ -111,7 +113,7 @@ exports.run = async () => {
     await vscode.commands.executeCommand(`${KEY}.useTheme`, 'icons');
     await vscode.commands.executeCommand(`${KEY}.useTheme`, 'product');
     await vscode.commands.executeCommand(`${KEY}.useTheme`, 'unknown');
-    assert.equal(workbench().get('iconTheme'), KEY);
+    assert.equal(workbench().get('iconTheme'), ICON_THEME);
     assert.equal(workbench().get('productIconTheme'), 'cool-islands-product-icons');
 
     await vscode.commands.executeCommand(`${KEY}.useJetBrainsFonts`);
@@ -202,7 +204,7 @@ exports.run = async () => {
     await vscode.commands.executeCommand('workbench.action.acceptSelectedQuickOpenItem');
     await choosing;
     assert.equal(workbench().inspect('productIconTheme')?.globalValue, 'cool-islands-product-icons');
-    assert.equal(workbench().inspect('iconTheme')?.globalValue, KEY);
+    assert.equal(workbench().inspect('iconTheme')?.globalValue, ICON_THEME);
     await vscode.commands.executeCommand(`${KEY}.undoPreset`);
     await waitFor('the settings before the combination', () => ids.every((id, index) => workbench().inspect(id)?.globalValue === before[index]));
   });

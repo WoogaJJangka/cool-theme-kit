@@ -1,15 +1,13 @@
 import i18next from 'i18next';
+import { OLD_EXTENSION_ID } from 'src/helpers/constants';
 import { isCancellation } from 'src/helpers/utils';
 import { logger } from 'src/services/LoggingService';
 import { commands, extensions, window } from 'vscode';
 
 import type { MessageItem } from 'vscode';
 
-/**
- * The id of this extension from 1.0.0 to 1.3.0. It was removed from the Marketplace, and an installed copy contributes the
- * same settings and theme ids as this one: VS Code then keeps only one of each, and the old copy writes its own themes.
- */
-const OLD_EXTENSION_ID = 'woogajjangka.cool-icon-vscode';
+// An installed old copy contributes the same settings and theme ids as this extension: VS Code then keeps only one of
+// each, and the old copy writes its own themes.
 
 /** When the old extension is still installed, offer to uninstall it (not awaited by the activation: it waits for the user) */
 const offerToUninstallOldExtension = async (): Promise<void> => {
@@ -25,4 +23,4 @@ const offerToUninstallOldExtension = async (): Promise<void> => {
   });
 };
 
-export { OLD_EXTENSION_ID, offerToUninstallOldExtension };
+export { offerToUninstallOldExtension };

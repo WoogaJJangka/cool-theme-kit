@@ -1,7 +1,7 @@
 import { strict as assert } from 'node:assert';
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { EXTENSION_ID, EXTENSION_KEY, JSON_FILE_NAME, JSON_PRODUCT_FILE_NAME, PACKAGE_NAME, PUBLISHER_ID } from 'src/helpers/constants';
+import { EXTENSION_ID, EXTENSION_KEY, ICON_THEME_ID, JSON_FILE_NAME, JSON_PRODUCT_FILE_NAME, PACKAGE_NAME, PUBLISHER_ID } from 'src/helpers/constants';
 
 const root = join(__dirname, '..', '..');
 const read = (file: string) => readFileSync(join(root, file), 'utf8');
@@ -55,9 +55,13 @@ describe('package identity', () => {
 
   // The ids are what users have in workbench.iconTheme / workbench.productIconTheme: renaming a label must not change them
   it('keeps the theme ids and names the themes in the pickers', () => {
+    // the earlier id still selects the theme, but the original Atom Material Icons has it too (and VS Code then shows theirs)
     assert.deepEqual(
       packageJson.contributes.iconThemes.map(({ id, label, path }) => ({ id, label, path })),
-      [{ id: EXTENSION_KEY, label: 'Cool Icons', path: `./dist/${JSON_FILE_NAME}` }],
+      [
+        { id: ICON_THEME_ID, label: 'Cool Icons', path: `./dist/${JSON_FILE_NAME}` },
+        { id: EXTENSION_KEY, label: 'Cool Icons', path: `./dist/${JSON_FILE_NAME}` },
+      ],
     );
     assert.deepEqual(
       packageJson.contributes.productIconThemes.map(({ id, label, path }) => ({ id, label, path })),
@@ -67,8 +71,15 @@ describe('package identity', () => {
       ],
     );
     // the pickers show the description next to the label, and the id when there is none ("Cool Icons a-file-icon-vscode")
-    for (const theme of [...packageJson.contributes.iconThemes, ...packageJson.contributes.productIconThemes]) {
+    // the earlier id says what it is for, in every language
+    const [current, earlier] = packageJson.contributes.iconThemes;
+    for (const theme of [current, ...packageJson.contributes.productIconThemes]) {
       assert.equal(theme.description, DISPLAY_NAME, theme.id);
+    }
+    assert.equal(earlier.description, '%iconTheme.earlierId.description%');
+    for (const file of nlsFiles) {
+      const description = (JSON.parse(read(file)) as Record<string, string>)['iconTheme.earlierId.description'];
+      if (description !== undefined) assert.ok(description.startsWith(`${DISPLAY_NAME} (`), `${file}: ${description}`);
     }
   });
 

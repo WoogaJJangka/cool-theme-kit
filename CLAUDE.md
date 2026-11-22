@@ -6,6 +6,9 @@
 - 이름 규칙: 확장·명령 분류·설정 제목·알림 = "Cool Theme Kit"(단 `package.json` `displayName` 은 임시로 "Cool Theme Kit (JetBrains Look)":
   Marketplace 가 지운 옛 확장의 표시 이름 "Cool Theme Kit" 을 계속 잡고 있어 2026-11-21 0.1.0 게시가 네 번 거부됨. 풀리면 되돌린다), 파일 아이콘 테마 = "Cool Icons", 색 = "Cool Islands Dark/Light",
   제품 아이콘 = "Cool Islands Icons"(id `cool-islands-product-icons`)·"Cool Material Icons". 테마 id·설정 id 는 바꾸지 않는다(사용자 설정이 가리킴).
+  단 파일 아이콘 테마는 2026-11-22 부터 겹치지 않는 id `cool-theme-kit-icons`(`ICON_THEME_ID`, 우리가 고를 때 쓰는 것)를 더 갖는다: 옛 id
+  `a-file-icon-vscode` 는 원본 Atom Material Icons 도 기여해서 둘 다 설치되면 VS Code 가 원본을 고른다. 섞기에서 `a-file-icon-vscode` = 원본
+  (`docs/MAINTENANCE.md` 2장 규칙 11, `test/unit/atomMaterialIcons.test.ts`).
   그래서 옛 id 가 화면에 나오지 않게 한다: 테마 선택 목록은 `description`("Cool Theme Kit")이 없으면 id 를 보여 주고, 설정 화면은
   설정 묶음 `id`(`a-file-icon-vscode.<종류>`)가 없으면 이름 앞에 "A-file-icon-vscode:" 를 붙인다(검색 결과·`@ext:` 에서는 VS Code 가 늘 붙임).
   `test/unit/packageIdentity.test.ts` 가 지킨다. 한국어 조사는 읽는 소리 기준: "Cool Theme Kit이/과", "Cool Icons가/와".
@@ -251,7 +254,7 @@
 - `package.json` 의 `"_watch": true` 는 개발 모드(`--extensionDevelopmentPath`)에서만 테마 파일을 다시 읽는다.
   사용자 환경을 확인하려면 VSIX 를 격리 프로필에 설치해 본다(사용자 VS Code 를 건드리지 않음):
   `code --user-data-dir <tmp>/u --extensions-dir <tmp>/x --shared-data-dir <tmp>/s --install-extension <vsix>` →
-  `<tmp>/u/User/settings.json` 에 `"workbench.iconTheme": "a-file-icon-vscode"` →
+  `<tmp>/u/User/settings.json` 에 `"workbench.iconTheme": "cool-theme-kit-icons"` →
   `code --user-data-dir … --extensions-dir … --shared-data-dir … <샘플 폴더>`(`Code.exe` 를 바로 띄울 때도 같은 세 옵션).
   설정은 그 settings.json 을 고쳐서 바꾼다(창은 다시 열 필요 없음).
 - **`--shared-data-dir` 는 빼먹지 않는다**(포크 #40): VS Code 1.147 은 GitHub 로그인 같은 일부 상태를 `--user-data-dir` 밖의

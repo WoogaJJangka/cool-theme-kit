@@ -14,6 +14,14 @@ export const testState: {
    */
   config: Record<string, unknown>;
   /**
+   * The defaults VS Code registered for the settings of a kept apart section (keys with their section), as another
+   * extension registering the same keys first leaves them: `get` gives one when the settings set no value, `inspect`
+   * reports it as the default
+   */
+  registeredDefaults: Record<string, unknown>;
+  /** the command ids another extension registered first: registering one of them throws, as in VS Code */
+  foreignCommands: string[];
+  /**
    * The settings of the Default profile when the window is in another profile (unset: the window is in the Default
    * profile). The settings listed in its `workbench.settings.applyToAllProfiles` (that one included) are read from and
    * written to it, as VS Code does; only for the sections in `sections`, whose keys carry their section.
@@ -46,6 +54,8 @@ export const testState: {
   quickPicks: [],
   clipboard: '',
   config: {},
+  registeredDefaults: {},
+  foreignCommands: [],
   executed: [],
   extensionPath: '',
   extensions: [],
@@ -179,11 +189,18 @@ export class TestQuickPick {
 
 export const workspace = {
   getConfiguration: (section?: string) => ({
-    get: <T>(key: string): T | undefined => (section ? storeOf(settingKey(section, key))[settingKey(section, key)] : undefined) as T | undefined,
+    get: <T>(key: string): T | undefined => {
+      if (!section) return undefined;
+      const full = settingKey(section, key);
+      return (storeOf(full)[full] ?? (isKeptApart(section) ? testState.registeredDefaults[full] : undefined)) as T | undefined;
+    },
     inspect: <T>(key: string) => {
       if (!isKeptApart(section)) return undefined;
-      const value = storeOf(settingKey(section, key))[settingKey(section, key)] as T | undefined;
-      return value === undefined ? undefined : { globalValue: value, key: settingKey(section, key) };
+      const full = settingKey(section, key);
+      const value = storeOf(full)[full] as T | undefined;
+      const defaultValue = testState.registeredDefaults[full] as T | undefined;
+      if (value === undefined && defaultValue === undefined) return undefined;
+      return { defaultValue, globalValue: value, key: full };
     },
     update: async (key: string, value: unknown, target?: number) => {
       storeOf(settingKey(section, key))[settingKey(section, key)] = value;
@@ -239,6 +256,7 @@ export const commands = {
     testState.executed.push(parameters);
   },
   registerCommand: (id: string, callback: (...parameters: unknown[]) => unknown) => {
+    if (testState.foreignCommands.includes(id)) throw new Error(`command '${id}' already exists`);
     registeredCommands.set(id, callback);
     return disposable;
   },

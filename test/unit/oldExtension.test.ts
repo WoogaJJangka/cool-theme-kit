@@ -1,7 +1,7 @@
 import * as assert from 'node:assert/strict';
-import { EXTENSION_ID } from 'src/helpers/constants';
+import { EXTENSION_ID, OLD_EXTENSION_ID } from 'src/helpers/constants';
 import { initI18next } from 'src/i18n/i18next';
-import { OLD_EXTENSION_ID, offerToUninstallOldExtension } from 'src/services/OldExtensionService';
+import { offerToUninstallOldExtension } from 'src/services/OldExtensionService';
 
 import { testState } from '../mocks/vscode';
 

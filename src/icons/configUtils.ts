@@ -46,7 +46,8 @@ activeIconPacks: [
     saturation: DEFAULT_SATURATION,
     showFontMessage: true,
     showReloadMessage: true,
-    showUpdateMessage: true,
+    // off, as in package.json: the update notice only shows for those who turn it on
+    showUpdateMessage: false,
     showWelcomeMessage: true,
   };
 };

@@ -186,7 +186,7 @@ describe('commands of the walkthrough', () => {
     await run('useTheme', 'light');
     assert.equal(testState.config['workbench.colorTheme'], 'Cool Islands Light');
     await run('useTheme', 'icons');
-    assert.equal(testState.config['workbench.iconTheme'], 'a-file-icon-vscode');
+    assert.equal(testState.config['workbench.iconTheme'], 'cool-theme-kit-icons');
     await run('useTheme', 'product');
     assert.equal(testState.config['workbench.productIconTheme'], 'cool-islands-product-icons');
     assert.equal(testState.lastTarget, ConfigurationTarget.Global);
