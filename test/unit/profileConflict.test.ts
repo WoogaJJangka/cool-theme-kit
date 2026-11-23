@@ -133,7 +133,7 @@ describe('settings that differ between profiles', () => {
     const openWindow = (profile: keyof typeof profiles) => profileConflictService.init({ globalState: profiles[profile] });
 
     /** What `regenerateTheme` of extension.ts does for the icon themes */
-    const regenerate = () => profileConflictService.regenerated(configChangeDetector.listenForChanges());
+    const regenerate = async () => profileConflictService.regenerated(await configChangeDetector.listenForChanges());
 
     before(async () => {
       assert.ok(existsSync(join(repoRoot, 'dist', JSON_FILE_NAME)), 'run `bun run build` first');

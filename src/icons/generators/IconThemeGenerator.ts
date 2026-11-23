@@ -1,9 +1,10 @@
 
-import { existsSync, readdirSync, readFileSync, rmSync } from 'node:fs';
+import { existsSync, readdirSync, rmSync } from 'node:fs';
 import { basename, join } from 'node:path';
 import { getFilesPath, getFoldersOpenPath, getFoldersPath, JSON_FILE_NAME } from 'src/helpers/constants';
 import { findCustomIcon, findCustomOpenFolderIcon, getCustomIconName, isCustomIconPath } from 'src/helpers/customIcons';
-import { writeFileAtomic } from 'src/helpers/fsUtils';
+import { FileCopies } from 'src/helpers/fileCopies';
+import { writeFileAtomicAsync } from 'src/helpers/fsUtils';
 import { getFileConfigHash, withDefaults } from 'src/icons/configUtils';
 import { IconConfiguration } from 'src/models/IconConfiguration';
 
@@ -61,6 +62,10 @@ export class IconThemeGenerator {
 
   /** The icon files written in each dist folder by this generation */
   private readonly writtenIcons = new Map<string, Set<string>>();
+  /** The icon files to write: copied together once the theme json is made */
+  private readonly copies = new FileCopies();
+  /** The files of `dist/layers` the mixed themes use, the others are removed */
+  private layerFiles = new Set<string>();
 
   languageGenerator: LanguageJsonGenerator;
   fileGenerator: FileJsonGenerator;
@@ -91,18 +96,24 @@ export class IconThemeGenerator {
   }
 
   /**
-   * Create the atom config to be serialized to json
+   * Create the atom config to be serialized to json, and the icon files it points to. The files are read and written
+   * without blocking the extension host, before the json: the theme never points to an icon not written yet.
    */
-  createJsonTheme() {
+  async createJsonTheme(): Promise<void> {
     // Update this.iconConfig
     this.generateJsonConfig();
+    await this.copies.run();
 
     try {
       const json = this.iconConfig;
-      writeFileAtomic(join(this.iconPath(), JSON_FILE_NAME), JSON.stringify(json, undefined, 2));
+      await writeFileAtomicAsync(join(this.iconPath(), JSON_FILE_NAME), JSON.stringify(json, undefined, 2));
     } catch (error) {
       throw new Error('Failed to create icon file: ' + error, { cause: error });
     }
+
+    // the icons of other settings and of the themes no longer mixed, once the theme no longer points to them
+    for (const [folder, written] of this.writtenIcons) this.removeStaleIcons(folder, written);
+    ThemeLayerGenerator.clean(this.iconPath(), this.layerFiles);
   }
 
   /**
@@ -138,10 +149,7 @@ export class IconThemeGenerator {
     const distributionPath = this.iconPath();
     this.iconConfig.layerThemes = '';
 
-    if (!this.layers?.themes.length) {
-      ThemeLayerGenerator.clean(distributionPath);
-      return;
-    }
+    if (!this.layers?.themes.length) return;
 
     const generator = new ThemeLayerGenerator(
       this.atomConfig,
@@ -149,12 +157,14 @@ export class IconThemeGenerator {
       this.layers.themes,
       this.layers.languages,
       distributionPath,
+      this.copies,
       getFileConfigHash(this.atomConfig),
       (svg) => this.filterSvg(svg),
       (color) => filterFontColor(color, this.atomConfig),
     );
     // a theme that cannot be read (being rewritten) is left out, so the fingerprint differs and it is read again
     this.iconConfig.layerThemes = generator.apply();
+    this.layerFiles = generator.files;
   }
 
   /**
@@ -228,8 +238,6 @@ export class IconThemeGenerator {
 
     this.copyCustomIcons(distributionPath);
 
-    for (const [folder, written] of this.writtenIcons) this.removeStaleIcons(folder, written);
-
     return [...readdirSync(filesPath), ...extraFiles].map((file) => file.replace(/\.svg$/, ''));
   }
 
@@ -246,7 +254,7 @@ export class IconThemeGenerator {
       if (openIcons.has(iconFile)) continue;
 
       const hashedFile = hashedIconName(iconFile, fileConfigHash);
-      this.writeIcon(destination, hashedFile, this.applyFilters(join(foldersPath, iconFile)));
+      this.writeIcon(destination, hashedFile, join(foldersPath, iconFile));
     }
   }
 
@@ -267,15 +275,15 @@ export class IconThemeGenerator {
       const source = findCustomIcon(value);
       if (!source) continue;
       const target = `${getCustomIconName(value)}${fileConfigHash}.svg`;
-      this.writeIcon(getFilesPath(distributionPath), target, this.applyFilters(source));
+      this.writeIcon(getFilesPath(distributionPath), target, source);
     }
 
     for (const value of customValues(this.atomConfig.foldersAssociations)) {
       const source = findCustomIcon(value);
       if (!source) continue;
       const target = `${getCustomIconName(value)}${fileConfigHash}.svg`;
-      this.writeIcon(getFoldersPath(distributionPath), target, this.applyFilters(source));
-      this.writeIcon(getFoldersOpenPath(distributionPath), target, this.applyFilters(findCustomOpenFolderIcon(source)));
+      this.writeIcon(getFoldersPath(distributionPath), target, source);
+      this.writeIcon(getFoldersOpenPath(distributionPath), target, findCustomOpenFolderIcon(source));
     }
   }
 
@@ -292,22 +300,22 @@ export class IconThemeGenerator {
     for (const iconFile of iconFiles) {
       // apply color, opacity and saturation
       const hashedFile = hashedIconName(iconFile, fileConfigHash);
-      const filePath = join(source, iconFile);
-      const svg = this.applyFilters(filePath);
-
-      this.writeIcon(destination, hashedFile, svg);
+      this.writeIcon(destination, hashedFile, join(source, iconFile));
     }
   }
 
-  /** Write an icon to a dist folder and remember it, to keep it in {@link removeStaleIcons} */
-  private writeIcon(folder: string, file: string, svg: string) {
+  /**
+   * Write an icon of a source file to a dist folder, with the filters, and remember it to keep it in
+   * {@link removeStaleIcons}. It is written with the other icons by {@link createJsonTheme}.
+   */
+  private writeIcon(folder: string, file: string, source: string) {
     let written = this.writtenIcons.get(folder);
     if (!written) {
       written = new Set();
       this.writtenIcons.set(folder, written);
     }
     written.add(file);
-    writeFileAtomic(join(folder, file), svg);
+    this.copies.add({ change: (svg) => this.filterSvg(svg), source, target: join(folder, file) });
   }
 
   /**
@@ -321,17 +329,7 @@ export class IconThemeGenerator {
     }
   }
 
-  /**
-   * Apply filters to the svg
-   * @param {string} filePath
-   * @returns {string}
-   * @private
-   */
-  private applyFilters(filePath: string) {
-    return this.filterSvg(readFileSync(filePath, 'utf8'));
-  }
-
-  /** The filters of {@link applyFilters}, for the content of an svg file */
+  /** The filters of the icons (folder color, monochrome, opacity, saturation), for the content of an svg file */
   private filterSvg(content: string) {
     let svg = content;
 

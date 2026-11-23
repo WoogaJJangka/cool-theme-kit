@@ -6,6 +6,7 @@
 const assert = require('node:assert/strict');
 const { existsSync, readdirSync, readFileSync, writeFileSync } = require('node:fs');
 const { join } = require('node:path');
+const { monitorEventLoopDelay } = require('node:perf_hooks');
 const { setFlagsFromString } = require('node:v8');
 const { runInNewContext } = require('node:vm');
 const vscode = require('vscode');
@@ -30,6 +31,13 @@ const CYCLES = 4;
 const PANEL_CYCLES = 3;
 /** Regenerations rewrite the ~2,500 icons when the opacity changes: slow on Windows (fork #28) */
 const REGENERATE_TIMEOUT = 90_000;
+/**
+ * Blocking budget: the longest time the extension host may be kept from running while the theme is mixed with the
+ * other icon themes (thousands of their icons copied). VS Code says the extension host is unresponsive after 3 s,
+ * and every other extension waits meanwhile. The icon files used to be read and written synchronously: 43 s on a
+ * Windows PC, the Mix Themes page did not open. Measured since they are copied asynchronously: see docs/MAINTENANCE.md.
+ */
+const BLOCKED_BUDGET_MS = 1500;
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -286,10 +294,17 @@ const compatibility = async (ids, { darkTheme, iconTheme, productTheme, report, 
 
   const iconThemes = contributedThemes(ids, 'iconThemes');
   if (iconThemes.length > 0) {
-    await step(`mixes the icon themes ${iconThemes.map((theme) => theme.id).join(', ')}`, async () => {
+    await step(`mixes the icon themes ${iconThemes.map((theme) => theme.id).join(', ')}, without blocking the extension host`, async () => {
+      // the delays of the event loop of the extension host, which runs this suite
+      const delay = monitorEventLoopDelay({ resolution: 20 });
+      delay.enable();
       await settings().update('iconThemeLayers', iconThemes.map((theme) => ({ files: 'fill', folders: 'fill', theme: theme.id })), global);
       const mixed = () => new Set((iconTheme().layerThemes ?? '').split('|').map((entry) => entry.split('=')[0]));
       await waitFor('every icon theme in the mixed theme', () => iconThemes.every((theme) => mixed().has(theme.id)), REGENERATE_TIMEOUT);
+      delay.disable();
+      const blocked = Math.round(delay.max / 1e6);
+      report.blocked = { budgetMs: BLOCKED_BUDGET_MS, ms: blocked };
+      assert.ok(blocked < BLOCKED_BUDGET_MS, `the extension host was blocked for ${blocked} ms while the themes were mixed (budget ${BLOCKED_BUDGET_MS} ms)`);
 
       const layers = join(vscode.extensions.getExtension(EXTENSION_ID).extensionPath, 'dist', 'layers');
       assert.ok(existsSync(layers) && readdirSync(layers).length > 0, 'no icon was copied to dist/layers');

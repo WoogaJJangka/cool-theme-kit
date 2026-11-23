@@ -91,7 +91,7 @@ describe('a read-only install', () => {
     });
   });
 
-  it('keeps the prebuilt themes, and says so once instead of an error at every change', function () {
+  it('keeps the prebuilt themes, and says so once instead of an error at every change', async function () {
     const before = [JSON_FILE_NAME, JSON_PRODUCT_FILE_NAME].map((file) => readFileSync(join(distribution, file), 'utf8'));
     makeReadOnly(distribution);
     if (canWriteIn(distribution)) this.skip();
@@ -100,13 +100,13 @@ describe('a read-only install', () => {
     initThemeFailure(state, '1.2.1');
 
     // nothing changed: nothing to write, nothing to say
-    assert.doesNotThrow(() => configChangeDetector.listenForChanges());
+    await assert.doesNotReject(() => configChangeDetector.listenForChanges());
 
     // a setting that needs a generated theme: it cannot be written
     testState.config = { opacity: 0.8 };
     for (let index = 0; index < 3; index++) {
       try {
-        configChangeDetector.listenForChanges();
+        await configChangeDetector.listenForChanges();
         assert.fail('the theme was written in a read-only folder');
       } catch (error) {
         reportThemeFailure(error);
@@ -171,16 +171,16 @@ describe('the theme state with several windows', () => {
     assert.doesNotThrow(() => JSON.parse(readFileSync(join(distribution, THEME_STATE_FILE), 'utf8')));
   });
 
-  it('follows the window that wrote last: the other one regenerates at its next start', () => {
+  it('follows the window that wrote last: the other one regenerates at its next start', async () => {
     // window B (opacity 0.8) regenerates after window A (default settings)
-    configChangeDetector.listenForChanges();
+    await configChangeDetector.listenForChanges();
     testState.config = { opacity: 0.8 };
-    configChangeDetector.listenForChanges();
+    await configChangeDetector.listenForChanges();
     assert.equal(readThemeState(distribution).icon?.atomConfig?.opacity, 0.8);
 
     // window A starts again with its settings: the state does not hide B's theme from it
     testState.config = {};
-    configChangeDetector.listenForChanges();
+    await configChangeDetector.listenForChanges();
     const theme = JSON.parse(readFileSync(join(distribution, JSON_FILE_NAME), 'utf8')) as { atomConfig?: { opacity?: number } };
     assert.equal(theme.atomConfig?.opacity, 1);
     assert.equal(readThemeState(distribution).icon?.atomConfig?.opacity, 1);

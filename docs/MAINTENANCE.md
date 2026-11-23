@@ -13,7 +13,7 @@ Cool Theme Kit 을 고칠 때 지키는 규칙과, 그 규칙을 지키는지 �
 | 보안·품질 | 버그·취약점·Hotspot·중복·커버리지 | SonarQube Cloud CI 분석 `sonar.yml` | PR·main | 품질 게이트 실패 |
 | 회귀 | lint·빌드·아이콘 점검·단위 테스트 | `build.yml` | 모든 push·PR | 하나라도 실패 |
 | 호환 | 실제 VS Code 1.95.0·stable, Linux·Windows | `smoke.yml` | PR·main·매주 수 | 활성화·명령·재생성 실패, 출력 채널에 `ERROR` |
-| 호환 | 다른 테마 확장과 함께 섞기 | `smoke.yml` (`--with-extensions`) | PR·main·매주 수 | 섞은 결과가 테마 파일에 없음, `ERROR` |
+| 호환 | 다른 테마 확장과 함께 섞기 (Linux·Windows) | `smoke.yml` (`--with-extensions`) | PR·main·매주 수 | 섞은 결과가 테마 파일에 없음, `ERROR`, 섞는 동안 확장 호스트가 1.5초 넘게 막힘 |
 | 메모리 | 재생성 반복 뒤 남는 힙 | `smoke.yml` (`suite.js`) | PR·main·매주 수 | 증가량 ≥ 3 MB |
 | 메모리 | 번들·테마 json·VSIX 크기 | `build.yml` → `bun run check:size` | 모든 push·PR | 예산 초과 |
 | 의존성 | 갱신 PR | Dependabot | Actions 매주, bun 매월 | — |
@@ -63,7 +63,7 @@ Cool Theme Kit 을 고칠 때 지키는 규칙과, 그 규칙을 지키는지 �
      `isInsideFolder` 로만 푼다(`path.relative` 비교라 `../`·절대 경로·다른 드라이브는 거부, Windows 는 대소문자·NFC 무시).
      밖으로 나가는 경로는 없는 파일처럼 건너뛴다: 테마는 섞이고 그 아이콘·글꼴·`include` 만 빠진다(제품 아이콘은 그 글꼴을
      쓰는 아이콘도 빠짐). 다른 테마 경로를 읽는 곳을 새로 만들면 이 helper 를 쓰고 `test/unit/themePaths.test.ts` 에 경우를 더한다.
-3. **파일 쓰기**: `dist/` 쓰기는 `helpers/fsUtils.writeFileAtomic` 만. 파일 이름은 해시·정규화한 이름만 쓰고, 다른 테마나
+3. **파일 쓰기**: `dist/` 쓰기는 `helpers/fsUtils.writeFileAtomic`·`writeFileAtomicAsync`(아이콘은 `helpers/fileCopies.FileCopies`) 만. 파일 이름은 해시·정규화한 이름만 쓰고, 다른 테마나
    설정에서 온 문자열을 그대로 경로 조각으로 쓰지 않는다.
 4. **경로를 받는 설정**: 새 설정이 파일 경로·명령·URL 을 받으면 `package.json` 의
    `capabilities.untrustedWorkspaces.restrictedConfigurations` 에 넣을지 같은 PR 에서 정한다.
@@ -200,6 +200,7 @@ Cool Theme Kit 을 고칠 때 지키는 규칙과, 그 규칙을 지키는지 �
 | Islands 제품 아이콘 json / 색 테마 json | 9 KB / 106 KB (0.2.0 의 TextMate 언어 규칙, 전에는 40 KB) | 32 KB / 128 KB | `check:size` |
 | VSIX 크기 / 파일 수 | 11.1 MB / 5,602 | 14 MB / 6,500 | `check:size` |
 | 재생성 4회 반복(불투명도·강조색) + 섞기 화면 3회 뒤 힙 증가 | 0.2~0.8 MB (Linux·Windows, 1.95.0·stable, 다른 확장 유무) | 3 MB | `smoke.yml` |
+| 다른 아이콘 테마 5개를 섞는 재생성 동안 확장 호스트가 막힌 가장 긴 시간 | 469 ms (Windows PC, stable, 다른 확장 6개, 2026-11-23. 동기 복사였던 때 같은 PC 에서 43초) | 1,500 ms | `smoke.yml` (`--with-extensions`) |
 
 - 예산은 넘기지 않는다. 기능 때문에 올려야 하면 같은 PR 에서 예산 숫자(`test/checks/sizeBudget.js`, `test/smoke/suite.js`)와
   이 표를 고치고, 늘어난 이유와 측정값을 PR 에 적는다.
@@ -210,14 +211,19 @@ Cool Theme Kit 을 고칠 때 지키는 규칙과, 그 규칙을 지키는지 �
 
 1. **활성화는 가볍게**: 무거운 일은 `scheduleRegenerate`(300 ms 묶기) 뒤로 미룬다. 시작 때 테마 json 을 통째로 파싱하지 않고
    `helpers/themeState.ts` 의 상태 파일을 쓴다.
-2. **큰 데이터를 붙잡지 않는다**: 테마 json·SVG 내용을 모듈 변수나 싱글턴에 두지 않는다. 캐시를 두면 비우는 길
+2. **확장 호스트를 막지 않는다**: 확장 호스트는 모든 확장이 같이 쓰는 스레드라, 오래 막으면 VS Code 가 "Extension host is
+   unresponsive" 를 띄우고 언어 서버·Git 같은 다른 확장도 기다린다. 파일 수천 개를 읽고 쓰는 일은 동기 API 로 하지 않는다:
+   아이콘 SVG 는 `FileCopies` 로 모아 비동기로 복사한다(`COPY_CONCURRENCY` 16개씩). 다른 확장의 SVG 를 처음 읽을 때 Windows 는
+   파일마다 수 ms 라(2026-11-23 측정: Material 1,256개 첫 읽기 6.7초, 두 번째 0.35초), 동기로 5,000개를 읽던 섞기 재생성 하나가
+   43초 막았다. 비동기라 재생성이 겹칠 수 있어서 `extension.ts` `startRegenerate` 가 한 번에 하나만 돌린다. 예산은 위 표(스모크가 잼).
+3. **큰 데이터를 붙잡지 않는다**: 테마 json·SVG 내용을 모듈 변수나 싱글턴에 두지 않는다. 캐시를 두면 비우는 길
    (`forgetInstalled*Themes`, `extensions.onDidChange`)을 같이 만든다.
-3. **해제**: 이벤트 구독·타이머·`watchFile` 은 `context.subscriptions` 나 `dispose` 에서 푼다. 섞기 화면은
+4. **해제**: 이벤트 구독·타이머·`watchFile` 은 `context.subscriptions` 나 `dispose` 에서 푼다. 섞기 화면은
    `retainContextWhenHidden: false` 를 유지하고, 숨겨진 패널에는 상태를 만들지 않는다.
-4. **디스크**: 내용이 같으면 쓰지 않는다(`writeFileAtomic`). 아이콘 파일 이름의 해시는 SVG 필터 설정만으로 만든다
+5. **디스크**: 내용이 같으면 쓰지 않는다(`writeFileAtomic`·`writeFileAtomicAsync`). 아이콘 파일 이름의 해시는 SVG 필터 설정만으로 만든다
    (아이콘 2,500개를 다시 쓰면 Windows 에서 6~9초 멈춤, 포크 #28).
-5. **번들**: 새 의존성은 번들 크기를 본다(`check:size`). 함수 하나 때문에 큰 라이브러리를 넣지 않는다.
-6. **측정 방법**: `COOL_THEME_KIT_MEMORY=1` 로 띄우면 출력 채널에 `MEMORY` 줄(GC 뒤 `heapUsed`·`rss`)이 남는다(CLAUDE.md).
+6. **번들**: 새 의존성은 번들 크기를 본다(`check:size`). 함수 하나 때문에 큰 라이브러리를 넣지 않는다.
+7. **측정 방법**: `COOL_THEME_KIT_MEMORY=1` 로 띄우면 출력 채널에 `MEMORY` 줄(GC 뒤 `heapUsed`·`rss`)이 남는다(CLAUDE.md).
    스모크도 이 값을 켜고 돌아서 Job summary 에 같은 줄이 나온다.
 
 ## 4. SonarQube Cloud

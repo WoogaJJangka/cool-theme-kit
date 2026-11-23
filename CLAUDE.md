@@ -227,10 +227,15 @@
 - 메모리·시간 측정: `COOL_THEME_KIT_MEMORY=1` 로 VS Code 를 띄우면 출력 채널에 `MEMORY` 줄이 남는다(활성화 끝·재생성 끝, GC 뒤 `heapUsed`·`rss`).
   격리 프로필의 `logs/*/window1/exthost/output_logging_*/1-Cool Theme Kit.log`. 재생성 시간에는 이 GC 가 들어간다(웜 스타트 기준 베이스라인 ≈ 50 ms).
   보유 메모리(37 MB)는 VS Code 확장 호스트가 대부분이라 파싱 같은 일시적 할당은 `heapUsed` 에 안 보인다.
-- dist 쓰기는 `helpers/fsUtils.writeFileAtomic`(임시 파일 + rename)만 쓴다(#67). 내용이 같으면 쓰지 않는다: 아이콘 ~2,500개를
+- dist 쓰기는 `helpers/fsUtils.writeFileAtomic`/`writeFileAtomicAsync`(임시 파일 + rename)만 쓴다(#67). 내용이 같으면 쓰지 않는다: 아이콘 ~2,500개를
   다시 쓰면 Windows 에서 확장 호스트가 6~9초 멈춘다(포크 #28). 아이콘 파일 이름의 해시(`getFileConfigHash`)는 SVG 필터 설정
   (색·불투명도·채도·모노크롬)만으로 만들고, 생성기가 이번에 쓰지 않은 `~해시`·`custom-` 아이콘은 지운다.
-  재생성은 `extension.ts` 의 `scheduleRegenerate`(300ms 묶기, 이 확장·`files.associations` 설정만)로만 부른다.
+  **아이콘 SVG(우리 것 + 섞는 테마 것)는 동기로 읽고 쓰지 않는다**: 생성기는 json 을 만들면서 복사할 것만 `helpers/fileCopies.FileCopies` 에
+  모으고, `IconThemeGenerator.createJsonTheme()`(async)가 16개씩 비동기로 복사 → 테마 json → 안 쓰는 아이콘 지우기 순으로 한다.
+  다른 확장의 SVG 를 처음 읽을 때 Windows 는 파일마다 수 ms(백신 검사로 추정)라, 동기로 5,000개를 읽던 때는 섞기 재생성 하나가
+  확장 호스트를 43초 막았다(2026-11-23, "Extension host is unresponsive", 섞기 화면도 안 열림). 동기는 json·글꼴처럼 몇 개짜리만.
+  재생성은 `extension.ts` 의 `scheduleRegenerate`(300ms 묶기, 이 확장·`files.associations` 설정만)로만 부르고, `startRegenerate` 가
+  한 번에 하나만 돌린다(도는 중 온 이벤트는 끝난 뒤 한 번 더).
   재생성 실패는 `services/themeFailure.reportThemeFailure` 로만 알린다: 확장 폴더에 쓸 수 없으면(`helpers/readOnly`, 권한 오류 +
   폴더에 시험 파일을 못 만듦 — Windows 의 EPERM 은 다른 창이 연 파일 때문일 수도 있어서) 버전마다 한 번 경고, 그 밖은 오류 토스트.
   생성기는 파일 시스템 오류를 `{ cause }` 로 감싸서 코드가 남는다.

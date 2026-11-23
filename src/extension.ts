@@ -32,18 +32,40 @@ const watchedThemes = new Set<string>();
  */
 const REGENERATE_DELAY = 300;
 let regenerateTimer: NodeJS.Timeout | undefined;
+/**
+ * The regeneration writing the theme files now. The icon files are written without blocking the extension host, so
+ * an event can come meanwhile: the theme is regenerated once more after it, never two at the same time.
+ */
+let regenerating: Promise<void> | undefined;
+let regenerateAgain = false;
 
 const scheduleRegenerate = () => {
   clearTimeout(regenerateTimer);
   regenerateTimer = setTimeout(() => {
     regenerateTimer = undefined;
-    regenerateTheme();
+    startRegenerate();
   }, REGENERATE_DELAY);
+};
+
+const startRegenerate = () => {
+  if (regenerating) {
+    regenerateAgain = true;
+    return;
+  }
+  regenerating = regenerateTheme()
+    .catch((error: unknown) => logger.error(String(error)))
+    .finally(() => {
+      regenerating = undefined;
+      if (!regenerateAgain) return;
+      regenerateAgain = false;
+      startRegenerate();
+    });
 };
 
 const cancelRegenerate = () => {
   clearTimeout(regenerateTimer);
   regenerateTimer = undefined;
+  regenerateAgain = false;
 };
 
 /** The settings the generated theme reads: this extension's, and the file associations for the mixed themes */
@@ -54,11 +76,11 @@ const affectsTheme = (event: ConfigurationChangeEvent) =>
  * Regenerate the theme files from the settings. A failure is shown to the user instead of only being logged,
  * otherwise the commands look like they do nothing (#73); a read-only install is told once (`reportThemeFailure`).
  */
-const regenerateTheme = () => {
+const regenerateTheme = async () => {
   const started = performance.now();
   let written = false;
   try {
-    written = configChangeDetector.listenForChanges();
+    written = await configChangeDetector.listenForChanges();
   } catch (error) {
     reportThemeFailure(error);
   }

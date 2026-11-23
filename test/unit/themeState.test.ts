@@ -80,9 +80,9 @@ describe('theme state', () => {
   });
 
   describe('the detector', () => {
-    it('writes the state at the first start, with the settings the theme files were generated with', () => {
+    it('writes the state at the first start, with the settings the theme files were generated with', async () => {
       assert.equal(existsSync(file(THEME_STATE_FILE)), false);
-      configChangeDetector.listenForChanges();
+      await configChangeDetector.listenForChanges();
 
       const state = readThemeState(dist());
       assert.ok(currentState(state.icon, file(JSON_FILE_NAME)), 'icons');
@@ -92,35 +92,35 @@ describe('theme state', () => {
       assert.equal(state.icon?.layerThemes ?? '', theme.layerThemes ?? '');
     });
 
-    it('does not read the theme files while the state knows them', () => {
-      configChangeDetector.listenForChanges();
+    it('does not read the theme files while the state knows them', async () => {
+      await configChangeDetector.listenForChanges();
       corruptKnownFile(JSON_FILE_NAME, 'icon');
       corruptKnownFile(JSON_PRODUCT_FILE_NAME, 'product');
 
-      assert.doesNotThrow(() => configChangeDetector.listenForChanges());
+      await assert.doesNotReject(() => configChangeDetector.listenForChanges());
     });
 
-    it('reads the theme file again when it is not the one the state was written for', () => {
-      configChangeDetector.listenForChanges();
+    it('reads the theme file again when it is not the one the state was written for', async () => {
+      await configChangeDetector.listenForChanges();
       writeFileSync(file(JSON_FILE_NAME), 'not json at all');
 
-      assert.throws(() => configChangeDetector.listenForChanges(), /Failed to read icon-theme\.json/);
+      await assert.rejects(() => configChangeDetector.listenForChanges(), /Failed to read icon-theme\.json/);
     });
 
-    it('works without the state file, and writes it again', () => {
-      configChangeDetector.listenForChanges();
+    it('works without the state file, and writes it again', async () => {
+      await configChangeDetector.listenForChanges();
       rmSync(file(THEME_STATE_FILE));
-      configChangeDetector.listenForChanges();
+      await configChangeDetector.listenForChanges();
 
       assert.ok(currentState(readThemeState(dist()).icon, file(JSON_FILE_NAME)));
     });
 
-    it('follows the settings: a change regenerates the theme and the state, and the next start changes nothing', () => {
-      configChangeDetector.listenForChanges();
+    it('follows the settings: a change regenerates the theme and the state, and the next start changes nothing', async () => {
+      await configChangeDetector.listenForChanges();
       const before = statSync(file(JSON_FILE_NAME)).mtimeMs;
 
       testState.config = { ...testState.config, opacity: 0.8 };
-      configChangeDetector.listenForChanges();
+      await configChangeDetector.listenForChanges();
 
       const state = readThemeState(dist());
       assert.equal(state.icon?.atomConfig?.opacity, 0.8);
@@ -132,7 +132,7 @@ describe('theme state', () => {
 
       const written = statSync(file(JSON_FILE_NAME)).mtimeMs;
       const stateWritten = statSync(file(THEME_STATE_FILE)).mtimeMs;
-      configChangeDetector.listenForChanges();
+      await configChangeDetector.listenForChanges();
       assert.equal(statSync(file(JSON_FILE_NAME)).mtimeMs, written);
       assert.equal(statSync(file(THEME_STATE_FILE)).mtimeMs, stateWritten, 'nothing changed: nothing is written');
     });

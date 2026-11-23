@@ -3,12 +3,21 @@ import { ProductThemeGenerator } from 'src/icons/generators/ProductThemeGenerato
 import { ProductIconGenerator } from 'src/productIcons/ProductIconGenerator';
 import { ColorThemeGenerator } from 'src/themes/ColorThemeGenerator';
 
-const iconThemeGenerator = new IconThemeGenerator();
-iconThemeGenerator.createJsonTheme();
+const generate = async () => {
+  const iconThemeGenerator = new IconThemeGenerator();
+  await iconThemeGenerator.createJsonTheme();
 
-const productThemeGenerator = new ProductThemeGenerator();
-productThemeGenerator.createJsonTheme();
+  const productThemeGenerator = new ProductThemeGenerator();
+  productThemeGenerator.createJsonTheme();
 
-new ColorThemeGenerator().createJsonThemes();
+  new ColorThemeGenerator().createJsonThemes();
 
-new ProductIconGenerator().createJsonTheme();
+  new ProductIconGenerator().createJsonTheme();
+};
+
+// ts-node runs it as CommonJS, without top-level await
+// eslint-disable-next-line unicorn/prefer-top-level-await
+generate().catch((error: unknown) => {
+  console.error(error);
+  process.exitCode = 1;
+});
