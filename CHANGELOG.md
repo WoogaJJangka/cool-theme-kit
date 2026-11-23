@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. Dates are displayed in UTC.
 
-#### Unreleased
+#### 1.6.1 (2026-11-23)
 
 - fix: mixing other icon themes no longer freezes VS Code's extension host on Windows. The icons (thousands of SVG
   files of the other themes, and the ones of Cool Icons) were read and written one by one, synchronously: the first
