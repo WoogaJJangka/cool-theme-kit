@@ -37,9 +37,9 @@ describe('JetBrains parity', () => {
   const iconOf = (definition?: string) =>
     (definition && theme.iconDefinitions?.[definition]?.iconPath?.split('/').pop()?.replace(/(~[^.]*)?\.svg$/, '').replace(/_dark$/, '')) ?? undefined;
 
-  before(() => {
+  before(async () => {
     dist = mkdtempSync(join(tmpdir(), 'afi-parity-'));
-    new IconThemeGenerator({}, { dist, iconGenerator: iconGeneratorPath }).createJsonTheme();
+    await new IconThemeGenerator({}, { dist, iconGenerator: iconGeneratorPath }).createJsonTheme();
     theme = JSON.parse(readFileSync(join(dist, JSON_FILE_NAME), 'utf8'));
   });
 

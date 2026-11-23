@@ -41,6 +41,10 @@ jobs:
           - os: windows-latest
             vscode: stable
             extensions: false
+          # thousands of icons of the other themes copied: the extension host was blocked for tens of seconds on Windows
+          - os: windows-latest
+            vscode: stable
+            extensions: true
 
     env:
       VSCODE_VERSION: ${{ matrix.vscode }}

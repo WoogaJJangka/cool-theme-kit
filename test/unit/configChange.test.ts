@@ -44,9 +44,9 @@ const readTheme = (): IconConfiguration =>
   JSON.parse(readFileSync(join(testState.extensionPath, 'dist', JSON_FILE_NAME), 'utf8'));
 
 /** Simulates VS Code applying the given user settings and firing onDidChangeConfiguration */
-const applySettings = (settings: Record<string, unknown>) => {
+const applySettings = async (settings: Record<string, unknown>) => {
   testState.config = { ...testState.config, ...settings };
-  configChangeDetector.listenForChanges();
+  await configChangeDetector.listenForChanges();
 };
 
 describe('ConfigChangeDetector', () => {
@@ -68,24 +68,24 @@ describe('ConfigChangeDetector', () => {
   });
 
   describe('foldersAssociations (#74)', () => {
-    it('applies a custom folder association', () => {
-      applySettings({ foldersAssociations: { claude: 'tools' } });
+    it('applies a custom folder association', async () => {
+      await applySettings({ foldersAssociations: { claude: 'tools' } });
 
       assert.equal(readTheme().folderNames?.claude, 'folder-tools');
       assert.equal(readTheme().folderNamesExpanded?.claude, 'folder-tools-open');
     });
 
-    it('keeps the custom folder association when another setting changes', () => {
-      applySettings({ foldersAssociations: { claude: 'tools' } });
-      applySettings({ opacity: 0.8 });
+    it('keeps the custom folder association when another setting changes', async () => {
+      await applySettings({ foldersAssociations: { claude: 'tools' } });
+      await applySettings({ opacity: 0.8 });
 
       assert.equal(readTheme().folderNames?.claude, 'folder-tools');
     });
   });
 
   describe('filesAssociations (#74)', () => {
-    it('maps a custom extension and file name to the chosen icon', () => {
-      applySettings({ filesAssociations: { '*.foo': 'typescript', 'special.txt': 'docker' } });
+    it('maps a custom extension and file name to the chosen icon', async () => {
+      await applySettings({ filesAssociations: { '*.foo': 'typescript', 'special.txt': 'docker' } });
 
       const theme = readTheme();
       // the svg is typeScript.svg: the name typed in lower case is resolved to it
@@ -93,17 +93,17 @@ describe('ConfigChangeDetector', () => {
       assert.equal(theme.fileNames?.['special.txt'], 'docker');
     });
 
-    it('overrides a built-in file name association', () => {
-      applySettings({ filesAssociations: { 'package.json': 'docker' } });
+    it('overrides a built-in file name association', async () => {
+      await applySettings({ filesAssociations: { 'package.json': 'docker' } });
 
       assert.equal(readTheme().fileNames?.['package.json'], 'docker');
     });
   });
 
   describe('Korean names', () => {
-    it('writes Korean file, extension and folder names in NFC, the form of the names in the explorer', () => {
+    it('writes Korean file, extension and folder names in NFC, the form of the names in the explorer', async () => {
       const decomposed = (text: string) => text.normalize('NFD');
-      applySettings({
+      await applySettings({
         filesAssociations: { [decomposed('*.한글')]: 'typescript', [decomposed('보고서.md')]: 'docker' },
         foldersAssociations: { [decomposed('도구')]: 'tools' },
       });
@@ -117,16 +117,16 @@ describe('ConfigChangeDetector', () => {
   });
 
   describe('languagesAssociations', () => {
-    it('maps a language id to the chosen icon', () => {
-      applySettings({ languagesAssociations: { mylang: 'rust' } });
+    it('maps a language id to the chosen icon', async () => {
+      await applySettings({ languagesAssociations: { mylang: 'rust' } });
 
       assert.equal(readTheme().languageIds?.mylang, 'rust');
     });
   });
 
   describe('upstream icons', () => {
-    it('includes associations synced from the JetBrains plugin', () => {
-      applySettings({ opacity: 0.9 });
+    it('includes associations synced from the JetBrains plugin', async () => {
+      await applySettings({ opacity: 0.9 });
 
       const theme = readTheme();
       assert.equal(theme.fileNames?.['uv.lock'], 'uv');
@@ -140,24 +140,24 @@ describe('ConfigChangeDetector', () => {
   });
 
   describe('activeIconPacks (#71)', () => {
-    it('enables only the selected pack', () => {
-      applySettings({ activeIconPacks: ['ngrx'] });
+    it('enables only the selected pack', async () => {
+      await applySettings({ activeIconPacks: ['ngrx'] });
 
       const theme = readTheme();
       assert.equal(theme.fileNames?.['reducer.ts'], 'ngrx-reducers');
       assert.equal(theme.fileExtensions?.['component.ts'], undefined, 'angular pack should be disabled');
     });
 
-    it('disables every pack when the list is empty', () => {
-      applySettings({ activeIconPacks: [] });
+    it('disables every pack when the list is empty', async () => {
+      await applySettings({ activeIconPacks: [] });
 
       assert.equal(readTheme().fileExtensions?.['component.ts'], undefined);
     });
   });
 
   describe('saturation (#70)', () => {
-    it('writes desaturated icons and points the theme at them', () => {
-      applySettings({ saturation: 0 });
+    it('writes desaturated icons and points the theme at them', async () => {
+      await applySettings({ saturation: 0 });
 
       const theme = readTheme();
       const iconName = theme.fileExtensions?.ts;
@@ -169,55 +169,55 @@ describe('ConfigChangeDetector', () => {
       assert.match(readFileSync(svgPath, 'utf8'), /feColorMatrix type=.saturate. values=.0./);
     });
 
-    it('keeps saturation when another setting changes', () => {
-      applySettings({ saturation: 0.3 });
-      applySettings({ folderColor: '#ff0000' });
+    it('keeps saturation when another setting changes', async () => {
+      await applySettings({ saturation: 0.3 });
+      await applySettings({ folderColor: '#ff0000' });
 
       assert.equal(readTheme().atomConfig?.saturation, 0.3);
     });
   });
 
   describe('change detection', () => {
-    it('does not rewrite the theme when nothing changed', () => {
-      applySettings({ opacity: 0.5 });
+    it('does not rewrite the theme when nothing changed', async () => {
+      await applySettings({ opacity: 0.5 });
       const themePath = join(testState.extensionPath, 'dist', JSON_FILE_NAME);
       const before = statSync(themePath).mtimeMs;
 
-      applySettings({});
+      await applySettings({});
 
       assert.equal(statSync(themePath).mtimeMs, before);
     });
 
     // writing the thousands of icons again blocked the extension host for seconds (fork #28)
-    it('does not write the icons again when a setting that does not change them changes', () => {
-      applySettings({ opacity: 0.5 });
+    it('does not write the icons again when a setting that does not change them changes', async () => {
+      await applySettings({ opacity: 0.5 });
       const iconPath = readTheme().iconDefinitions?.[readTheme().fileExtensions?.ts ?? '']?.iconPath;
       assert.ok(iconPath, 'no icon for .ts files');
       const svgPath = join(testState.extensionPath, 'dist', iconPath);
       const past = new Date('2020-01-01');
       utimesSync(svgPath, past, past);
 
-      applySettings({ filesAssociations: { 'keys.txt': 'secret' } });
+      await applySettings({ filesAssociations: { 'keys.txt': 'secret' } });
 
       assert.equal(readTheme().iconDefinitions?.[readTheme().fileExtensions?.ts ?? '']?.iconPath, iconPath);
       assert.equal(statSync(svgPath).mtimeMs, past.getTime());
     });
 
-    it('removes the icons written for previous filter settings', () => {
+    it('removes the icons written for previous filter settings', async () => {
       const filesFolder = join(testState.extensionPath, 'dist', 'files');
       const hashed = () => readdirSync(filesFolder).filter((file) => file.includes('~'));
 
-      applySettings({ opacity: 0.5 });
+      await applySettings({ opacity: 0.5 });
       const first = hashed();
       assert.ok(first.length > 0, 'no icon written for the opacity');
 
-      applySettings({ opacity: 0.6 });
+      await applySettings({ opacity: 0.6 });
       const second = hashed();
       assert.ok(second.length > 0, 'no icon written for the new opacity');
       assert.ok(first.every((file) => !second.includes(file)), 'the icons were not renamed');
       assert.equal(second.length, first.length, 'the icons of the previous opacity are left');
 
-      applySettings({ opacity: 1 });
+      await applySettings({ opacity: 1 });
       assert.deepEqual(hashed(), []);
     });
   });
@@ -248,23 +248,23 @@ describe('ConfigChangeDetector', () => {
       }
     };
 
-    it('points every mapping to an icon definition whose svg exists', () => {
-      applySettings({ opacity: 0.9 });
+    it('points every mapping to an icon definition whose svg exists', async () => {
+      await applySettings({ opacity: 0.9 });
 
       assert.deepEqual(findBrokenMappings(), []);
     });
 
-    it('does the same with every icon pack and the classic folders', () => {
+    it('does the same with every icon pack and the classic folders', async () => {
       const packs = ['angular', 'angular2', 'css', 'nest', 'next', 'ngrx', 'phalcon', 'rails', 'react', 'recoil', 'redux', 'tests', 'volt', 'vue', 'vuex'];
-      applySettings({ activeIconPacks: packs, folderTheme: 'classic' });
+      await applySettings({ activeIconPacks: packs, folderTheme: 'classic' });
 
       assert.deepEqual(findBrokenMappings(), []);
     });
   });
 
   describe('light theme variants', () => {
-    it('uses the _dark icon in dark themes and the plain icon in light themes', () => {
-      applySettings({ opacity: 0.9 });
+    it('uses the _dark icon in dark themes and the plain icon in light themes', async () => {
+      await applySettings({ opacity: 0.9 });
 
       const theme = readTheme();
       assert.equal(theme.fileExtensions?.['test.js'], 'testjs_dark');
@@ -275,8 +275,8 @@ describe('ConfigChangeDetector', () => {
   });
 
   describe('language icons', () => {
-    it('defines language icons that no file association uses', () => {
-      applySettings({ opacity: 0.9 });
+    it('defines language icons that no file association uses', async () => {
+      await applySettings({ opacity: 0.9 });
 
       const theme = readTheme();
       assert.equal(theme.languageIds?.bower, 'bower');
@@ -284,8 +284,8 @@ describe('ConfigChangeDetector', () => {
       assert.equal(theme.languageIds?.dtd, 'markup');
     });
 
-    it('finds a bundled icon typed in another case (svg names are case-sensitive on Linux)', () => {
-      applySettings({
+    it('finds a bundled icon typed in another case (svg names are case-sensitive on Linux)', async () => {
+      await applySettings({
         filesAssociations: { '*.foo': 'githubactions' },
         languagesAssociations: { mylang: 'GROOVYFILE' },
       });
@@ -295,17 +295,17 @@ describe('ConfigChangeDetector', () => {
       assert.equal(theme.languageIds?.mylang, 'groovyFile');
     });
 
-    it('keeps the case of custom language ids', () => {
-      applySettings({ languagesAssociations: { MyLang: 'rust' } });
+    it('keeps the case of custom language ids', async () => {
+      await applySettings({ languagesAssociations: { MyLang: 'rust' } });
 
       assert.equal(readTheme().languageIds?.MyLang, 'rust');
     });
 
-    it('accepts a custom SVG file', () => {
+    it('accepts a custom SVG file', async () => {
       const directory = mkdtempSync(join(tmpdir(), 'afi-lang-'));
       try {
         writeFileSync(join(directory, 'lang.svg'), '<svg xmlns="http://www.w3.org/2000/svg"><path fill="#abcdef"/></svg>');
-        applySettings({ languagesAssociations: { mylang: join(directory, 'lang.svg') } });
+        await applySettings({ languagesAssociations: { mylang: join(directory, 'lang.svg') } });
 
         const theme = readTheme();
         const name = theme.languageIds?.mylang ?? '';
@@ -318,8 +318,8 @@ describe('ConfigChangeDetector', () => {
   });
 
   describe('PyCharm icon pack', () => {
-    it('gives every Python file the PyCharm Python icon, like PyCharm', () => {
-      applySettings({ opacity: 0.9 });
+    it('gives every Python file the PyCharm Python icon, like PyCharm', async () => {
+      await applySettings({ opacity: 0.9 });
 
       const theme = readTheme();
       for (const extension of ['py', 'pyi', 'test.py']) {
@@ -333,55 +333,55 @@ describe('ConfigChangeDetector', () => {
       assert.match(readIcon(theme, 'pycharm-python_dark'), /#548AF7/);
     });
 
-    it('keeps the Atom icons when the pack is disabled', () => {
-      applySettings({ activeIconPacks: ['angular', 'rails', 'tests'] });
+    it('keeps the Atom icons when the pack is disabled', async () => {
+      await applySettings({ activeIconPacks: ['angular', 'rails', 'tests'] });
 
       const theme = readTheme();
       assert.equal(theme.fileExtensions?.py, 'python');
       assert.equal(theme.fileNames?.['manage.py'], 'djangoconfig');
     });
 
-    it('lets a custom association win', () => {
-      applySettings({ filesAssociations: { 'manage.py': 'docker' } });
+    it('lets a custom association win', async () => {
+      await applySettings({ filesAssociations: { 'manage.py': 'docker' } });
 
       assert.equal(readTheme().fileNames?.['manage.py'], 'docker');
     });
   });
 
   describe('Tests icon pack', () => {
-    it('shows the test icons by default', () => {
-      applySettings({ opacity: 0.9 });
+    it('shows the test icons by default', async () => {
+      await applySettings({ opacity: 0.9 });
 
       assert.equal(readTheme().fileExtensions?.['test.ts'], 'testts');
       assert.equal(readTheme().fileExtensions?.['spec.go'], 'testgo');
     });
 
-    it('hides them when the pack is disabled', () => {
-      applySettings({ activeIconPacks: ['angular'] });
+    it('hides them when the pack is disabled', async () => {
+      await applySettings({ activeIconPacks: ['angular'] });
 
       assert.equal(readTheme().fileExtensions?.['test.ts'], undefined);
     });
   });
 
   describe('CSS icon pack', () => {
-    it('replaces the css icon, including its light variant', () => {
-      applySettings({ activeIconPacks: ['css'] });
+    it('replaces the css icon, including its light variant', async () => {
+      await applySettings({ activeIconPacks: ['css'] });
 
       const theme = readTheme();
       assert.equal(theme.fileExtensions?.css, 'css2');
       assert.equal(theme.light?.fileExtensions?.css, undefined);
     });
 
-    it('keeps the base css icon when disabled', () => {
-      applySettings({ opacity: 0.9 });
+    it('keeps the base css icon when disabled', async () => {
+      await applySettings({ opacity: 0.9 });
 
       assert.notEqual(readTheme().fileExtensions?.css, 'css2');
     });
   });
 
   describe('monochrome', () => {
-    it('recolors the icons with the hue of the chosen color', () => {
-      applySettings({ monochrome: true, monochromeColor: '#ff0000' });
+    it('recolors the icons with the hue of the chosen color', async () => {
+      await applySettings({ monochrome: true, monochromeColor: '#ff0000' });
 
       const theme = readTheme();
       const svg = readIcon(theme, theme.fileExtensions?.ts ?? '');
@@ -393,16 +393,16 @@ describe('ConfigChangeDetector', () => {
       }
     });
 
-    it('ignores the color while disabled', () => {
-      applySettings({ monochromeColor: '#ff0000' });
+    it('ignores the color while disabled', async () => {
+      await applySettings({ monochromeColor: '#ff0000' });
 
       assert.equal(readTheme().atomConfig?.monochrome, false);
     });
   });
 
   describe('hideFileIcons', () => {
-    it('removes the file icons and keeps the folder icons', () => {
-      applySettings({ hideFileIcons: true });
+    it('removes the file icons and keeps the folder icons', async () => {
+      await applySettings({ hideFileIcons: true });
 
       const theme = readTheme();
       assert.equal(theme.file, undefined);
@@ -423,8 +423,8 @@ describe('ConfigChangeDetector', () => {
 
     afterEach(() => rmSync(iconsDirectory, { force: true, recursive: true }));
 
-    it('copies a custom file icon and associates it', () => {
-      applySettings({ filesAssociations: { '*.foo': join(iconsDirectory, 'foo.svg') } });
+    it('copies a custom file icon and associates it', async () => {
+      await applySettings({ filesAssociations: { '*.foo': join(iconsDirectory, 'foo.svg') } });
 
       const theme = readTheme();
       const name = theme.fileExtensions?.foo ?? '';
@@ -432,16 +432,16 @@ describe('ConfigChangeDetector', () => {
       assert.match(readIcon(theme, name), /#123456/);
     });
 
-    it('uses the -open sibling for expanded folders', () => {
-      applySettings({ foldersAssociations: { recipes: join(iconsDirectory, 'foo.svg') } });
+    it('uses the -open sibling for expanded folders', async () => {
+      await applySettings({ foldersAssociations: { recipes: join(iconsDirectory, 'foo.svg') } });
 
       const theme = readTheme();
       assert.match(readIcon(theme, theme.folderNames?.recipes ?? ''), /#123456/);
       assert.match(readIcon(theme, theme.folderNamesExpanded?.recipes ?? ''), /#654321/);
     });
 
-    it('ignores a missing file', () => {
-      applySettings({ filesAssociations: { '*.foo': join(iconsDirectory, 'missing.svg') } });
+    it('ignores a missing file', async () => {
+      await applySettings({ filesAssociations: { '*.foo': join(iconsDirectory, 'missing.svg') } });
 
       assert.equal(readTheme().fileExtensions?.foo, undefined);
     });
@@ -516,10 +516,10 @@ describe('ConfigChangeDetector', () => {
     const installFallbackTheme = (themeId = 'material-icon-theme') => installTheme(themeId);
 
     /** The theme generated with the default settings and without any other theme */
-    const ownTheme = () => {
+    const ownTheme = async () => {
       testState.extensions = [];
-      applySettings({ opacity: 0.99 });
-      applySettings({ opacity: undefined });
+      await applySettings({ opacity: 0.99 });
+      await applySettings({ opacity: undefined });
       return readTheme();
     };
 
@@ -537,9 +537,9 @@ describe('ConfigChangeDetector', () => {
       themePaths = [];
     });
 
-    it('gives the names this theme does not know the icon of a fill layer', () => {
+    it('gives the names this theme does not know the icon of a fill layer', async () => {
       installFallbackTheme();
-      configChangeDetector.listenForChanges();
+      await configChangeDetector.listenForChanges();
       const theme = readTheme();
 
       const definition = theme.fileNames?.['zz-unknown'];
@@ -555,10 +555,10 @@ describe('ConfigChangeDetector', () => {
       assert.notEqual(theme.light?.fileNames?.['zz-unknown'], definition);
     });
 
-    it('keeps the icon of this theme for every name it knows, by name, extension or language', () => {
-      const own = ownTheme();
+    it('keeps the icon of this theme for every name it knows, by name, extension or language', async () => {
+      const own = await ownTheme();
       installFallbackTheme();
-      configChangeDetector.listenForChanges();
+      await configChangeDetector.listenForChanges();
       const theme = readTheme();
 
       assert.equal(theme.fileNames?.['package.json'], own.fileNames?.['package.json']);
@@ -573,9 +573,9 @@ describe('ConfigChangeDetector', () => {
       assert.equal(theme.folder, own.folder);
     });
 
-    it('gives the folders this theme does not know the icons of a fill layer', () => {
+    it('gives the folders this theme does not know the icons of a fill layer', async () => {
       installFallbackTheme();
-      configChangeDetector.listenForChanges();
+      await configChangeDetector.listenForChanges();
       const theme = readTheme();
 
       assert.ok(theme.folderNames?.['fb-folder']);
@@ -584,9 +584,9 @@ describe('ConfigChangeDetector', () => {
       assert.notEqual(theme.folderNamesExpanded?.['fb-folder'], theme.folderNames?.['fb-folder']);
     });
 
-    it('adds no folder with the classic folder theme and no file with hidden file icons', () => {
+    it('adds no folder with the classic folder theme and no file with hidden file icons', async () => {
       installFallbackTheme();
-      applySettings({ folderTheme: 'classic', hideFileIcons: true });
+      await applySettings({ folderTheme: 'classic', hideFileIcons: true });
       const theme = readTheme();
 
       assert.equal(theme.folderNames?.['fb-folder'], undefined);
@@ -594,9 +594,9 @@ describe('ConfigChangeDetector', () => {
       assert.equal(theme.languageIds?.['fb-lang'], undefined);
     });
 
-    it('skips the icons that are missing or are not svg files', () => {
+    it('skips the icons that are missing or are not svg files', async () => {
       installFallbackTheme();
-      configChangeDetector.listenForChanges();
+      await configChangeDetector.listenForChanges();
       const theme = readTheme();
 
       assert.equal(theme.fileNames?.['gone.zzz'], undefined);
@@ -607,7 +607,7 @@ describe('ConfigChangeDetector', () => {
     });
 
     // docs/MAINTENANCE.md, 1. 보안, rule 2: VS Code loads no icon from outside the folder of the extension of a theme
-    it('skips the icons outside the folder of the extension of the theme, like missing ones', () => {
+    it('skips the icons outside the folder of the extension of the theme, like missing ones', async () => {
       const outside = mkdtempSync(join(tmpdir(), 'afi-outside-'));
       themePaths.push(outside);
       writeFileAtomic(join(outside, 'secret.svg'), SVG('#abcdef'));
@@ -621,7 +621,7 @@ describe('ConfigChangeDetector', () => {
           'fb-escape': { iconPath: `../../${basename(outside)}/secret.svg` },
         },
       });
-      configChangeDetector.listenForChanges();
+      await configChangeDetector.listenForChanges();
       const theme = readTheme();
 
       assert.equal(theme.fileNames?.['escape.zzz'], undefined);
@@ -634,9 +634,9 @@ describe('ConfigChangeDetector', () => {
       }
     });
 
-    it('applies the filters of this theme to the icons of the other themes', () => {
+    it('applies the filters of this theme to the icons of the other themes', async () => {
       installFallbackTheme();
-      applySettings({ opacity: 0.5 });
+      await applySettings({ opacity: 0.5 });
       const theme = readTheme();
 
       const icon = readIcon(theme, theme.fileNames?.['zz-unknown'] ?? '');
@@ -644,31 +644,31 @@ describe('ConfigChangeDetector', () => {
       assert.match(icon, /opacity/);
     });
 
-    it('removes the icons of the other themes when the layers are emptied', () => {
+    it('removes the icons of the other themes when the layers are emptied', async () => {
       installFallbackTheme();
-      configChangeDetector.listenForChanges();
+      await configChangeDetector.listenForChanges();
       assert.ok(readTheme().fileNames?.['zz-unknown']);
 
-      applySettings({ iconThemeLayers: [] });
+      await applySettings({ iconThemeLayers: [] });
       const theme = readTheme();
       assert.equal(theme.fileNames?.['zz-unknown'], undefined);
       assert.ok(!Object.keys(theme.iconDefinitions ?? {}).some((key) => key.startsWith('layer-')));
       assert.deepEqual(readdirSync(join(testState.extensionPath, 'dist', 'layers')), []);
     });
 
-    it('uses another installed theme given by its id, and ignores an id that is not installed', () => {
+    it('uses another installed theme given by its id, and ignores an id that is not installed', async () => {
       installFallbackTheme('other-icons');
-      configChangeDetector.listenForChanges();
+      await configChangeDetector.listenForChanges();
       assert.equal(readTheme().fileNames?.['zz-unknown'], undefined);
 
-      applySettings({ iconThemeLayers: ['not-installed', { theme: 'other-icons' }] });
+      await applySettings({ iconThemeLayers: ['not-installed', { theme: 'other-icons' }] });
       assert.ok(readTheme().fileNames?.['zz-unknown']);
     });
 
-    it('fills with the first listed theme first', () => {
+    it('fills with the first listed theme first', async () => {
       installTheme('first', fallbackTheme, '#111111');
       installTheme('second', { ...fallbackTheme, fileNames: { 'zz-second': 'fb-file', 'zz-unknown': 'fb-file' } }, '#222222');
-      applySettings({ iconThemeLayers: ['first', 'second'] });
+      await applySettings({ iconThemeLayers: ['first', 'second'] });
       const theme = readTheme();
 
       assert.equal(colorOf(theme, theme.fileNames?.['zz-unknown']), '#111111');
@@ -676,10 +676,10 @@ describe('ConfigChangeDetector', () => {
       assert.equal(colorOf(theme, theme.fileNames?.['zz-second']), '#222222');
     });
 
-    it('gives the icons of an override layer to every name it knows, and keeps the folders when they are off', () => {
-      const own = ownTheme();
+    it('gives the icons of an override layer to every name it knows, and keeps the folders when they are off', async () => {
+      const own = await ownTheme();
       installTheme('material-icon-theme', { ...fallbackTheme, file: 'fb-file', folder: 'fb-folder' });
-      applySettings({ iconThemeLayers: [{ files: 'override', folders: 'off', theme: 'material-icon-theme' }] });
+      await applySettings({ iconThemeLayers: [{ files: 'override', folders: 'off', theme: 'material-icon-theme' }] });
       const theme = readTheme();
 
       const python = theme.fileExtensions?.py;
@@ -696,10 +696,10 @@ describe('ConfigChangeDetector', () => {
       assert.equal(theme.folder, own.folder);
     });
 
-    it('mixes in the original Atom Material Icons, whose theme has the earlier id of this theme, and not this theme', () => {
-      const own = ownTheme();
+    it('mixes in the original Atom Material Icons, whose theme has the earlier id of this theme, and not this theme', async () => {
+      const own = await ownTheme();
       installTheme(EXTENSION_KEY, { ...fallbackTheme, file: 'fb-file', folder: 'fb-folder' });
-      applySettings({ iconThemeLayers: [{ files: 'override', folders: 'override', theme: EXTENSION_KEY }, ICON_THEME_ID] });
+      await applySettings({ iconThemeLayers: [{ files: 'override', folders: 'override', theme: EXTENSION_KEY }, ICON_THEME_ID] });
       const theme = readTheme();
 
       assert.ok(theme.fileExtensions?.py?.startsWith('layer-'), theme.fileExtensions?.py);
@@ -711,8 +711,8 @@ describe('ConfigChangeDetector', () => {
       assert.ok(theme.layerThemes?.includes(`test.${EXTENSION_KEY}@`), theme.layerThemes);
     });
 
-    it('gives a name pinned to this theme its own icon back, over an override layer', () => {
-      const own = ownTheme();
+    it('gives a name pinned to this theme its own icon back, over an override layer', async () => {
+      const own = await ownTheme();
       const extension = Object.keys(own.light?.fileExtensions ?? {}).find((key) => !key.includes('.'));
       assert.ok(extension, 'no light variant in this theme');
       installTheme('material-icon-theme', {
@@ -721,7 +721,7 @@ describe('ConfigChangeDetector', () => {
         fileExtensions: { ...fallbackTheme.fileExtensions, [extension]: 'fb-python' },
         folder: 'fb-folder',
       });
-      applySettings({
+      await applySettings({
         iconThemeByName: {
           [`*.${extension}`]: ICON_THEME_ID,
           'package.json': ICON_THEME_ID,
@@ -745,9 +745,9 @@ describe('ConfigChangeDetector', () => {
       assert.equal(theme.fileNames?.['zz-unknown'], own.file);
     });
 
-    it('gives the folder icons of an override layer, its default ones too', () => {
+    it('gives the folder icons of an override layer, its default ones too', async () => {
       installTheme('material-icon-theme', { ...fallbackTheme, folder: 'fb-folder', folderExpanded: 'fb-folder-open' });
-      applySettings({ iconThemeLayers: [{ files: 'off', folders: 'override', theme: 'material-icon-theme' }] });
+      await applySettings({ iconThemeLayers: [{ files: 'off', folders: 'override', theme: 'material-icon-theme' }] });
       const theme = readTheme();
 
       assert.ok(theme.folderNames?.src?.startsWith('layer-'));
@@ -759,22 +759,22 @@ describe('ConfigChangeDetector', () => {
       assert.equal(theme.fileNames?.['zz-unknown'], undefined);
     });
 
-    it('removes the light variant of this theme for a name an override layer gives its icon to', () => {
-      const own = ownTheme();
+    it('removes the light variant of this theme for a name an override layer gives its icon to', async () => {
+      const own = await ownTheme();
       const extension = Object.keys(own.light?.fileExtensions ?? {}).find((key) => !key.includes('.'));
       assert.ok(extension, 'no light variant in this theme');
       installTheme('material-icon-theme', { ...fallbackTheme, fileExtensions: { [extension]: 'fb-python' } });
-      applySettings({ iconThemeLayers: [{ files: 'override', theme: 'material-icon-theme' }] });
+      await applySettings({ iconThemeLayers: [{ files: 'override', theme: 'material-icon-theme' }] });
       const theme = readTheme();
 
       assert.ok(theme.fileExtensions?.[extension]?.startsWith('layer-'));
       assert.equal(theme.light?.fileExtensions?.[extension], undefined);
     });
 
-    it('keeps the user associations over an override layer, and the first listed override wins', () => {
+    it('keeps the user associations over an override layer, and the first listed override wins', async () => {
       installTheme('first', fallbackTheme, '#111111');
       installTheme('second', fallbackTheme, '#222222');
-      applySettings({
+      await applySettings({
         filesAssociations: { '*.py': 'json' },
         iconThemeLayers: [{ files: 'override', theme: 'first' }, { files: 'override', theme: 'second' }],
       });
@@ -785,10 +785,10 @@ describe('ConfigChangeDetector', () => {
       assert.equal(colorOf(theme, theme.fileNames?.['zz-unknown']), '#111111');
     });
 
-    it('gives a name the icon of the theme of iconThemeByName, over every layer', () => {
+    it('gives a name the icon of the theme of iconThemeByName, over every layer', async () => {
       installTheme('first', { ...fallbackTheme, file: 'fb-python', folderNames: { src: 'fb-folder' }, folderNamesExpanded: {} }, '#111111');
       installTheme('second', fallbackTheme, '#222222');
-      applySettings({
+      await applySettings({
         iconThemeByName: {
           '*.ts': 'first',
           'nothing.here': 'first',
@@ -810,23 +810,23 @@ describe('ConfigChangeDetector', () => {
       assert.equal(theme.folderNamesExpanded?.src, theme.folderNames?.src);
     });
 
-    it('regenerates the theme when a layer theme changes', () => {
+    it('regenerates the theme when a layer theme changes', async () => {
       installFallbackTheme();
-      configChangeDetector.listenForChanges();
+      await configChangeDetector.listenForChanges();
       assert.equal(readTheme().fileNames?.['zz-later'], undefined);
 
       writeFileAtomic(fallbackJson, JSON.stringify({ ...fallbackTheme, fileNames: { ...fallbackTheme.fileNames, 'zz-later': 'fb-file' } }));
       const later = new Date(statSync(fallbackJson).mtimeMs + 10_000);
       utimesSync(fallbackJson, later, later);
-      configChangeDetector.listenForChanges();
+      await configChangeDetector.listenForChanges();
 
       assert.ok(readTheme().fileNames?.['zz-later']);
     });
 
-    it('gives the svg files of a usesCurrentColor theme the text color of the dark and of the light themes', () => {
+    it('gives the svg files of a usesCurrentColor theme the text color of the dark and of the light themes', async () => {
       // like the built-in VS Code Modern theme: no light variants, every svg drawn with the color of the text
       installTheme('vscode-modern-icons', { ...fallbackTheme, usesCurrentColor: true }, 'currentColor');
-      applySettings({ iconThemeLayers: ['vscode-modern-icons'] });
+      await applySettings({ iconThemeLayers: ['vscode-modern-icons'] });
       let theme = readTheme();
 
       assert.equal(colorOf(theme, theme.fileExtensions?.zzq), '#cccccc');
@@ -835,7 +835,7 @@ describe('ConfigChangeDetector', () => {
       assert.equal(theme.highContrast?.fileExtensions?.zzq, undefined, 'high contrast themes take the base icon');
 
       // the filters of this theme apply on top
-      applySettings({ opacity: 0.5 });
+      await applySettings({ opacity: 0.5 });
       theme = readTheme();
       const icon = readIcon(theme, theme.fileExtensions?.zzq ?? '');
       assert.match(icon, /opacity="0.5"/);
@@ -881,9 +881,9 @@ describe('ConfigChangeDetector', () => {
         return theme.fonts?.find((font) => font.id === fontId);
       };
 
-      it('gives the names this theme does not know a glyph of a fill layer, with its font copied', () => {
+      it('gives the names this theme does not know a glyph of a fill layer, with its font copied', async () => {
         installSeti();
-        applySettings({ iconThemeLayers: ['vs-seti'] });
+        await applySettings({ iconThemeLayers: ['vs-seti'] });
         const theme = readTheme();
 
         const definition = theme.iconDefinitions?.[theme.fileExtensions?.zzq ?? ''];
@@ -901,10 +901,10 @@ describe('ConfigChangeDetector', () => {
         assert.ok(theme.iconDefinitions?.[theme.file ?? '']?.iconPath);
       });
 
-      it('skips the glyphs of a font the theme does not have, and the fonts whose file is missing', () => {
+      it('skips the glyphs of a font the theme does not have, and the fonts whose file is missing', async () => {
         installSeti({ ...setiTheme, fileNames: { 'zz-no-font': '_no_font' } });
         rmSync(fontPath);
-        applySettings({ iconThemeLayers: ['vs-seti'] });
+        await applySettings({ iconThemeLayers: ['vs-seti'] });
         const theme = readTheme();
 
         assert.equal(theme.fileNames?.['zz-no-font'], undefined);
@@ -912,13 +912,13 @@ describe('ConfigChangeDetector', () => {
         assert.equal(theme.fonts, undefined);
       });
 
-      it('skips a font outside the folder of the extension of the theme, and its glyphs', () => {
+      it('skips a font outside the folder of the extension of the theme, and its glyphs', async () => {
         const outside = mkdtempSync(join(tmpdir(), 'afi-outside-'));
         themePaths.push(outside);
         writeFileAtomic(join(outside, 'secret.woff'), 'secret font');
         const src = [{ format: 'woff', path: `../../${basename(outside)}/secret.woff` }];
         installSeti({ ...setiTheme, fonts: [{ ...setiTheme.fonts[0], src }] });
-        applySettings({ iconThemeLayers: ['vs-seti'] });
+        await applySettings({ iconThemeLayers: ['vs-seti'] });
         const theme = readTheme();
 
         assert.equal(theme.fileExtensions?.zzq, undefined);
@@ -931,35 +931,35 @@ describe('ConfigChangeDetector', () => {
         }
       });
 
-      it('gives the default glyph of an override layer, and the color filters to the glyphs', () => {
+      it('gives the default glyph of an override layer, and the color filters to the glyphs', async () => {
         installSeti();
-        applySettings({ iconThemeLayers: [{ files: 'override', theme: 'vs-seti' }], saturation: 0 });
+        await applySettings({ iconThemeLayers: [{ files: 'override', theme: 'vs-seti' }], saturation: 0 });
         const theme = readTheme();
 
         assert.equal(theme.iconDefinitions?.[theme.file ?? '']?.fontCharacter, String.raw`\E023`);
         const color = theme.iconDefinitions?.[theme.fileExtensions?.zzq ?? '']?.fontColor ?? '';
         assert.match(color, /^#([\da-f]{2})\1\1$/, color);
 
-        applySettings({ monochrome: true, monochromeColor: '#ff0000', saturation: 1 });
+        await applySettings({ monochrome: true, monochromeColor: '#ff0000', saturation: 1 });
         const red = readTheme().iconDefinitions?.[readTheme().fileNames?.['zz-named'] ?? '']?.fontColor;
         assert.equal(red, '#ff0000');
       });
 
-      it('renames the copy of the font when it changes, and removes the fonts when the layers are emptied', () => {
+      it('renames the copy of the font when it changes, and removes the fonts when the layers are emptied', async () => {
         installSeti();
-        applySettings({ iconThemeLayers: ['vs-seti'] });
+        await applySettings({ iconThemeLayers: ['vs-seti'] });
         const before = fontOf(readTheme(), readTheme().fileExtensions?.zzq)?.src[0].path;
 
         writeFileAtomic(fontPath, 'woff font v2');
         const jsonPath = join(dirname(fontPath), 'vs-seti-icon-theme.json');
         const later = new Date(statSync(jsonPath).mtimeMs + 10_000);
         utimesSync(jsonPath, later, later);
-        configChangeDetector.listenForChanges();
+        await configChangeDetector.listenForChanges();
         const after = fontOf(readTheme(), readTheme().fileExtensions?.zzq)?.src[0].path;
         assert.ok(after && after !== before, `${before} -> ${after}`);
         assert.equal(readdirSync(join(testState.extensionPath, 'dist', 'layers')).length, 1);
 
-        applySettings({ iconThemeLayers: [] });
+        await applySettings({ iconThemeLayers: [] });
         assert.equal(readTheme().fonts, undefined);
         assert.deepEqual(readdirSync(join(testState.extensionPath, 'dist', 'layers')), []);
       });

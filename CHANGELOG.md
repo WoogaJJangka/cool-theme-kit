@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. Dates are displayed in UTC.
 
+#### Unreleased
+
+- fix: mixing other icon themes no longer freezes VS Code's extension host on Windows. The icons (thousands of SVG
+  files of the other themes, and the ones of Cool Icons) were read and written one by one, synchronously: the first
+  regeneration after an update, or after a change of the layers, kept every other extension waiting for up to a minute
+  ("Extension host is unresponsive"). They are now copied in the background, several at a time, and the theme file is
+  written once they are there. The compatibility check of the CI now mixes the other themes on Windows too, and fails
+  when the extension host is blocked for more than 1.5 seconds.
+
 #### 1.6.0 (2026-11-22)
 
 - feat: Cool Material Icons has its own product icon theme id, `cool-material-product-icons`. The earlier id

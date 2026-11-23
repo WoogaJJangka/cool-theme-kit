@@ -9,6 +9,7 @@ import { resolveThemePath } from 'src/helpers/themePaths';
 import { normalizeName, trimTrailingSlashes } from 'src/helpers/utils';
 
 import type { AtomConfig } from 'src/@types/config';
+import type { FileCopies } from 'src/helpers/fileCopies';
 import type { LanguageLookup, LayerTheme } from 'src/helpers/themeLayers';
 import type { IconConfiguration, IconFont } from 'src/models/IconConfiguration';
 
@@ -254,11 +255,18 @@ export class ThemeLayerGenerator {
     private readonly themes: LayerTheme[],
     private readonly languages: LanguageLookup,
     private readonly distributionPath: string,
+    /** the svg files to copy to `dist/layers`, with the icons of this theme */
+    private readonly copies: FileCopies,
     private readonly fileConfigHash: string,
     /** the filters of this theme, for the content of an svg file */
     private readonly applyFilters: (svg: string) => string,
     private readonly filterColor: (color: unknown) => string | undefined,
   ) {}
+
+  /** The files of `dist/layers` this theme uses after {@link apply}: the others can be removed with {@link clean} */
+  get files(): Set<string> {
+    return this.written;
+  }
 
   /** Remove the icons of the themes no longer used */
   static clean(distributionPath: string, keep: Set<string> = new Set()) {
@@ -276,6 +284,7 @@ export class ThemeLayerGenerator {
 
   /**
    * Add the associations of the other themes. A theme that cannot be read is ignored: this theme works without it.
+   * Their svg files are added to the copies, the fonts are copied now (a few files).
    * @returns the fingerprint of the themes that could be read
    */
   apply(): string {
@@ -301,8 +310,6 @@ export class ThemeLayerGenerator {
     const fonts = [...this.fonts.values()].flatMap((copied) => (copied ? [copied.font] : []));
     if (fonts.length > 0) this.iconConfig.fonts = fonts;
     else delete this.iconConfig.fonts;
-
-    ThemeLayerGenerator.clean(this.distributionPath, this.written);
 
     const read = this.themes.filter((theme) => this.readers.get(theme.id));
     return layerStamp(read);
@@ -573,17 +580,24 @@ export class ThemeLayerGenerator {
     return this.definition(reader, reader.lookup('base', hit), 'light');
   }
 
-  /** An svg file of the other theme copied to `dist/layers`; none outside the folder of its extension, like a missing file */
+  /**
+   * An svg file of the other theme copied to `dist/layers` (with the icons of this theme, see {@link FileCopies});
+   * none outside the folder of its extension, like a missing file
+   */
   private svgDefinition(reader: LayerReader, iconPath: string, safeName: string, tone: Tone) {
     const source = reader.resolve(iconPath);
     if (!source || !/\.svg$/i.test(source) || !existsSync(source)) return;
 
-    let svg = readFileSync(source, 'utf8');
     // VS Code gives the text color only to the icons of the theme declaring `usesCurrentColor`: elsewhere, black
-    if (reader.usesCurrentColor) svg = svg.replaceAll(/currentColor/gi, CURRENT_COLORS[tone]);
-
+    const color = reader.usesCurrentColor ? CURRENT_COLORS[tone] : undefined;
     const file = `${safeName}${this.fileConfigHash}.svg`;
-    writeFileAtomic(join(this.distributionPath, LAYERS_FOLDER, file), this.applyFilters(svg));
+    this.copies.add({
+      change: (svg) => this.applyFilters(color ? svg.replaceAll(/currentColor/gi, color) : svg),
+      // removed since it was found (the other extension being updated): only that icon is missing
+      optional: true,
+      source,
+      target: join(this.distributionPath, LAYERS_FOLDER, file),
+    });
     this.written.add(file);
     return { iconPath: `${RELATIVE_DIST}/${LAYERS_FOLDER}/${file}` };
   }

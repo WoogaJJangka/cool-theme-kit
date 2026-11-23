@@ -19,20 +19,23 @@ type GeneratedProduct = { atomConfig?: Partial<AtomConfig> };
  * updating the icon theme accordingly.
  */
 class ConfigChangeDetector {
-  /** Generate the icon and product icon themes again when the settings changed; returns whether a theme file was written */
-  listenForChanges(): boolean {
+  /**
+   * Generate the icon and product icon themes again when the settings changed; resolves whether a theme file was
+   * written. The icon files are written without blocking the extension host: one generation at a time (`extension.ts`).
+   */
+  async listenForChanges(): Promise<boolean> {
     const distribution = join(getExtensionPath(), 'dist');
     const state = readThemeState(distribution);
     const remember: ThemeState = {};
 
-    const icons = this.updateIcons(distribution, state, remember);
+    const icons = await this.updateIcons(distribution, state, remember);
     const product = this.updateProductIcons(distribution, state, remember);
 
     if (remember.icon || remember.product) writeThemeState(distribution, remember);
     return icons || product;
   }
 
-  private updateIcons(distribution: string, state: ThemeState, remember: ThemeState): boolean {
+  private async updateIcons(distribution: string, state: ThemeState, remember: ThemeState): Promise<boolean> {
     const path = join(distribution, JSON_FILE_NAME);
     const known = currentState(state.icon, path);
     // the theme file (some 700 KB of json) is read only when the state does not know it
@@ -47,7 +50,7 @@ class ConfigChangeDetector {
     if (iconDelta || layersChanged) {
       const layers = themes.length > 0 ? { languages: getLanguageLookup(), themes } : undefined;
       const iconThemeGenerator = new IconThemeGenerator(settings, getGeneratorPaths(), layers);
-      iconThemeGenerator.createJsonTheme();
+      await iconThemeGenerator.createJsonTheme();
       const stamp = stampOf(path);
       if (stamp) remember.icon = { ...stamp, atomConfig: iconThemeGenerator.iconConfig.atomConfig, layerThemes: iconThemeGenerator.iconConfig.layerThemes };
       return true;

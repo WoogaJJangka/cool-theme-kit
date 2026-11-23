@@ -83,6 +83,9 @@ const summarize = (report, memoryLines, errors, logFound) => {
       `| regeneration (setting written → file rewritten) | avg ${memory.regenerateAvgMs} ms, max ${memory.regenerateMaxMs} ms | |`,
     );
   }
+  if (report?.blocked) {
+    lines.push('', `Longest block of the extension host while the icon themes were mixed: ${report.blocked.ms} ms (budget ${report.blocked.budgetMs} ms)`);
+  }
   if (report?.extensions?.length) lines.push('', `Other extensions: ${report.extensions.join(', ')}`);
   if (!logFound) lines.push('', `The output log of the extension (${OUTPUT_LOG}) was not found: its errors were not checked.`);
   if (memoryLines.length > 0) lines.push('', '```', ...memoryLines, '```');
