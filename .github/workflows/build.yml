@@ -46,6 +46,10 @@ jobs:
       - name: Lint 🔍
         run: bun run lint
 
+      # the license texts of the npm packages bundled into dist/ (the VSIX has no node_modules)
+      - name: Third-party notices 📜
+        run: bun run check:notices
+
       - name: Build ⚒
         run: bun run build
 

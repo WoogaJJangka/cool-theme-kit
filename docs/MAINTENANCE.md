@@ -12,6 +12,7 @@ Cool Theme Kit 을 고칠 때 지키는 규칙과, 그 규칙을 지키는지 �
 | 보안 | 코드·워크플로 정적 분석 | `security.yml` CodeQL (`javascript-typescript`, `actions`) | PR·main·매주 화 | Code scanning 경고(PR 검사에 표시) |
 | 보안·품질 | 버그·취약점·Hotspot·중복·커버리지 | SonarQube Cloud CI 분석 `sonar.yml` | PR·main | 품질 게이트 실패 |
 | 회귀 | lint·빌드·아이콘 점검·단위 테스트 | `build.yml` | 모든 push·PR | 하나라도 실패 |
+| 라이선스 | 번들 패키지의 라이선스 전문 | `build.yml` → `bun run check:notices` | 모든 push·PR | `THIRD-PARTY-NOTICES.md` 의 생성 부분이 번들 패키지와 다름 |
 | 호환 | 실제 VS Code 1.95.0·stable, Linux·Windows | `smoke.yml` | PR·main·매주 수 | 활성화·명령·재생성 실패, 출력 채널에 `ERROR` |
 | 호환 | 다른 테마 확장과 함께 섞기 (Linux·Windows) | `smoke.yml` (`--with-extensions`) | PR·main·매주 수 | 섞은 결과가 테마 파일에 없음, `ERROR`, 섞는 동안 확장 호스트가 1.5초 넘게 막힘 |
 | 메모리 | 재생성 반복 뒤 남는 힙 | `smoke.yml` (`suite.js`) | PR·main·매주 수 | 증가량 ≥ 3 MB |
@@ -23,6 +24,7 @@ Cool Theme Kit 을 고칠 때 지키는 규칙과, 그 규칙을 지키는지 �
 | 목적 | 명령 |
 |---|---|
 | 배포 의존성 감사 | `bun run audit:shipped` |
+| 번들 패키지 라이선스 확인 / 다시 쓰기 | `bun run check:notices` / `bun run sync:notices` |
 | 크기 예산 (VSIX 를 만든 뒤) | `bun run check:size <경로>.vsix` |
 | 단위 테스트 + 커버리지(`coverage/lcov.info`) | `bun run test:coverage` |
 | 스모크 (빌드 필요) | `bun run test:smoke -- 1.95.0` / `bun run test:smoke -- stable --with-extensions` |
@@ -75,6 +77,10 @@ Cool Theme Kit 을 고칠 때 지키는 규칙과, 그 규칙을 지키는지 �
    - CI 는 `bun install --frozen-lockfile --ignore-scripts` 이다(의존성의 설치 스크립트를 돌리지 않음, 지금 쓰는 것 중 설치 스크립트가
      있는 건 `esbuild` 뿐이고 그것 없이도 동작한다). VSIX 를 만드는 `npx` 도 `--ignore-scripts`. `bun.lock` 이 바뀌는 PR 은 무엇이 바뀌는지 본다.
    - 배포 패키지의 advisory 를 받아들일 때는 `test/checks/auditShipped.js` 의 `ACCEPTED` 에 GHSA id·이유·재검토 날짜를 적는다.
+   - 번들 패키지의 라이선스 전문은 `THIRD-PARTY-NOTICES.md` 의 생성 부분(`bundled-packages` 표시 사이)에만 있다: VSIX 에
+     `node_modules` 가 없고 최소화한 번들은 그 패키지들의 주석을 남기지 않는다. 번들 패키지가 늘거나 줄거나 갱신으로 라이선스가
+     바뀌면(Dependabot PR 포함) `check:notices` 가 실패하니 `bun run sync:notices` 로 다시 쓰고 같은 PR 에 커밋한다. 라이선스 파일이 없는
+     패키지는 스크립트가 멈추므로 그 라이선스를 손으로 적는다(생성 부분 밖에).
 7. **GitHub Actions**
    - 워크플로 기본 권한은 `contents: read`. 쓰기가 필요한 job 에만 그 권한을 준다(`release.yml`, `sync-upstream.yml`, CodeQL 의 `security-events`).
    - `uses:` 는 커밋 SHA + 버전 주석(`@<sha> # v4.4.0`). Dependabot 이 SHA 와 주석을 함께 올린다.
@@ -82,6 +88,11 @@ Cool Theme Kit 을 고칠 때 지키는 규칙과, 그 규칙을 지키는지 �
    - 입력·PR 제목 같은 값은 `run:` 안에 `${{ }}` 로 넣지 않고 `env:` 로 넘긴다(`release.yml` 의 버전 입력처럼). `pull_request_target` 은 쓰지 않는다.
    - 비밀값은 저장소 secret 만: `OPEN_VSX_TOKEN`, `SONAR_TOKEN`. Marketplace 는 토큰 없이 Trusted Publishing(OIDC)으로 배포한다
      (아래 "Marketplace 배포"). 예전 `VS_MARKETPLACE_TOKEN` 은 2026-11-21 에 OIDC 로 바꾸며 지웠다. 다시 만들지 않는다.
+8. **남의 것을 가져올 때 출처**: 다른 프로젝트의 코드(포팅 포함)·아이콘·글꼴·색·데이터를 저장소에 넣는 PR 은 같은 PR 에서
+   `THIRD-PARTY-NOTICES.md` 에 출처·라이선스·저작권자를 적는다. 배포물에 들어가면 위쪽 절에, 빌드·검사 스크립트에만 쓰이면
+   "Code in the repository only" 에. 라이선스가 전문을 요구하면(MIT·BSD·Apache 2.0 등) 배포물에 그 전문이 들어가는지 본다
+   (Apache 2.0 은 `assets/icons/LICENSE-APACHE-2.0.txt`). 가져온 파일의 머리 주석에도 출처를 적는다. IDE 화면·서식 복사에서 읽은 색처럼
+   파일을 가져오지 않은 것도 어디서 읽었는지 적는다(`capturedAttributes.ts` 와 그 절).
 
 ### 취약점이 나오면
 

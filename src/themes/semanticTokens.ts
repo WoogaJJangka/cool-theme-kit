@@ -8,6 +8,8 @@
  *   of the theme by `resolveScopes`) and `nameMatcher`;
  * - src/vs/editor/common/services/semanticTokensProviderStyling.ts: a style replaces only the properties it sets on
  *   the TextMate style of the token.
+ * Those parts: Copyright (c) Microsoft Corporation, MIT License (the text is in THIRD-PARTY-NOTICES.md, "Code in the
+ * repository only"). Used only by the check script: not in the extension package.
  */
 import type { TokenStyle } from './colorCheck';
 

@@ -812,12 +812,16 @@ owners. All licenses and sources are listed in [THIRD-PARTY-NOTICES.md](./THIRD-
 - The PyCharm Python icon comes from [JetBrains/intellij-community](https://github.com/JetBrains/intellij-community)
   (Apache License 2.0, copy in [assets/icons/LICENSE-APACHE-2.0.txt](./assets/icons/LICENSE-APACHE-2.0.txt)),
   see [assets/icons/NOTICE.md](./assets/icons/NOTICE.md)
+- The Cool Islands color themes and the Cool Islands Icons product icons are made from the themes, color schemes and
+  New UI icons of [JetBrains/intellij-community](https://github.com/JetBrains/intellij-community) (Apache License 2.0)
+- The npm packages bundled into the extension code keep their own licenses, whose texts are in
+  [THIRD-PARTY-NOTICES.md](./THIRD-PARTY-NOTICES.md)
 
 Special credits to:
 
 - [VSCode Material Icon Theme](https://github.com/PKief/vscode-material-icon-theme) for the implementation
 - [Atom File Icons](https://github.com/file-icons/atom)
-  and [Sublime Text A File Icon](https://github.com/SublimeText/AFileIcon) for the idea
+  and [Sublime Text A File Icon](https://github.com/SublimeText/AFileIcon) for the idea and icons
 - [File-Icons](https://github.com/file-icons/source/blob/master/charmap.md)
 - [FontAwesome 4.7.0](https://fontawesome.com/v4.7.0/cheatsheet/)
 - [MFixx](https://github.com/file-icons/MFixx/blob/master/charmap.md)
