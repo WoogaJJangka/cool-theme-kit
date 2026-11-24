@@ -33,6 +33,8 @@
     "test:coverage": "c8 node ./test/run-unit.js",
     "audit:shipped": "bun ./test/checks/auditShipped.js",
     "check:size": "node ./test/checks/sizeBudget.js",
+    "check:notices": "node ./test/checks/notices.js",
+    "sync:notices": "node ./test/checks/notices.js --write",
     "webfont": "ts-node ./src/scripts/icons/webfont.ts",
     "vscode:prepublish": "bun run lint && bun run compile && bun run package-web",
     "watch-web": "webpack --watch --config ./build/web-extension.webpack.config.js",

@@ -48,6 +48,7 @@
 | README 스크린샷 다시 찍기 (격리 VS Code, `docs/screenshots/`, 기본 섞기 층 Material Icon Theme 을 받아 설치) | `bun run screenshots -- --vsix <경로>.vsix` (`--vsix` 없으면 개발 모드라 제목 줄에 표시가 남음) |
 | 단위 테스트 + 커버리지 (`coverage/lcov.info`, Sonar CI 분석용) | `bun run test:coverage` |
 | 배포 의존성 감사 (번들에 든 패키지의 high/critical 만 실패) | `bun run audit:shipped` |
+| 번들 패키지 라이선스 전문 확인 / 다시 쓰기 (`THIRD-PARTY-NOTICES.md` 의 생성 부분) | `bun run check:notices` / `bun run sync:notices` |
 | 크기 예산 (번들·테마 json·VSIX, `vsce package` 뒤) | `bun run check:size <경로>.vsix` |
 | 프리셋 조사 수치(대비·아이콘 fill 수, 확장은 `.vscode-test/preset-extensions` 에 격리 설치) / 프리셋 화면 | `bun run analyze:presets` / `bun run screenshots -- --preset <id>` (`all` 은 전부) |
 | 유지보수 점검 보고서 (GitHub·SonarQube MCP, 읽기 전용, 설정은 `docs/MAINTENANCE.md` 7장) | Claude Code 에서 `/maintenance-check [PR 번호] [--local]` |
@@ -245,7 +246,11 @@
   보안·호환·메모리에 닿는 변경은 그 문서의 규칙을 따르고, 규칙·예산을 바꾸면 문서와 검사(`test/checks/`, `test/smoke/`)를 같이 고친다.
   모든 워크플로는 기본 `contents: read`, `uses:` 는 커밋 SHA + 버전 주석(`security.yml` 이 검사), 설치는 `bun install --frozen-lockfile --ignore-scripts`
   (`npx` 도 `--ignore-scripts`).
-- CI(`.github/workflows`): `build.yml`(lint·build·test·VSIX·크기 예산), `security.yml`(배포 의존성 감사·Actions 고정 검사·CodeQL,
+- **출처·라이선스는 `THIRD-PARTY-NOTICES.md`**(VSIX 에 들어감): 남의 코드(포팅 포함)·아이콘·글꼴·색·데이터를 넣으면 같은 PR 에서 적는다
+  (`docs/MAINTENANCE.md` 1장 규칙 8). 번들 npm 패키지의 라이선스 전문은 생성 부분이라 손대지 않고 `sync:notices` 로 쓴다(VSIX 에
+  `node_modules` 가 없고 최소화한 번들은 그 주석을 남기지 않음, 2026-11-23 전에는 빠져 있었음). 번들 패키지 목록은
+  `test/checks/bundledPackages.js`(esbuild metafile, `audit:shipped` 와 같이 씀).
+- CI(`.github/workflows`): `build.yml`(lint·notices·build·test·VSIX·크기 예산), `security.yml`(배포 의존성 감사·Actions 고정 검사·CodeQL,
   매주 화), `smoke.yml`(실제 VS Code 1.95.0·stable, Linux·Windows, 다른 테마 확장과 함께, 재생성 반복 뒤 힙 증가 예산, 매주 수),
   `sonar.yml`(SonarQube Cloud CI 분석 + 커버리지 + 품질 게이트, `SONAR_TOKEN` 이 있을 때만), `sync-upstream.yml`(매주 iconGenerator 최신화 → PR,
   저장소 설정 "Allow GitHub Actions to create … pull requests" 필요), `release.yml`(수동, Marketplace 는 Trusted Publishing(`vsce --oidc`, environment `marketplace`), Open VSX 는 토큰 시크릿이 있을 때만 배포, `docs/MAINTENANCE.md` "Marketplace 배포"). main 이 보호돼 있어 커밋하지 않는다: 다음 버전은 이 저장소의

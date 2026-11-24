@@ -10,12 +10,10 @@
  * In GitHub Actions the result is also written to the job summary.
  */
 const { spawnSync } = require('node:child_process');
-const { appendFileSync, existsSync, readFileSync } = require('node:fs');
-const { join } = require('node:path');
+const { appendFileSync } = require('node:fs');
 
-const root = join(__dirname, '..', '..');
-// bun resolves a bare `esbuild` to the esbuild.js of the root (tsconfig baseUrl is "."): load the package itself
-const esbuild = require(join(root, 'node_modules', 'esbuild'));
+const { bundledPackages, root } = require('./bundledPackages');
+
 const FAILING = new Set(['critical', 'high']);
 
 /**
@@ -24,38 +22,6 @@ const FAILING = new Set(['critical', 'high']);
  * @type {Record<string, string>}
  */
 const ACCEPTED = {};
-
-/** The packages bundled into an entry point, with their versions: name -> versions */
-const bundledPackages = (entryPoint) => {
-  const result = esbuild.buildSync({
-    absWorkingDir: root,
-    bundle: true,
-    entryPoints: [entryPoint],
-    external: ['vscode'],
-    format: 'cjs',
-    logLevel: 'silent',
-    metafile: true,
-    outfile: join(root, 'out', 'audit', 'bundle.js'),
-    platform: entryPoint.includes('web') ? 'browser' : 'node',
-    write: false,
-  });
-
-  /** @type {Map<string, Set<string>>} */
-  const packages = new Map();
-  // the paths of the metafile use / on every platform
-  for (const input of Object.keys(result.metafile.inputs)) {
-    const parts = input.split('/');
-    const index = parts.lastIndexOf('node_modules');
-    if (index === -1) continue;
-    const name = parts[index + 1].startsWith('@') ? `${parts[index + 1]}/${parts[index + 2]}` : parts[index + 1];
-    const folder = join(root, ...parts.slice(0, index + 1), ...name.split('/'));
-    const manifest = join(folder, 'package.json');
-    const version = existsSync(manifest) ? JSON.parse(readFileSync(manifest, 'utf8')).version : undefined;
-    if (!packages.has(name)) packages.set(name, new Set());
-    if (version) packages.get(name).add(version);
-  }
-  return packages;
-};
 
 /** Whether a version is in an advisory's range; without bun's semver every installed version counts as affected */
 const affects = (version, range) => {
@@ -81,13 +47,8 @@ const runAudit = () => {
 };
 
 const main = () => {
-  const shipped = new Map();
-  for (const entry of ['src/extension.ts', 'src/web/extension.ts']) {
-    for (const [name, versions] of bundledPackages(entry)) {
-      if (!shipped.has(name)) shipped.set(name, new Set());
-      for (const version of versions) shipped.get(name).add(version);
-    }
-  }
+  /** name -> versions */
+  const shipped = new Map([...bundledPackages()].map(([name, copies]) => [name, new Set([...copies.keys()].filter(Boolean))]));
 
   /** @type {Record<string, Array<{ id: number; severity: string; title: string; url: string; vulnerable_versions: string }>>} */
   const report = runAudit();
