@@ -11,13 +11,13 @@ import { glassIcon, toMetric } from 'src/icons/glass/glassIcons';
 
 import { iconFolders, METRICS_FILE } from './syncIconMetrics';
 
-import type { IconKind, IconMetrics } from 'src/icons/glass/glassIcons';
+import type { IconGroup, IconKind, IconMetrics } from 'src/icons/glass/glassIcons';
 
 const root = join(__dirname, '..', '..', '..');
 const COLUMNS = 12;
 const CELL = { height: 46, width: 118 };
 const PER_SHEET = 240;
-const KINDS: Record<keyof IconMetrics, IconKind> = { files: 'file', folders: 'folder', foldersOpen: 'folderOpen' };
+const KINDS: Record<IconGroup, IconKind> = { files: 'file', folders: 'folder', foldersOpen: 'folderOpen' };
 
 /** One font file for the labels where there is one: loading every system font takes seconds a sheet */
 const LABEL_FONT = 'C:/Windows/Fonts/segoeui.ttf';
@@ -38,7 +38,11 @@ const sheets = () => {
   const background = light ? '#f7f8fa' : '#191a1c';
   const metrics = JSON.parse(readFileSync(option('--metrics') ?? join(root, METRICS_FILE), 'utf8')) as IconMetrics;
 
-  for (const [name, folders] of Object.entries(iconFolders(root)) as Array<[keyof IconMetrics, string[]]>) {
+  const { glyphs: glyphFolders, ...iconGroups } = iconFolders(root);
+  // the New UI glyph of a file icon, as the generator draws it in the glass style
+  const glyphOf = (icon: string) => glyphFolders.map((folder) => join(folder, `${icon}.svg`)).find((file) => existsSync(file));
+
+  for (const [name, folders] of Object.entries(iconGroups) as Array<[IconGroup, string[]]>) {
     if (group && group !== name) continue;
 
     // the last folder wins, as in the generator
@@ -57,8 +61,9 @@ const sheets = () => {
       for (const [index, icon] of part.entries()) {
         const x = (index % COLUMNS) * CELL.width;
         const y = Math.floor(index / COLUMNS) * CELL.height;
-        const source = readFileSync(icons.get(icon)!, 'utf8');
-        const svg = flat ? source : glassIcon(source, KINDS[name], toMetric(metrics[name][icon]));
+        const glyph = name === 'files' && !flat ? glyphOf(icon) : undefined;
+        const source = readFileSync(glyph ?? icons.get(icon)!, 'utf8');
+        const svg = flat ? source : glassIcon(source, KINDS[name], toMetric(metrics[glyph ? 'glyphs' : name][icon]));
         const href = `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`;
         body += `<image x="${x + 4}" y="${y + 1}" width="32" height="32" href="${href}"/>`;
         body += `<image x="${x + 44}" y="${y + 9}" width="16" height="16" href="${href}"/>`;

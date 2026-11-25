@@ -12,6 +12,11 @@ All notable changes to this project will be documented in this file. Dates are d
   HTML) becomes the tile itself, an icon of several colors keeps them on a dark tile, and a dark logo shows on any
   theme. Which icon a name gets does not change, and the folder color, opacity, saturation and monochrome settings
   work as before. The file icons of other themes mixed in and custom SVG file icons go on a tile too.
+- feat: in the glass style the JetBrains shapes come first. A file type the JetBrains IDEs have their own New UI
+  icon for (about fifty: JSON, YAML, XML, HTML, CSS, JavaScript, TypeScript, Java, C, C#, SQL, Markdown, shell
+  scripts, text, images, archives, fonts…) shows that icon as its glyph, on a tile of its color. They are drawn for
+  16 pixels, where a logo with fine lines (the braces of JSON, the cup of Java) fades. The other types show the logo
+  of the JetBrains icon plugin.
 - feat: `a-file-icon-vscode.iconStyle`: `glass` (the default) or `flat`, the icons as the JetBrains plugin draws
   them (the look of the versions before). Add it to `workbench.settings.applyToAllProfiles` with the other theme
   settings when you use several VS Code profiles.

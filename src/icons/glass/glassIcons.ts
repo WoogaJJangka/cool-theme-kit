@@ -9,6 +9,10 @@
  * Pure functions of the svg text: the theme is regenerated in the extension host, where nothing can render an svg.
  * What needs a renderer (the box a glyph really fills, whether a logo is a badge with its glyph cut out) is measured
  * ahead by `sync:metrics` (`assets/icons/metrics.json`).
+ *
+ * The glyph of a file type the JetBrains IDEs have their own New UI icon for is that icon, not the logo of the icon
+ * plugin: `assets/icons/glass/files` (`sync:glyphs`, src/scripts/icons/jetbrainsGlyphs.ts). The generator gives
+ * it to these functions in place of the icon; it is an icon of one color like any other.
  */
 
 /** What an icon is drawn for */
@@ -28,13 +32,24 @@ type IconMetric = {
    * a badge in a badge, so the tile takes its place and the holes are the glyph
    */
   holes?: boolean;
+  /**
+   * a glyph drawn with lines one pixel wide for an icon of 16 pixels (the JetBrains New UI icons): it is drawn larger
+   * than a logo, or its lines would be well under a pixel on the tile
+   */
+  lines?: boolean;
 };
 
-/** An entry of `metrics.json`: the box, then `"h"` for holes and/or the `#rrggbb` color */
+/** An entry of `metrics.json`: the box, then `"h"` for holes, `"l"` for lines and/or the `#rrggbb` color */
 type MetricEntry = Array<number | string>;
 
-/** The measures of the bundled icons, by icon name (without `.svg`) */
-type IconMetrics = Record<'files' | 'folders' | 'foldersOpen', Record<string, MetricEntry>>;
+/** The icons of this theme: file icons, folder icons, expanded folder icons */
+type IconGroup = 'files' | 'folders' | 'foldersOpen';
+
+/**
+ * The measures of the bundled icons, by icon name (without `.svg`). `glyphs`: the JetBrains New UI glyphs drawn
+ * instead of a file icon of the same name (`assets/icons/glass/files`).
+ */
+type IconMetrics = Record<IconGroup | 'glyphs', Record<string, MetricEntry>>;
 
 const toMetric = (entry: MetricEntry | undefined): IconMetric | undefined => {
   if (!entry) return undefined;
@@ -44,14 +59,16 @@ const toMetric = (entry: MetricEntry | undefined): IconMetric | undefined => {
   if (box.length === 4 && box.every((value) => typeof value === 'number')) metric.box = box as GlyphBox;
   for (const flag of entry.slice(4)) {
     if (flag === 'h') metric.holes = true;
+    else if (flag === 'l') metric.lines = true;
     else if (typeof flag === 'string' && flag.startsWith('#')) metric.color = flag;
   }
   return metric;
 };
 
-const toEntry = ({ box, color, holes }: IconMetric): MetricEntry => [
+const toEntry = ({ box, color, holes, lines }: IconMetric): MetricEntry => [
   ...(box ?? []),
   ...(holes ? ['h'] : []),
+  ...(lines ? ['l'] : []),
   ...(color ? [color] : []),
 ];
 
@@ -247,6 +264,9 @@ const TILE_RADIUS = 4.6;
 /** The longest side of a glyph on its tile, and the side of a square glyph: a long glyph is not as tall as a square one */
 const GLYPH_LONGEST = 11.6;
 const GLYPH_SQUARE = 10.2;
+/** The same for a glyph drawn with lines (`lines`): larger, its lines stay close to a pixel */
+const LINES_LONGEST = 12.4;
+const LINES_SQUARE = 11.6;
 /** A glyph placed by the viewBox of its file (an icon that was not measured) usually has a margin in it */
 const GLYPH_UNMEASURED = 11.8;
 
@@ -272,8 +292,9 @@ const glassFile = (svg: string, metric?: IconMetric): string => {
   const color = ownColors ? DARK_TILE : (metric?.color ?? mainPaint(svg) ?? NEUTRAL);
   const width = box[2];
   const height = box[3];
+  const [longest, square] = metric?.lines ? [LINES_LONGEST, LINES_SQUARE] : [GLYPH_LONGEST, GLYPH_SQUARE];
   const scale = metric?.box
-    ? Math.min(GLYPH_LONGEST / Math.max(width, height), GLYPH_SQUARE / Math.sqrt(width * height))
+    ? Math.min(longest / Math.max(width, height), square / Math.sqrt(width * height))
     : GLYPH_UNMEASURED / Math.max(width, height);
   const placed = place(parts, box, scale, SIZE / 2, SIZE / 2);
 
@@ -427,4 +448,4 @@ export {
   toEntry,
   toMetric,
 };
-export type { FolderParts, GlyphBox, IconKind, IconMetric, IconMetrics, MetricEntry, SvgParts };
+export type { FolderParts, GlyphBox, IconGroup, IconKind, IconMetric, IconMetrics, MetricEntry, SvgParts };

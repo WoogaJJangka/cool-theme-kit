@@ -18,6 +18,7 @@
   "scripts": {
     "build": "bun run compile:dev && bun run postcompile",
     "sync:upstream": "ts-node ./src/scripts/icons/syncUpstream.ts",
+    "sync:glyphs": "ts-node ./src/scripts/icons/syncJetbrainsGlyphs.ts",
     "sync:metrics": "ts-node ./src/scripts/icons/syncIconMetrics.ts",
     "sheet:icons": "ts-node ./src/scripts/icons/iconSheets.ts",
     "compile": "node esbuild.js --production",

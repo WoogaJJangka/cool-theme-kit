@@ -10,7 +10,8 @@ import { monochromeService } from 'src/icons/generators/MonochromeService';
 import { opacityService } from 'src/icons/generators/OpacityService';
 import { saturationService } from 'src/icons/generators/SaturationService';
 import { glassFile, glassFolder, glassIcon, luminance, mainPaint, mixColors, paintCount, parseFolder, parseSvg, toEntry, toMetric } from 'src/icons/glass/glassIcons';
-import { FILE_OVERRIDES, measureFile, measureFolder } from 'src/scripts/icons/iconMetrics';
+import { FILE_OVERRIDES, measureFile, measureFolder, measureGlyph } from 'src/scripts/icons/iconMetrics';
+import { glyphNotice, JETBRAINS_GLYPHS, toGlyph } from 'src/scripts/icons/jetbrainsGlyphs';
 import { iconFolders, measureIcons, METRICS_FILE } from 'src/scripts/icons/syncIconMetrics';
 
 import type { IconMetrics, MetricEntry } from 'src/icons/glass/glassIcons';
@@ -84,7 +85,7 @@ describe('glass icons', () => {
 
   describe('metrics', () => {
     it('reads and writes an entry of metrics.json', () => {
-      const entries: MetricEntry[] = [[1, 2, 3, 4], [1, 2, 3, 4, 'h'], [1, 2, 3, 4, '#aabbcc'], [1, 2, 3, 4, 'h', '#aabbcc']];
+      const entries: MetricEntry[] = [[1, 2, 3, 4], [1, 2, 3, 4, 'h'], [1, 2, 3, 4, 'l'], [1, 2, 3, 4, '#aabbcc'], [1, 2, 3, 4, 'h', '#aabbcc']];
       for (const entry of entries) assert.deepEqual(toEntry(toMetric(entry)!), entry);
       assert.deepEqual(toMetric([1, 2, 3, 4, 'h', '#aabbcc']), { box: [1, 2, 3, 4], color: '#aabbcc', holes: true });
       assert.equal(toMetric(undefined), undefined);
@@ -110,6 +111,12 @@ describe('glass icons', () => {
       // 18 units wide in a viewBox of 24: 10.2 wide on the tile, 24 units are 13.6
       const glass = glassFile(SQUARE, { box: [3, 3, 18, 18] });
       assert.ok(glass.includes('<svg x="1.2" y="1.2" width="13.6" height="13.6" viewBox="0 0 24 24" overflow="visible">'), glass);
+    });
+
+    it('draws a glyph made of lines larger: its lines are made for 16 pixels', () => {
+      const glass = glassFile(SQUARE, { box: [3, 3, 18, 18], lines: true });
+      // 18 units are 11.6 on the tile, 24 units are 15.4667
+      assert.ok(glass.includes('width="15.4667" height="15.4667" viewBox="0 0 24 24"'), glass);
     });
 
     it('makes a long glyph no longer than the tile allows', () => {
@@ -276,7 +283,7 @@ describe('glass icons', () => {
       this.timeout(300_000);
       const measured = measureIcons(repoRoot);
 
-      for (const group of ['files', 'folders', 'foldersOpen'] as const) {
+      for (const group of ['files', 'folders', 'foldersOpen', 'glyphs'] as const) {
         assert.deepEqual(Object.keys(metrics[group]), Object.keys(measured[group]), `${group}: icons added or removed`);
         for (const [name, entry] of Object.entries(measured[group])) {
           const stored = metrics[group][name];
@@ -312,6 +319,72 @@ describe('glass icons', () => {
     });
   });
 
+  describe('JetBrains New UI glyphs', () => {
+    const glyphsFolder = join(repoRoot, 'assets', 'icons', 'glass', 'files');
+    const iconFolder = (name: string) => iconFolders(repoRoot).files.find((folder) => existsSync(join(folder, `${name}.svg`)));
+    const icon16 = (content: string) => `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">${content}</svg>`;
+
+    it('keeps the lines of an icon in its color, and removes the dark fill inside them', () => {
+      // like java.svg: a cup with a dark inside, and a saucer
+      const cup = icon16('<rect x="2" y="13" width="12" height="1" fill="#C77D55"/><path d="M2 3h10v8H2z" fill="#45322B" stroke="#C77D55"/>');
+      assert.equal(toGlyph(cup), icon16('<rect x="2" y="13" width="12" height="1" fill="#c77d55"/><path d="M2 3h10v8H2z" fill="none" stroke="#c77d55"/>'));
+    });
+
+    it('gives the tile the color of the icon, not the gray of its letters', () => {
+      // like yaml.svg: a red page with a gray letter, more gray paints than red ones
+      const page = icon16('<path d="M3 1h8v13H3z" fill="#402929"/><path d="M3 1h8" stroke="#DB5C5C"/><path d="M12 9h3" fill="#CED0D6"/><path d="M12 11h3" fill="#CED0D6"/>');
+      const glyph = toGlyph(page);
+      assert.equal(mainPaint(glyph), '#db5c5c');
+      assert.equal(paintCount(glyph), 1);
+      assert.ok(glyph.includes('<path d="M12 9h3" fill="#db5c5c"/>'), 'the letter is a part of the glyph');
+    });
+
+    it('gives an icon of gray alone a gray tile', () => {
+      assert.equal(mainPaint(toGlyph(icon16('<rect x="2" y="3" width="12" height="1" fill="#CED0D6"/>'))), '#ced0d6');
+    });
+
+    it('keeps only the letters of a filled shape with letters on it: the tile takes the place of the shape', () => {
+      // like javaScript.svg (dark letters on a yellow square) and typeScript.svg (white letters on a blue one)
+      const js = icon16('<path d="M2 2h12v12H2z" fill="#F2C55C"/><path d="M5 9h2v3H5z" fill="#1E1F22"/>');
+      assert.equal(toGlyph(js, ['#1E1F22']), icon16('<path d="M2 2h12v12H2z" fill="none"/><path d="M5 9h2v3H5z" fill="#f2c55c"/>'));
+      const ts = icon16('<path d="M2 2h12v12H2z" fill="#548AF7"/><path d="M5 9h2v3H5z" fill="white"/>');
+      assert.equal(toGlyph(ts, ['white']), icon16('<path d="M2 2h12v12H2z" fill="none"/><path d="M5 9h2v3H5z" fill="#548af7"/>'));
+    });
+
+    it('refuses an icon without a paint for the tile', () => {
+      assert.throws(() => toGlyph(icon16('<path d="M2 2h12v12H2z" fill="#1E1F22"/>')), /without a paint/);
+    });
+
+    it('says where a glyph comes from, and that it was changed', () => {
+      assert.match(glyphNotice('json_dark.svg'), /^<!-- From JetBrains\/intellij-community, platform\/icons\/src\/expui\/fileTypes\/json_dark\.svg: .*Apache License 2\.0\. Changed for Cool Theme Kit .* -->\n$/);
+    });
+
+    it('measures a glyph as lines, whatever its holes', () => {
+      assert.deepEqual(measureGlyph(BADGE), { box: [2, 2, 20, 20], lines: true });
+    });
+
+    it('gives each icon of this theme one New UI icon, and names icons that exist', () => {
+      const names = JETBRAINS_GLYPHS.flatMap((glyph) => glyph.names);
+      assert.equal(new Set(names).size, names.length, 'an icon named twice');
+      for (const name of names) assert.ok(iconFolder(name), `no icon ${name}`);
+    });
+
+    it('has the glyph of every icon of the table, for its dark variant too, and no other (bun run sync:glyphs)', () => {
+      const expected = JETBRAINS_GLYPHS.flatMap((glyph) => glyph.names).flatMap((name) => [name, `${name}_dark`].filter((item) => iconFolder(item)));
+      assert.deepEqual(readdirSync(glyphsFolder).sort(), expected.map((name) => `${name}.svg`).sort());
+    });
+
+    it('has glyphs of one color, with their notice and their measures', () => {
+      const metrics = JSON.parse(readFileSync(join(repoRoot, METRICS_FILE), 'utf8')) as IconMetrics;
+      for (const file of readdirSync(glyphsFolder)) {
+        const glyph = readFileSync(join(glyphsFolder, file), 'utf8');
+        assert.ok(glyph.startsWith('<!-- From JetBrains/intellij-community, platform/icons/src/expui/fileTypes/'), file);
+        assert.equal(paintCount(glyph), 1, file);
+        assert.ok(toMetric(metrics.glyphs[file.slice(0, -4)])?.lines, `${file}: bun run sync:metrics`);
+      }
+    });
+  });
+
   describe('the generated theme', () => {
     let directory: string;
 
@@ -339,7 +412,7 @@ describe('glass icons', () => {
       assert.equal(getFileConfigHash(config), '', 'the default style adds nothing to the names of the icons');
       assert.equal(theme.atomConfig?.iconStyle, 'glass');
       assert.ok(icon(theme.fileExtensions!.ts).includes('url(#ctk-t)'), 'a file icon is on a tile');
-      assert.ok(icon(theme.fileExtensions!.ts).includes('operator="out"'), 'TypeScript: the letters cut out of the square');
+      assert.ok(icon(theme.fileExtensions!.pdf).includes('operator="out"'), 'PDF: the glyph cut out of the square');
       assert.ok(icon(theme.folderNames!.src).includes('url(#ctk-f)'), 'a folder icon is a glass folder');
       assert.ok(icon(theme.folderNamesExpanded!.src).includes('opacity=".6"'), 'an expanded folder holds a sheet');
       assert.ok(icon(theme.folder!).includes('url(#ctk-f)'), 'the default folder too');
@@ -357,6 +430,22 @@ describe('glass icons', () => {
       if (definition) assert.ok(icon(definition).includes('opacity=".6"'), closedOnly);
     });
 
+    it('draws the JetBrains New UI glyph of a file type that has one, on a tile of its color', async function () {
+      this.timeout(120_000);
+      const { icon, theme } = await generate(IconStyle.Glass);
+      const glyphs = join(repoRoot, 'assets', 'icons', 'glass', 'files');
+      const color = (name: string) => mainPaint(readFileSync(join(glyphs, `${name}.svg`), 'utf8'))!;
+
+      const json = icon(theme.fileExtensions!.json);
+      assert.ok(json.includes(`stop-color="${mixColors(color('json'), '#ffffff', 0.18)}"`), 'the tile takes the color of the New UI icon');
+      assert.ok(!json.includes('data-iconColor'), 'not the icon of the icon plugin');
+      assert.ok(icon(theme.file!).includes(`stop-color="${mixColors(color('file'), '#ffffff', 0.18)}"`), 'the default file icon too');
+      // the icon for the dark themes and the one for the light themes: the same glyph
+      assert.equal(icon(theme.fileExtensions!.css), icon(theme.light!.fileExtensions!.css));
+      // a file type the IDE has no icon for keeps the icon of the icon plugin
+      assert.ok(icon(theme.fileExtensions!.rs).includes('data-iconColor'));
+    });
+
     it('keeps the icons as they are drawn with the flat style, under other file names', async function () {
       this.timeout(120_000);
       const { config, icon, theme } = await generate(IconStyle.Flat);
@@ -364,6 +453,7 @@ describe('glass icons', () => {
       assert.notEqual(getFileConfigHash(config), '');
       assert.ok(theme.iconDefinitions![theme.fileExtensions!.ts].iconPath!.includes('~'), 'VS Code loads the icons again');
       assert.ok(!icon(theme.fileExtensions!.ts).includes('ctk-'));
+      assert.ok(icon(theme.fileExtensions!.json).includes('data-iconColor="JSON"'), 'the icon of the icon plugin, not the New UI glyph');
       assert.ok(icon(theme.folderNames!.src).includes('data-folderColor'));
     });
   });

@@ -22,7 +22,7 @@ import { ThemeLayerGenerator } from './ThemeLayerGenerator';
 
 import type { AtomConfig } from 'src/@types/config';
 import type { LanguageLookup, LayerTheme } from 'src/helpers/themeLayers';
-import type { IconKind, IconMetric, IconMetrics } from 'src/icons/glass/glassIcons';
+import type { IconGroup, IconKind, IconMetric, IconMetrics } from 'src/icons/glass/glassIcons';
 
 /** The measures of the bundled icons the glass style places them with (`bun run sync:metrics`), in `assets/icons` */
 const METRICS_FILE = 'metrics.json';
@@ -30,7 +30,13 @@ const METRICS_FILE = 'metrics.json';
 /** What an icon is drawn for in the glass style, and what was measured for it (nothing for an icon not bundled) */
 type Glass = { kind: IconKind; metric?: IconMetric };
 
-const KINDS: Record<keyof IconMetrics, IconKind> = { files: 'file', folders: 'folder', foldersOpen: 'folderOpen' };
+const KINDS: Record<IconGroup, IconKind> = { files: 'file', folders: 'folder', foldersOpen: 'folderOpen' };
+
+/**
+ * The JetBrains New UI glyphs (`bun run sync:glyphs`): in the glass style, a file icon with a file of its name in
+ * this folder of `assets/icons` is drawn with it, in place of the icon of the icon plugin
+ */
+const GLYPHS_FOLDER = 'glass';
 
 /** Association values that are paths to custom SVG files */
 const customValues = (associations?: Record<string, string>) =>
@@ -79,6 +85,9 @@ export class IconThemeGenerator {
   private layerFiles = new Set<string>();
   /** The measures of the bundled icons, read for the glass style only */
   private metrics: IconMetrics | undefined;
+  /** The files of the New UI glyphs (`json.svg`), and their folder: none with the flat style */
+  private glyphs = new Set<string>();
+  private glyphsPath = '';
 
   languageGenerator: LanguageJsonGenerator;
   fileGenerator: FileJsonGenerator;
@@ -241,6 +250,7 @@ export class IconThemeGenerator {
     const distributionFoldersOpenPath = getFoldersOpenPath(distributionPath);
 
     this.metrics = this.readMetrics();
+    this.readGlyphs();
     this.applyFiltersAndCopy(filesPath, distributionFilesPath, 'files');
     this.applyFiltersAndCopy(foldersPath, distributionFoldersPath, 'folders');
     this.applyFiltersAndCopy(foldersOpenPath, distributionFoldersOpenPath, 'foldersOpen');
@@ -270,6 +280,13 @@ export class IconThemeGenerator {
     } catch {
       return undefined;
     }
+  }
+
+  /** The New UI glyphs of the glass style: a few file names, read once a generation */
+  private readGlyphs() {
+    this.glyphsPath = getFilesPath(join(this.iconGeneratorPath(), '..', 'assets', 'icons', GLYPHS_FOLDER));
+    const used = this.atomConfig.iconStyle === IconStyle.Glass && existsSync(this.glyphsPath);
+    this.glyphs = new Set(used ? readdirSync(this.glyphsPath) : []);
   }
 
   /** How an icon is drawn in the glass style; nothing with the flat style */
@@ -334,14 +351,17 @@ export class IconThemeGenerator {
    * @param group what the icons are: files, folders or expanded folders
    * @private
    */
-  private applyFiltersAndCopy(source: string, destination: string, group: keyof IconMetrics) {
+  private applyFiltersAndCopy(source: string, destination: string, group: IconGroup) {
     const iconFiles = readdirSync(source);
     const fileConfigHash = getFileConfigHash(this.atomConfig);
 
     for (const iconFile of iconFiles) {
       // apply color, opacity and saturation
       const hashedFile = hashedIconName(iconFile, fileConfigHash);
-      this.writeIcon(destination, hashedFile, join(source, iconFile), this.glass(group, iconFile, KINDS[group]));
+      // a file type the JetBrains IDEs have their own icon for: its glyph in place of the icon, in the glass style
+      const glyph = group === 'files' && this.glyphs.has(iconFile);
+      const file = glyph ? join(this.glyphsPath, iconFile) : join(source, iconFile);
+      this.writeIcon(destination, hashedFile, file, this.glass(glyph ? 'glyphs' : group, iconFile, KINDS[group]));
     }
   }
 

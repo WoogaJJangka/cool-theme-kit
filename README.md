@@ -15,8 +15,9 @@
   the Atom Material Icons plugin, and the colors and product icons are generated from the JetBrains sources, not drawn
   by hand.
 - **One look for every icon.** The file icons are glyphs on the same rounded glass tile and the folders the same
-  rounded glass folder, so thousands of logos read as one set, and a dark logo shows on a dark theme. The flat icons of
-  the JetBrains plugin are [one setting away](#icon-style).
+  rounded glass folder, so thousands of logos read as one set, and a dark logo shows on a dark theme. The JetBrains
+  shapes come first: the New UI icon of the IDE where it has one, the logo of the icon plugin elsewhere. The flat icons
+  of the plugin are [one setting away](#icon-style).
 - **Take only what you want.** Installing the extension changes nothing: choose the file icons, the colors, the product
   icons and the fonts one by one. A user of the file icons alone keeps their own colors and font.
 - **Keep your other themes.** VS Code uses one theme of each kind; Cool Theme Kit mixes other installed themes into its
@@ -269,8 +270,12 @@ Cool Icons draws every icon in one style, **glass**:
   highlight on its top edge. The glyphs all get about the same size, whatever the size of the logo they come from.
 - Every **folder** is the same rounded folder in its own color, with its badge as a glyph on the front. An expanded
   folder shows the sheet it holds.
-- A logo that is a badge with its glyph cut out (the square of TypeScript, the hexagon of C#, the shield of HTML)
-  becomes the tile itself: its glyph is as large as the others, not a badge in a badge.
+- **The JetBrains shapes come first.** For a file type the JetBrains IDEs have their own New UI icon for (about
+  fifty: JSON, YAML, XML, HTML, CSS, JavaScript, TypeScript, Java, C, C#, SQL, Markdown, shell scripts, text, images,
+  archives, fonts…), the glyph is that icon and the tile takes its color. They are drawn for 16 pixels, with lines that
+  stay readable on a tile. The other types show the logo of the JetBrains icon plugin (Atom Material Icons).
+- A logo that is a badge with its glyph cut out (the square of Photoshop, the hexagon of Node.js, the disc of
+  Bitcoin) becomes the tile itself: its glyph is as large as the others, not a badge in a badge.
 - An icon drawn with several colors keeps them, on a dark tile.
 - A dark logo (GitHub, Vercel, Deno) shows on a dark theme and a light one on a light theme: the tile carries it.
 
@@ -280,7 +285,7 @@ settings below (folder color, opacity, saturation, monochrome, icon packs). The 
 [mixed in](#mixing-icon-themes) and your [custom SVG icons](#custom-svg-icons) go on a tile too; the folder icons of
 other themes and your custom folder icons are whole drawings, kept as they are.
 
-To get the icons as the JetBrains plugin draws them:
+To get the icons as the JetBrains icon plugin draws them, for every file type:
 
 ```json
 {

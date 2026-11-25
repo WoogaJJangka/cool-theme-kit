@@ -24,7 +24,10 @@
   써서 반영하고, VS Code 가 다시 읽지 않는 것(색·제품 아이콘)은 창 다시 로드를 권한다.
 - **아이콘 모양은 유리 스타일이 기본(2026-11-25 사용자 결정)**: 어떤 이름에 어떤 아이콘이 붙는지는 계속 JetBrains(PyCharm + Atom
   Material Icons)를 따르고(`jetbrainsParity.test.ts`), 그리는 방식만 바꾼다. 파일 = 같은 둥근 타일 위의 글리프, 폴더 = 같은 둥근
-  폴더(종류별 색 유지) + 배지 글리프. 예전 평면 모양은 `iconStyle: "flat"` 로 남긴다. 사용자 기준: 심플·모던 최우선, 16px 에서
+  폴더(종류별 색 유지) + 배지 글리프. 예전 평면 모양은 `iconStyle: "flat"` 로 남긴다.
+  **JetBrains 형태가 기본이라는 것을 잊지 않는다(사용자가 같은 날 다시 강조)**: 글리프를 새로 그리거나 다른 그림으로 바꾸지 않는다.
+  글리프의 출처는 ① JetBrains 가 직접 그린 New UI 파일 아이콘이 있는 종류는 그 모양과 색(사용자 선택 "New UI 모양 우선"),
+  ② 없는 종류는 JetBrains 아이콘 플러그인(Atom Material Icons) 모양. 다듬는다는 것은 이 둘 안에서 고르고 크기를 맞추는 일이다. 사용자 기준: 심플·모던 최우선, 16px 에서
   무너지는 입체 표현은 쓰지 않음(그래서 그라데이션 + 위쪽 하이라이트 한 줄만 — 진짜 굴절·투명은 이 크기에서 안 보인다), 둥글고
   투명한 유리 느낌, 모든 아이콘의 통일감, 의미가 바로 보일 것.
 - **묶음이지만 opt-in(2026-11-21 사용자 결정)**: 설치만으로는 아무것도 바꾸지 않고, 사용자가 고른 것만 적용한다. 아이콘만 쓰는
@@ -59,6 +62,7 @@
 | 유지보수 점검 보고서 (GitHub·SonarQube MCP, 읽기 전용, 설정은 `docs/MAINTENANCE.md` 7장) | Claude Code 에서 `/maintenance-check [PR 번호] [--local]` |
 | lint (`vsce package` 가 먼저 돌림, 0 errors 유지) | `bun run lint` |
 | JetBrains 연결 규칙 동기화 | `bun run sync:upstream` |
+| 유리 스타일의 JetBrains New UI 글리프 받기 (`assets/icons/glass/files`, 대응표를 고치거나 고정 커밋이 바뀌면. 뒤에 `sync:metrics`) | `bun run sync:glyphs` |
 | 유리 스타일용 아이콘 측정값 다시 쓰기 (`assets/icons/metrics.json`, 아이콘 SVG 가 바뀌면) | `bun run sync:metrics` |
 | 전체 아이콘을 16px·32px 시트로 그려 눈으로 검토 (무너지는 글리프 찾기) | `bun run sheet:icons -- <폴더>` (`--flat` 평면, `--light`, `--only <이름,이름…>`, `--group files\|folders\|foldersOpen`) |
 | JetBrains 색 테마 동기화 (고정 커밋 / 최신) | `bun run sync:colors` / `bun run sync:colors -- --latest` |
@@ -222,6 +226,15 @@
   - 파일: 단색 아이콘 = 그 색 타일 + 흰 글리프(밝은 타일(휘도 > 0.45, JS 노랑)은 어두운 글리프), 여러 색 아이콘 = 어두운 타일 + 원래 색
     그대로(한 색으로 누르면 대부분 덩어리가 된다), 글리프를 뚫은 배지(`holes`: TS 사각형·C# 육각형·HTML 방패) = 타일이 배지를 대신하고
     구멍이 글리프(배지가 그리지 않은 곳을 구멍 상자 안에서 칠함: `feComposite out` + clip). 글리프 크기는 긴 변 11.6·정사각 10.2 로 맞춘다.
+  - JetBrains New UI 글리프(`src/scripts/icons/jetbrainsGlyphs.ts` 대응표, 손으로 관리 → `sync:glyphs` 가
+    `assets/icons/glass/files/<우리 아이콘 이름>.svg` 로 씀, 생성물·**손대지 않는다**): intellij-community
+    `platform/icons/src/expui/fileTypes` 의 `_dark` 아이콘(어두운 테마 색)을 한 색 글리프로 바꾼 것. New UI 아이콘은 "선 색 + 그 색의
+    어두운 안쪽 채움 + 글자용 회색"으로 그려져 있어서, 휘도 0.1 아래 채움은 지우고 나머지를 아이콘 색 하나로 칠한다(타일이 그 색을
+    가져감). 채운 도형 위에 글자를 얹은 것(JS·TS·CSS)은 대응표의 `ink` 로 글자만 남긴다(타일이 도형을 대신함). 생성기는 유리 스타일일 때
+    같은 이름의 파일 아이콘 대신 이 파일을 원본으로 쓴다(`_dark` 변형이 있는 아이콘은 두 파일 다 같은 글리프). 측정값은
+    `metrics.json` 의 `glyphs`(구멍 판정 안 함, `"l"` = 선 글리프라 타일에서 더 크게: 긴 변 12.4·정사각 11.6). 평면 스타일은 쓰지 않는다.
+    대응표에서 뺀 것: 파일 종류가 아닌 아이콘, 삽화(jenkins), 플러그인 로고가 더 나은 것(bazel·eclipse). 고정 커밋은 색 테마와 같은
+    `themes/jetbrains-source.json`. Apache 2.0 의 변경 고지는 각 파일 첫 줄(`glyphNotice`)과 `assets/icons/NOTICE.md`.
   - 폴더: `data-folderColor`/`data-themed` 표시가 있는 path(없으면 Material 폴더 윤곽 `M10,4H4`·`M20,18`)가 폴더 모양, 나머지가 배지.
     그 색으로 뒤판·앞판을 그리고 배지를 앞판에 글리프로 놓는다(여러 색 배지는 원래 색). 펼친 폴더는 앞판이 낮고 종이가 보인다.
     `seed` 는 구조가 달라 평면 그대로. 펼친 아이콘이 없는 폴더는 닫힌 아이콘의 배지로 펼친 유리 폴더를 그린다.

@@ -9,7 +9,7 @@ import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { toEntry } from 'src/icons/glass/glassIcons';
 
-import { measureFile, measureFolder } from './iconMetrics';
+import { measureFile, measureFolder, measureGlyph } from './iconMetrics';
 
 import type { IconMetric, IconMetrics, MetricEntry } from 'src/icons/glass/glassIcons';
 
@@ -20,6 +20,8 @@ const iconFolders = (repository: string) => ({
   files: [join(repository, 'iconGenerator', 'assets', 'icons', 'files'), join(repository, 'assets', 'icons', 'files')],
   folders: [join(repository, 'iconGenerator', 'assets', 'icons', 'folders')],
   foldersOpen: [join(repository, 'iconGenerator', 'assets', 'icons', 'foldersOpen')],
+  // the JetBrains New UI glyphs the glass style draws instead of the file icon of the same name
+  glyphs: [join(repository, 'assets', 'icons', 'glass', 'files')],
 });
 
 const METRICS_FILE = join('assets', 'icons', 'metrics.json');
@@ -42,6 +44,7 @@ const measureIcons = (repository: string): IconMetrics => {
     files: measureAll(folders.files, measureFile),
     folders: measureAll(folders.folders, measureFolder),
     foldersOpen: measureAll(folders.foldersOpen, measureFolder),
+    glyphs: measureAll(folders.glyphs, measureGlyph),
   };
 };
 
@@ -61,7 +64,8 @@ if (require.main === module) {
   const holes = Object.values(metrics.files).filter((entry) => entry.includes('h')).length;
   console.log(
     `${METRICS_FILE}: ${Object.keys(metrics.files).length} file icons (${holes} with holes), ` +
-      `${Object.keys(metrics.folders).length} + ${Object.keys(metrics.foldersOpen).length} folder badges`,
+      `${Object.keys(metrics.folders).length} + ${Object.keys(metrics.foldersOpen).length} folder badges, ` +
+      `${Object.keys(metrics.glyphs).length} New UI glyphs`,
   );
 }
 

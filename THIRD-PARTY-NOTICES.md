@@ -41,6 +41,13 @@ its CSS is MIT).
   [JetBrains/intellij-community](https://github.com/JetBrains/intellij-community), Apache License 2.0,
   Copyright 2000-2024 JetBrains s.r.o. and contributors. See [assets/icons/NOTICE.md](./assets/icons/NOTICE.md) and
   [assets/icons/LICENSE-APACHE-2.0.txt](./assets/icons/LICENSE-APACHE-2.0.txt).
+- `assets/icons/glass/files/*.svg` (the glyphs of the glass icon style for the file types the JetBrains IDEs have
+  their own icon for) — the New UI file type icons of
+  [JetBrains/intellij-community](https://github.com/JetBrains/intellij-community) (`platform/icons/src/expui/fileTypes`),
+  at the commit given in `themes/jetbrains-source.json`, Apache License 2.0, Copyright 2000-2025 JetBrains s.r.o. and
+  contributors. The icons were changed, as the first line of each file says: drawn with one color, the fills inside
+  their lines removed, by `src/scripts/icons/syncJetbrainsGlyphs.ts`. See
+  [assets/icons/NOTICE.md](./assets/icons/NOTICE.md).
 - `productIcons/cool-islands-icons.woff` (Cool Islands Icons) — a font made from the New UI icons of
   [JetBrains/intellij-community](https://github.com/JetBrains/intellij-community) (`platform/icons/src/expui` and the
   terminal plugin), at the commit given in `themes/jetbrains-source.json`, Apache License 2.0, Copyright 2000-2026
