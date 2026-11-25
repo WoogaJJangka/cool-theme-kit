@@ -22,6 +22,11 @@
 - VS Code 는 종류마다 테마를 하나만 고를 수 있다 → **JetBrains 기본 위에 다른 설치된 테마를 우선순위·예외로 얹는다**
   (파일 아이콘의 `iconThemeLayers`·`iconThemeByName` 과 같은 규칙을 색·제품 아이콘에도). 섞은 결과는 테마 파일을 다시
   써서 반영하고, VS Code 가 다시 읽지 않는 것(색·제품 아이콘)은 창 다시 로드를 권한다.
+- **아이콘 모양은 유리 스타일이 기본(2026-11-25 사용자 결정)**: 어떤 이름에 어떤 아이콘이 붙는지는 계속 JetBrains(PyCharm + Atom
+  Material Icons)를 따르고(`jetbrainsParity.test.ts`), 그리는 방식만 바꾼다. 파일 = 같은 둥근 타일 위의 글리프, 폴더 = 같은 둥근
+  폴더(종류별 색 유지) + 배지 글리프. 예전 평면 모양은 `iconStyle: "flat"` 로 남긴다. 사용자 기준: 심플·모던 최우선, 16px 에서
+  무너지는 입체 표현은 쓰지 않음(그래서 그라데이션 + 위쪽 하이라이트 한 줄만 — 진짜 굴절·투명은 이 크기에서 안 보인다), 둥글고
+  투명한 유리 느낌, 모든 아이콘의 통일감, 의미가 바로 보일 것.
 - **묶음이지만 opt-in(2026-11-21 사용자 결정)**: 설치만으로는 아무것도 바꾸지 않고, 사용자가 고른 것만 적용한다. 아이콘만 쓰는
   사람의 글꼴·색을 건드리지 않는다. Get Started 안내(`contributes.walkthroughs`)에 부분마다 버튼(`useTheme` 명령, `useJetBrainsFonts`).
 - 폰트: JetBrains 글꼴(JetBrains Mono, Markdown 미리보기는 Inter) + 한글 대체 글꼴을 사용자가 고를 때만 사용자 설정에 쓴다
@@ -54,6 +59,8 @@
 | 유지보수 점검 보고서 (GitHub·SonarQube MCP, 읽기 전용, 설정은 `docs/MAINTENANCE.md` 7장) | Claude Code 에서 `/maintenance-check [PR 번호] [--local]` |
 | lint (`vsce package` 가 먼저 돌림, 0 errors 유지) | `bun run lint` |
 | JetBrains 연결 규칙 동기화 | `bun run sync:upstream` |
+| 유리 스타일용 아이콘 측정값 다시 쓰기 (`assets/icons/metrics.json`, 아이콘 SVG 가 바뀌면) | `bun run sync:metrics` |
+| 전체 아이콘을 16px·32px 시트로 그려 눈으로 검토 (무너지는 글리프 찾기) | `bun run sheet:icons -- <폴더>` (`--flat` 평면, `--light`, `--only <이름 정규식>`, `--group files\|folders\|foldersOpen`) |
 | JetBrains 색 테마 동기화 (고정 커밋 / 최신) | `bun run sync:colors` / `bun run sync:colors -- --latest` |
 | 문법 색을 JetBrains 와 비교 (실제 VS Code 문법으로 `test/colors` 샘플을 토큰으로 나눔, `.vscode-test` 에 받음) | `bun run check:colors` (`-- --report` 토큰마다 scope·색·규칙, 색 없는 scope) |
 | 같은 비교를 VS Code 내장 TypeScript 서버의 의미 토큰까지 얹어서 (TS·JS 샘플, 실제 VS Code 를 띄움, Linux 는 `xvfb-run -a`) | `bun run check:semantic` (`-- --report` 의미 토큰마다 종류·수식어·스타일) |
@@ -75,7 +82,7 @@
 - `test/unit/jetbrainsParity.test.ts` 가 기본 테마의 모든 키를 JetBrains 선택과 비교한다(어두운·밝은 테마).
 - 포크가 직접 넣은 아이콘은 `assets/icons/files/`(iconGenerator 와 같은 구조, 출처·라이선스는 `assets/icons/NOTICE.md`).
   생성기가 iconGenerator 다음에 복사한다. 테스트 fixture 는 `iconGenerator`·`assets` 둘 다 junction 으로 건다.
-- 방향: PyCharm(Atom Material Icons 설치)에서 보이는 모습에 맞춘다. PyCharm 은 `.py` 를 이름과 상관없이 자체 New UI
+- 방향: **어떤 아이콘이 붙는지**는 PyCharm(Atom Material Icons 설치)에서 보이는 것에 맞춘다(모양은 유리 스타일, 아래). PyCharm 은 `.py` 를 이름과 상관없이 자체 New UI
   Python 아이콘으로 보여 줘서 `pycharm` 팩이 그걸 따른다. 다른 차이는 PyCharm 화면과 나란히 비교해서 찾는다.
 - `name` = SVG 파일 이름(확장자 제외). `light: true` = `<name>_dark.svg` 가 있다는 뜻(어두운 테마에 _dark 사용).
 - 설정 → 테마: `services/ConfigChangeDetector` 가 `ConfigService.getIconConfigChanges()` 로 **설정 전체**를 저장된
@@ -210,6 +217,27 @@
   섞기: `productIconThemeLayers`(fill/override/off)·`productIconByName`(id glob), 우선순위는 색·아이콘과 같다. 다른 테마 글꼴은
   `dist/layers/product/<테마>/` 로 복사하고 글리프마다 `fontId`(Islands 글꼴이 첫 번째라 fontId 없는 정의는 Islands). Cool Material Icons 도
   층으로 고를 수 있다(새 id `cool-material-product-icons`). 화살표 스타일(`arrowTheme`)은 Material 테마에만 적용. 섞기 화면 제품 아이콘 탭(`openThemeMixer` 에 'product' 인자).
+- 유리 스타일(`iconStyle`, `src/icons/glass/glassIcons.ts` 순수 함수 — 확장 호스트에는 SVG 를 그릴 것이 없다): `IconThemeGenerator.filterSvg`
+  에서 폴더 색 필터 **뒤**(색을 아이콘에서 읽는다), 단색·불투명도·채도 필터 **앞**(어떤 SVG 에도 듣는다)에 적용한다.
+  - 파일: 단색 아이콘 = 그 색 타일 + 흰 글리프(밝은 타일(휘도 > 0.45, JS 노랑)은 어두운 글리프), 여러 색 아이콘 = 어두운 타일 + 원래 색
+    그대로(한 색으로 누르면 대부분 덩어리가 된다), 글리프를 뚫은 배지(`holes`: TS 사각형·C# 육각형·HTML 방패) = 타일이 배지를 대신하고
+    구멍이 글리프(배지가 그리지 않은 곳을 구멍 상자 안에서 칠함: `feComposite out` + clip). 글리프 크기는 긴 변 11.6·정사각 10.2 로 맞춘다.
+  - 폴더: `data-folderColor`/`data-themed` 표시가 있는 path(없으면 Material 폴더 윤곽 `M10,4H4`·`M20,18`)가 폴더 모양, 나머지가 배지.
+    그 색으로 뒤판·앞판을 그리고 배지를 앞판에 글리프로 놓는다(여러 색 배지는 원래 색). 펼친 폴더는 앞판이 낮고 종이가 보인다.
+    `seed` 는 구조가 달라 평면 그대로. 펼친 아이콘이 없는 폴더는 닫힌 아이콘의 배지로 펼친 유리 폴더를 그린다.
+  - 글리프 색은 mask 가 아니라 filter(`feFlood` + `feComposite`)로 입힌다: 단색 설정이 뒤에서 모든 paint 를 바꾸므로 mask 는 투명도가 돼 버린다.
+    생성한 id 는 `ctk-` 로 시작한다(아이콘 안의 id 와 겹치지 않게).
+  - 글리프는 원래 viewBox 를 가진 안쪽 `<svg>` 로 놓는다(퍼센트 길이 유지: detekt 의 mask "100%"). 그래서 한 파일에 `</svg>` 가 여럿이다:
+    `SaturationService` 는 마지막 것 앞에 필터를 넣는다.
+  - 렌더러가 있어야 아는 것(글리프가 실제로 차지하는 상자, 뚫린 배지인지)은 `sync:metrics`(resvg, `src/scripts/icons/iconMetrics.ts`)가
+    `assets/icons/metrics.json`(생성물, **손대지 않는다**, VSIX 에 들어감)에 미리 잰다. 측정으로 알 수 없는 것은 `iconMetrics.ts` 의
+    `PLAIN`(구멍이 글리프가 아닌 배지: 자물쇠·봉투·카메라·글자 속 구멍)·`ONE_COLOR`(여러 색이지만 한 색 글리프가 나은 것: Docker Compose).
+    아이콘이 바뀌면 다시 쓴다(`sync-upstream.yml` 이 같이 돌린다). `glassIcons.test.ts` 가 뒤처진 측정값을 잡는다(`<text>` 로 그린
+    아이콘은 PC 글꼴에 따라 달라 비교에서 뺀다). 새 아이콘이 들어오면 `sheet:icons` 로 보고 필요한 이름을 두 목록에 넣는다.
+  - 측정값이 없는 아이콘(사용자 커스텀 SVG, 섞는 다른 테마의 **파일** 아이콘)은 viewBox 로 놓고 같은 타일에 올린다. 다른 테마·사용자의
+    **폴더** 아이콘은 통째 그림이라 그대로 둔다(`ThemeLayerGenerator` 가 파일용·폴더용 정의를 따로 복사한다).
+  - `iconStyle` 은 기본값(glass)이 아닐 때만 아이콘 파일 이름 해시에 들어간다(`getFileConfigHash`). 밝은·어두운 테마 변형(`_dark`)은
+    그대로 두 벌이다(타일이라 둘 다 어느 배경에서나 보인다).
 - 아이콘 팩(`enabledFor`) 항목은 생성 때 일반 항목 뒤에 적용돼 같은 확장자를 덮어쓴다(css → css2). 기본 팩은
   `package.json` 기본값과 `getDefaultConfig` 를 같이 고친다.
 - 시작 때 설정과 생성된 테마를 비교하느라 테마 json(아이콘 735 KB + 제품 180 KB)을 통째로 파싱하지 않는다: `helpers/themeState.ts` 가
@@ -218,7 +246,7 @@
 - VS Code 프로필은 확장 폴더(`dist/`)를 같이 쓰고 설정은 따로라, 값이 다른 프로필끼리 창을 열 때마다 서로의 테마를 다시 만든다(2026-11-22 재현).
   `.state.json` 의 `writer`(마지막으로 쓴 프로필 = 그 프로필 globalState 의 무작위 `profileId`, 그때의 `THEME_SETTING_KEYS` 값, 워크스페이스 값인 키)를 보고
   `services/ProfileConflictService.regenerated(written)`(`regenerateTheme` 끝에서 부름)이 다른 설정을 출력 채널에 매번, 알림으로 한 번 알리고,
-  버튼은 `workbench.settings.applyToAllProfiles` 에 우리 키를 덧붙인 뒤 이 프로필 값을 비교 없이 20개 모두 쓴다(공유 직후 확장 호스트가
+  버튼은 `workbench.settings.applyToAllProfiles` 에 우리 키를 덧붙인 뒤 이 프로필 값을 비교 없이 모두(`THEME_SETTING_KEYS`, 21개) 쓴다(공유 직후 확장 호스트가
   잠깐 이 프로필 값을 돌려줘서 비교하면 쓰기를 건너뜀, 1.147 확인). 판단은 `helpers/profileConflict.ts`(순수 함수).
   테마를 바꾸는 설정을 추가하면 `THEME_SETTING_KEYS` 와 README "VS Code profiles" 목록도 고친다(`profileConflict.test.ts`).
   격리 VS Code 로 프로필 확인: `Code.exe … --profile B <폴더>` 로 한 번 열어 프로필을 만든 뒤 `code.cmd … --profile B --install-extension <vsix>`.

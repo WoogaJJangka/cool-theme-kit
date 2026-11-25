@@ -11,8 +11,12 @@
 
 ![Cool Islands Dark with Cool Icons and Cool Islands Icons](docs/screenshots/cool-islands-dark.png)
 
-- **Made for people coming from PyCharm or IntelliJ IDEA.** The file icons are the ones PyCharm shows with the Atom
-  Material Icons plugin, and the colors and icons are generated from the JetBrains sources, not drawn by hand.
+- **Made for people coming from PyCharm or IntelliJ IDEA.** Every file and folder gets the icon PyCharm gives it with
+  the Atom Material Icons plugin, and the colors and product icons are generated from the JetBrains sources, not drawn
+  by hand.
+- **One look for every icon.** The file icons are glyphs on the same rounded glass tile and the folders the same
+  rounded glass folder, so thousands of logos read as one set, and a dark logo shows on a dark theme. The flat icons of
+  the JetBrains plugin are [one setting away](#icon-style).
 - **Take only what you want.** Installing the extension changes nothing: choose the file icons, the colors, the product
   icons and the fonts one by one. A user of the file icons alone keeps their own colors and font.
 - **Keep your other themes.** VS Code uses one theme of each kind; Cool Theme Kit mixes other installed themes into its
@@ -63,7 +67,7 @@ What VS Code itself cannot do (rounded floating panels, the interface font, colo
 
 | Kind          | Name in the VS Code picker              | Base                                               | Status                                                                               |
 |---------------|-----------------------------------------|----------------------------------------------------|--------------------------------------------------------------------------------------|
-| File icons    | **Cool Icons**                          | Atom Material Icons, as PyCharm shows them         | Available, with other icon themes [mixed in](#mixing-icon-themes)                    |
+| File icons    | **Cool Icons**                          | Atom Material Icons, as PyCharm chooses them, drawn in a [glass style](#icon-style) | Available, with other icon themes [mixed in](#mixing-icon-themes) |
 | Color theme   | **Cool Islands Dark / Light**           | JetBrains Islands Dark / Light                     | [Available](#color-themes), with other color themes [mixed in](#mixing-color-themes) |
 | Product icons | **Cool Islands Icons**                  | JetBrains New UI icons                             | [Available](#product-theme), with other product icon themes [mixed in](#mixing-product-icon-themes) |
 | Product icons | **Cool Material Icons**                 | Material Design Icons, from the original extension | Available                                                                            |
@@ -253,7 +257,40 @@ You can find a list of all the available associations in the following links:
 - Language Associations: [`src/icons/languageIcons.ts`](./src/icons/languageIcons.ts) (VS Code language ids, used when no file
   name or extension matches)
 
+## Icon style
+
+Cool Icons draws every icon in one style, **glass**:
+
+| Glass (default) | Flat |
+|---|---|
+| ![The explorer with the glass icons](docs/screenshots/icon-style-glass.png) | ![The explorer with the flat icons](docs/screenshots/icon-style-flat.png) |
+
+- Every **file icon** is a glyph on the same rounded tile, in the color of the icon, with a soft gradient and a
+  highlight on its top edge. The glyphs all get about the same size, whatever the size of the logo they come from.
+- Every **folder** is the same rounded folder in its own color, with its badge as a glyph on the front. An expanded
+  folder shows the sheet it holds.
+- A logo that is a badge with its glyph cut out (the square of TypeScript, the hexagon of C#, the shield of HTML)
+  becomes the tile itself: its glyph is as large as the others, not a badge in a badge.
+- An icon drawn with several colors keeps them, on a dark tile.
+- A dark logo (GitHub, Vercel, Deno) shows on a dark theme and a light one on a light theme: the tile carries it.
+
+Only what survives at the 16 pixels of the explorer is drawn: the rounded shape, the gradient and one highlight. Which
+icon a name gets does not change: the [associations](#associations) are the same in both styles, and so are the
+settings below (folder color, opacity, saturation, monochrome, icon packs). The file icons of the other themes
+[mixed in](#mixing-icon-themes) and your [custom SVG icons](#custom-svg-icons) go on a tile too; the folder icons of
+other themes and your custom folder icons are whole drawings, kept as they are.
+
+To get the icons as the JetBrains plugin draws them:
+
+```json
+{
+  "a-file-icon-vscode.iconStyle": "flat"
+}
+```
+
 ## File Icons
+
+The icons before the glass style (`"iconStyle": "flat"`):
 
 ![File Icons](https://raw.githubusercontent.com/mallowigi/iconGenerator/master/assets/files.png)
 
@@ -724,6 +761,9 @@ Here's a list of the available commands:
 
 ## Differences with the JetBrains plugin
 
+Cool Icons gives every name the icon the JetBrains plugin gives it, and draws it in its own [glass style](#icon-style)
+by default. `"a-file-icon-vscode.iconStyle": "flat"` draws the icons as the plugin does.
+
 Some options of the JetBrains plugin cannot be built with the VS Code icon theme API:
 
 - **Hollow folders** (folders that contain open files): an icon theme does not know which files are open.
@@ -770,6 +810,7 @@ other settings stay per profile. To do it by hand, add this to the user settings
   "a-file-icon-vscode.folderTheme",
   "a-file-icon-vscode.foldersAssociations",
   "a-file-icon-vscode.hideFileIcons",
+  "a-file-icon-vscode.iconStyle",
   "a-file-icon-vscode.iconThemeByName",
   "a-file-icon-vscode.iconThemeLayers",
   "a-file-icon-vscode.languagesAssociations",

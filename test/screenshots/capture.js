@@ -64,8 +64,11 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const EDITOR_FONT =
   "'JetBrains Mono', 'D2Coding', Consolas, Menlo, 'Droid Sans Mono', 'Malgun Gothic', 'Apple SD Gothic Neo', 'Noto Sans Mono CJK KR', 'Courier New', monospace";
 
-/** The settings of the profile: the kit selected, nothing else on the screen (no chat, no notices, no tips) */
-const settings = (colorTheme) => ({
+/**
+ * The settings of the profile: the kit selected, nothing else on the screen (no chat, no notices, no tips).
+ * `more`: other settings for one capture.
+ */
+const settings = (colorTheme, more = {}) => ({
   'a-file-icon-vscode.showUpdateMessage': false,
   'a-file-icon-vscode.showWelcomeMessage': false,
   'chat.disableAIFeatures': true,
@@ -86,6 +89,7 @@ const settings = (colorTheme) => ({
   'workbench.secondarySideBar.defaultVisibility': 'hidden',
   'workbench.startupEditor': 'none',
   'workbench.tips.enabled': false,
+  ...more,
 });
 
 const MAIN_PY = `"""주문 처리 서비스: Cool Islands 미리보기용 예제."""
@@ -328,9 +332,22 @@ const capture = async () => {
     for (const type of ['rawKeyDown', 'keyUp']) await page.send('Input.dispatchKeyEvent', { code: 'Escape', key: 'Escape', type, windowsVirtualKeyCode: 27 });
     await sleep(600);
   };
-  const useSettings = async (colorTheme) => {
-    writeFileSync(settingsFile, JSON.stringify(settings(colorTheme), null, 2));
-    await sleep(3000);
+  const useSettings = async (colorTheme, more = {}, wait = 3000) => {
+    writeFileSync(settingsFile, JSON.stringify(settings(colorTheme, more), null, 2));
+    await sleep(wait);
+  };
+  /** The tree of the explorer alone, twice its size: the icons are 16 pixels */
+  const explorerShot = async (name) => {
+    await run('document.activeElement?.blur()');
+    await sleep(400);
+    const box = await run(
+      "(() => { const rows = [...document.querySelectorAll('.explorer-folders-view .monaco-list-row')]; if (rows.length === 0) return undefined; const first = rows[0].getBoundingClientRect(); const last = rows.at(-1).getBoundingClientRect(); return { height: last.bottom - first.top, x: first.x, y: first.y }; })()",
+    );
+    if (!box) throw new Error(`No explorer for ${name}`);
+    const clip = { height: Math.ceil(box.height) + 8, scale: 2, width: 232, x: Math.floor(box.x), y: Math.max(0, Math.floor(box.y) - 4) };
+    const image = await page.send('Page.captureScreenshot', { clip, format: 'png' });
+    writeFileSync(join(output, name), Buffer.from(image.result.data, 'base64'));
+    console.log(`  docs/screenshots/${name}`);
   };
 
   try {
@@ -363,6 +380,12 @@ const capture = async () => {
     await useSettings('Cool Islands Light');
     await shot('cool-islands-light.png');
     await useSettings('Cool Islands Dark');
+
+    // the two icon styles: the icons are generated again, under other names, and VS Code loads them
+    await explorerShot('icon-style-glass.png');
+    await useSettings('Cool Islands Dark', { 'a-file-icon-vscode.iconStyle': 'flat' }, 12_000);
+    await explorerShot('icon-style-flat.png');
+    await useSettings('Cool Islands Dark', {}, 12_000);
 
     for (const [name, image] of Object.entries(PICKERS)) {
       await command(name, 2000);

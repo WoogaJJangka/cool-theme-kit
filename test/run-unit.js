@@ -19,7 +19,8 @@ buildSync({
   alias: { vscode: join(__dirname, 'mocks', 'vscode.ts') },
   bundle: true,
   entryPoints,
-  external: ['mocha'],
+  // resvg (the measures of the icons, test/unit/glassIcons.test.ts) loads a native module: not something to bundle
+  external: ['mocha', '@resvg/resvg-js'],
   format: 'cjs',
   logLevel: 'warning',
   outdir: outDir,

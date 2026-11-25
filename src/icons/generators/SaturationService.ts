@@ -56,7 +56,9 @@ class SaturationService {
       return svg.replace(pattern, `${filterElement}$1`);
     }
     else {
-      return svg.replace(/<\/svg>/, `${filterElement}</svg>`);
+      // before the end of the root: an svg can hold others (the glyph of a glass icon keeps its own viewBox)
+      const end = svg.lastIndexOf('</svg>');
+      return end === -1 ? svg :`${svg.slice(0, end)}${filterElement}${svg.slice(end)}`;
     }
   }
 

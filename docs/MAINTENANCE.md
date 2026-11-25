@@ -277,7 +277,7 @@ Cool Theme Kit 을 고칠 때 지키는 규칙과, 그 규칙을 지키는지 �
 | 주기 | 할 일 |
 |---|---|
 | 모든 PR | PR 템플릿의 확인 목록, 모든 검사 통과 |
-| 매주 (자동) | 월 `sync-upstream.yml`, 월 Dependabot(Actions), 화 `security.yml`, 수 `smoke.yml` — 실패하면 그 주에 본다 |
+| 매주 (자동) | 월 `sync-upstream.yml`, 월 Dependabot(Actions), 화 `security.yml`, 수 `smoke.yml` — 실패하면 그 주에 본다. `sync-upstream` PR 에 새 아이콘이 있으면 `bun run sheet:icons -- <폴더>` 로 유리 스타일 모습을 보고, 글리프가 어색한 이름을 `src/scripts/icons/iconMetrics.ts` 의 `PLAIN`·`ONE_COLOR` 에 넣는다 |
 | 매월 | Dependabot bun 묶음 PR 처리, `audit:shipped` summary 의 빌드 도구 advisory 수 확인, Sonar 이슈·Hotspot 정리 |
 | 릴리스 전 | main 의 smoke(1.95.0·stable·다른 확장) 통과, 격리 프로필에서 VSIX 확인(한국어 글꼴 포함), 크기 예산 표 확인 |
 | 분기 | 엔진 하한 재검토, `COMPAT_EXTENSIONS` 갱신, 토큰 만료일 확인, 이 문서의 예산·점검 결과 갱신 |

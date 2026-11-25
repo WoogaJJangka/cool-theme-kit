@@ -12,7 +12,7 @@ import { ConfigurationTarget, window, workspace } from 'vscode';
 import type { ProductConfiguration } from 'src/models/ProductConfiguration';
 import type { WorkspaceConfiguration } from 'vscode';
 import type { IconConfiguration } from 'src/models/IconConfiguration';
-import type { FolderTheme, ArrowTheme, AtomConfig, IconPack, IconSettings, IconThemeLayer } from 'src/@types/config';
+import type { FolderTheme, ArrowTheme, AtomConfig, IconPack, IconSettings, IconStyle, IconThemeLayer } from 'src/@types/config';
 import type { IconAssociations } from 'src/@types/associations';
 import type { AccentTarget } from 'src/themes/accent';
 import type { ColorThemeLayer } from 'src/themes/colorLayers';
@@ -23,6 +23,8 @@ const EMPTY_DEFAULTS: Partial<IconSettings> = {
   filesAssociations: {},
   foldersAssociations: {},
   hideFileIcons: false,
+  // the icons were flat before the glass style
+  iconStyle: 'flat' as IconStyle,
   iconThemeByName: {},
   iconThemeLayers: [],
   languagesAssociations: {},
@@ -223,6 +225,14 @@ export class ConfigService implements AtomConfig {
     this.setConfigValue('hideFileIcons', v, ConfigurationTarget.Workspace);
   }
 
+  get iconStyle(): IconStyle {
+    return this.getConfigValue<IconStyle>('iconStyle') ?? getDefaultConfig().iconStyle;
+  }
+
+  set iconStyle(v: IconStyle) {
+    this.setConfigValue('iconStyle', v, ConfigurationTarget.Workspace);
+  }
+
   get monochrome(): boolean {
     return this.getConfigValue<boolean>('monochrome') ?? getDefaultConfig().monochrome;
   }
@@ -337,6 +347,7 @@ export class ConfigService implements AtomConfig {
       folderTheme: this.folderTheme,
       foldersAssociations: this.foldersAssociations ?? {},
       hideFileIcons: this.hideFileIcons,
+      iconStyle: this.iconStyle,
       iconThemeByName: this.iconThemeByName ?? {},
       iconThemeLayers: this.iconThemeLayers,
       languagesAssociations: this.languagesAssociations ?? {},
@@ -380,6 +391,7 @@ export class ConfigService implements AtomConfig {
     this.folderColor = defaultConfig.folderColor;
     this.folderTheme = defaultConfig.folderTheme;
     this.hideFileIcons = defaultConfig.hideFileIcons;
+    this.iconStyle = defaultConfig.iconStyle;
     this.iconThemeLayers = defaultConfig.iconThemeLayers;
     this.monochrome = defaultConfig.monochrome;
     this.monochromeColor = defaultConfig.monochromeColor;
