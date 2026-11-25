@@ -238,6 +238,10 @@ describe('glass icons', () => {
       assert.equal(measureFile(svg('')), undefined);
     });
 
+    it('does not measure an icon drawn with text: the fonts of the machine would decide its box', () => {
+      assert.equal(measureFile(svg('<text x="2" y="20" fill="#ffd54f" font-size="24">D</text>')), undefined);
+    });
+
     it('finds a badge with its glyph cut out, and the box of the holes', () => {
       const metric = measureFile(BADGE);
       assert.equal(metric?.holes, true);
@@ -268,10 +272,6 @@ describe('glass icons', () => {
   describe('metrics.json', () => {
     const metrics = JSON.parse(readFileSync(join(repoRoot, METRICS_FILE), 'utf8')) as IconMetrics;
 
-    /** The fonts of the machine decide the box of an icon drawn with text */
-    const usesText = (group: keyof IconMetrics, name: string) =>
-      iconFolders(repoRoot)[group].some((folder) => existsSync(join(folder, `${name}.svg`)) && readFileSync(join(folder, `${name}.svg`), 'utf8').includes('<text'));
-
     it('is up to date with the bundled icons (bun run sync:metrics)', function () {
       this.timeout(300_000);
       const measured = measureIcons(repoRoot);
@@ -279,8 +279,6 @@ describe('glass icons', () => {
       for (const group of ['files', 'folders', 'foldersOpen'] as const) {
         assert.deepEqual(Object.keys(metrics[group]), Object.keys(measured[group]), `${group}: icons added or removed`);
         for (const [name, entry] of Object.entries(measured[group])) {
-          if (usesText(group, name)) continue;
-
           const stored = metrics[group][name];
           assert.deepEqual(stored.slice(4), entry.slice(4), `${group}/${name}: holes or color`);
           // the same up to the rounding of another machine
@@ -295,7 +293,10 @@ describe('glass icons', () => {
     it('has a box for every file icon, and for every folder icon with a badge', () => {
       const folders = iconFolders(repoRoot);
       for (const folder of folders.files) {
-        for (const file of readdirSync(folder).filter((name) => name.endsWith('.svg'))) assert.ok(metrics.files[file.slice(0, -4)], `files/${file}`);
+        for (const file of readdirSync(folder).filter((name) => name.endsWith('.svg'))) {
+          // an icon drawn with text is not measured: the fonts of the machine would decide its box
+          if (!readFileSync(join(folder, file), 'utf8').includes('<text')) assert.ok(metrics.files[file.slice(0, -4)], `files/${file}`);
+        }
       }
       for (const group of ['folders', 'foldersOpen'] as const) {
         for (const file of readdirSync(folders[group][0]).filter((name) => name.endsWith('.svg'))) {

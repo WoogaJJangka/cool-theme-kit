@@ -9,8 +9,8 @@ import { mainPaint, parseFolder, parseSvg } from 'src/icons/glass/glassIcons';
 
 import type { GlyphBox, IconMetric, SvgParts } from 'src/icons/glass/glassIcons';
 
-/** Loading the system fonts takes seconds: only for the few icons drawn with text */
-const options = (content: string) => ({ font: { loadSystemFonts: content.includes('<text') } });
+/** No text is rendered (see `measureFile`): loading the system fonts for each icon would take seconds */
+const OPTIONS = { font: { loadSystemFonts: false } };
 
 /** The side of the picture an icon is analysed on */
 const RASTER = 96;
@@ -28,7 +28,7 @@ const boxOf = (parts: Parts, content: string): GlyphBox | undefined => {
   const size = parts.viewBox
     ? `viewBox="${parts.viewBox.join(' ')}" width="${parts.viewBox[2]}" height="${parts.viewBox[3]}"`
     : 'width="4096" height="4096"';
-  const box = new Resvg(document(parts, content, size), options(content)).getBBox();
+  const box = new Resvg(document(parts, content, size), OPTIONS).getBBox();
   if (!box || box.width <= 0 || box.height <= 0) return undefined;
   return [precise(box.x), precise(box.y), precise(box.width), precise(box.height)];
 };
@@ -40,7 +40,7 @@ const drawnPixels = (parts: SvgParts, box: GlyphBox): boolean[] => {
   const height = parts.viewBox?.[3] ?? 4096;
   const inner = `<svg ${parts.viewBox ? `viewBox="${parts.viewBox.join(' ')}" ` : ''}width="${width}" height="${height}" overflow="visible"><g ${parts.attributes}>${parts.content}</g></svg>`;
   const outer = `<svg xmlns="http://www.w3.org/2000/svg"${parts.namespaces} viewBox="${box.join(' ')}" width="${RASTER}" height="${RASTER}">${inner}</svg>`;
-  const { pixels } = new Resvg(outer, options(parts.content)).render();
+  const { pixels } = new Resvg(outer, OPTIONS).render();
   return Array.from({ length: RASTER * RASTER }, (_, index) => pixels[index * 4 + 3] >= OPAQUE);
 };
 
@@ -157,7 +157,6 @@ const PLAIN = [
     'bitbucket',
     'bluespec',
     'cordova',
-    'denizen',
     'garden',
     'noon',
     'nu',
@@ -208,8 +207,13 @@ export const FILE_OVERRIDES: Record<string, { oneColor?: boolean; plain?: boolea
   ...ONE_COLOR.map((name) => [name, { oneColor: true }] as const),
 ]);
 
-/** The measures of a file icon; nothing for an svg that draws nothing */
+/**
+ * The measures of a file icon; nothing for an svg that draws nothing, or that draws text: its box depends on the fonts
+ * of the machine (none on the CI), so it is placed by its viewBox like an icon that is not bundled.
+ */
 export const measureFile = (svg: string, name?: string): IconMetric | undefined => {
+  if (svg.includes('<text')) return undefined;
+
   const parts = parseSvg(svg);
   const box = parts && boxOf(parts, parts.content);
   if (!parts || !box) return undefined;
