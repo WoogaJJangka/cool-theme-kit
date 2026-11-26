@@ -18,8 +18,8 @@ const root = join(__dirname, '..', '..', '..');
 /** The folders of the bundled icons: the fork's own icons replace those of iconGenerator with the same name */
 const iconFolders = (repository: string) => ({
   files: [join(repository, 'iconGenerator', 'assets', 'icons', 'files'), join(repository, 'assets', 'icons', 'files')],
-  folders: [join(repository, 'iconGenerator', 'assets', 'icons', 'folders')],
-  foldersOpen: [join(repository, 'iconGenerator', 'assets', 'icons', 'foldersOpen')],
+  folders: [join(repository, 'iconGenerator', 'assets', 'icons', 'folders'), join(repository, 'assets', 'icons', 'folders')],
+  foldersOpen: [join(repository, 'iconGenerator', 'assets', 'icons', 'foldersOpen'), join(repository, 'assets', 'icons', 'foldersOpen')],
   // the JetBrains New UI glyphs the glass style draws instead of the file icon of the same name
   glyphs: [join(repository, 'assets', 'icons', 'glass', 'files')],
 });

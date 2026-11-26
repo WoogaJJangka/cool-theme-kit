@@ -18,6 +18,13 @@
 /** What an icon is drawn for */
 type IconKind = 'file' | 'folder' | 'folderOpen';
 
+/**
+ * What a file is in its project whatever its language, when its name says so: where the program starts (`main.py`),
+ * what makes a folder a package (`__init__.py`), tests (`conftest.py`), settings (`settings.py`). Drawn as a mark over
+ * the corner of the icon of the language, the way the JetBrains IDEs mark a runnable class or a test class.
+ */
+type IconRole = 'config' | 'package' | 'run' | 'test';
+
 /** x, y, width and height of what an icon draws, in the units of its svg */
 type GlyphBox = [x: number, y: number, width: number, height: number];
 
@@ -285,6 +292,82 @@ const verticalGradient = (id: string, top: string, bottom: string, opacities?: [
 
 // endregion
 
+// region role marks
+
+/** The mark of a role: a disc over the lower right corner of a file icon, which is cut around it */
+const MARK = { gap: 0.8, radius: 3.7, x: 12.3, y: 12.3 };
+/** Under a mark, an icon is drawn a little smaller and moved to the upper left: the mark hides less of it */
+const MARKED = { scale: 0.84, shift: 1.1 };
+
+const GEAR_TEETH = [0, 60, 120, 180, 240, 300]
+  .map((angle) => `<rect x="-.5" y="-2.75" width="1" height="1.1" rx=".3" fill="#fff" transform="rotate(${angle})"/>`)
+  .join('');
+
+/**
+ * The color of the disc of each role and its sign, drawn in white around the point 0 0. Only shapes that are still
+ * themselves in a disc of 7 pixels: a triangle, a dot, a check, a toothed ring.
+ */
+const ROLE_MARKS: Record<IconRole, { color: string; sign: string }> = {
+  config: { color: '#7d828c', sign: `<circle r="1.25" fill="none" stroke="#fff" stroke-width="1.05"/>${GEAR_TEETH}` },
+  package: { color: '#548af7', sign: '<circle r="1.45" fill="#fff"/>' },
+  run: {
+    color: '#43a047',
+    sign: '<path d="M-1.05-1.7 1.75 0-1.05 1.7Z" fill="#fff" stroke="#fff" stroke-width=".8" stroke-linejoin="round"/>',
+  },
+  test: {
+    color: '#00a896',
+    sign: '<path d="M-1.85.15-.6 1.4 1.9-1.3" fill="none" stroke="#fff" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round"/>',
+  },
+};
+
+/**
+ * An icon of 16 units with the mark of a role over its corner. The icon is clipped around the mark, not covered by
+ * an edge of some color: the gap shows whatever is behind the icon (the explorer, a selection).
+ * @param namespaces the namespace declarations of the icon
+ * @param defs the definitions of the icon
+ * @param icon what it draws
+ * @param role the role to mark
+ * @param glass a disc with the gradient and the edge of the glass style, or of one flat color
+ */
+const withMark = (namespaces: string, defs: string, icon: string, role: IconRole, glass: boolean): string => {
+  const { color, sign } = ROLE_MARKS[role];
+  const { radius, x, y } = MARK;
+  const hole = round(radius + MARK.gap);
+  const across = round(2 * (radius + MARK.gap));
+  const cut = `M0 0H${SIZE}V${SIZE}H0ZM${round(x - radius - MARK.gap)} ${y}a${hole} ${hole} 0 1 0 ${across} 0a${hole} ${hole} 0 1 0 -${across} 0Z`;
+
+  return [
+    ROOT(namespaces),
+    '<defs>',
+    defs,
+    `<clipPath id="${ID}m"><path clip-rule="evenodd" d="${cut}"/></clipPath>`,
+    glass ? verticalGradient('d', mixColors(color, WHITE, 0.22), mixColors(color, BLACK, 0.12)) : '',
+    '</defs>',
+    `<g clip-path="url(#${ID}m)">${icon}</g>`,
+    `<circle cx="${x}" cy="${y}" r="${radius}" fill="${glass ? `url(#${ID}d)` : color}"/>`,
+    glass ? `<circle cx="${x}" cy="${y}" r="${round(radius - 0.3)}" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width=".5"/>` : '',
+    `<g transform="translate(${x} ${y})">${sign}</g>`,
+    '</svg>',
+  ].join('');
+};
+
+/**
+ * A file icon of the flat style with the mark of a role: the icon as it is drawn, a little smaller, the mark over its
+ * corner.
+ * @returns the icon unchanged when it has no viewBox to place it by
+ */
+const markedFile = (svg: string, role: IconRole): string => {
+  const parts = parseSvg(svg);
+  const box = parts?.viewBox;
+  if (!parts || !box || box[2] <= 0 || box[3] <= 0) return svg;
+
+  const center = SIZE / 2 - MARKED.shift;
+  const scale = (SIZE * MARKED.scale) / Math.max(box[2], box[3]);
+  return withMark(parts.namespaces, '', place(parts, box, scale, center, center), role, false);
+};
+
+// endregion
+
 // region file icons
 
 const TILE_RADIUS = 4.6;
@@ -309,8 +392,9 @@ const RIM = `<rect x=".5" y=".5" width="15" height="15" rx="4.1" fill="none" str
  * @param svg the icon
  * @param metric what was measured for it; without it the glyph is placed by its viewBox (the icons of the user and
  * of other themes)
+ * @param role the role to mark over the corner of the tile, for a file whose name gives it one
  */
-const glassFile = (svg: string, metric?: IconMetric): string => {
+const glassFile = (svg: string, metric?: IconMetric, role?: IconRole): string => {
   const parts = parseSvg(svg);
   const box = metric?.box ?? parts?.viewBox;
   if (!parts || !box || box[2] <= 0 || box[3] <= 0) return svg;
@@ -320,36 +404,34 @@ const glassFile = (svg: string, metric?: IconMetric): string => {
   const width = box[2];
   const height = box[3];
   const [longest, square] = metric?.lines ? [LINES_LONGEST, LINES_SQUARE] : [GLYPH_LONGEST, GLYPH_SQUARE];
-  const scale = metric?.box
+  const fitted = metric?.box
     ? Math.min(longest / Math.max(width, height), square / Math.sqrt(width * height))
     : GLYPH_UNMEASURED / Math.max(width, height);
-  const placed = place(parts, box, scale, SIZE / 2, SIZE / 2);
+  const scale = role ? fitted * MARKED.scale : fitted;
+  const center = SIZE / 2 - (role ? MARKED.shift : 0);
+  const placed = place(parts, box, scale, center, center);
 
   let glyph = placed;
   let extra = '';
   if (metric?.holes) {
     // everything the badge does not draw inside the box of its holes
     const [w, h] = [width * scale, height * scale];
-    extra = `<clipPath id="${ID}c"><rect x="${round((SIZE - w) / 2)}" y="${round((SIZE - h) / 2)}" width="${round(w)}" height="${round(h)}"/></clipPath>`;
+    extra = `<clipPath id="${ID}c"><rect x="${round(center - w / 2)}" y="${round(center - h / 2)}" width="${round(w)}" height="${round(h)}"/></clipPath>`;
     glyph = `<g clip-path="url(#${ID}c)"><g filter="url(#${ID}k)">${placed}</g></g>`;
   } else if (!ownColors) {
     glyph = `<g filter="url(#${ID}k)">${placed}</g>`;
   }
 
-  return [
-    ROOT(parts.namespaces),
-    '<defs>',
+  const defs = [
     verticalGradient('t', mixColors(color, WHITE, 0.18), mixColors(color, BLACK, 0.16)),
     rimGradient('r', 0.7, 0.22),
     ownColors ? '' : inkFilter('k', inkOn(color), metric?.holes ? 'out' : 'in'),
     extra,
-    '</defs>',
-    TILE,
-    SHEEN,
-    glyph,
-    RIM,
-    '</svg>',
   ].join('');
+  const icon = TILE + SHEEN + glyph + RIM;
+  if (role) return withMark(parts.namespaces, defs, icon, role, true);
+
+  return `${ROOT(parts.namespaces)}<defs>${defs}</defs>${icon}</svg>`;
 };
 
 // endregion
@@ -458,9 +540,12 @@ const glassFolder = (svg: string, open: boolean, metric?: IconMetric): string =>
 
 // endregion
 
-/** An icon in the glass style: a file icon on its tile, a bundled folder icon as a glass folder */
-const glassIcon = (svg: string, kind: IconKind, metric?: IconMetric): string =>
-  kind === 'file' ? glassFile(svg, metric) : glassFolder(svg, kind === 'folderOpen', metric);
+/**
+ * An icon in the glass style: a file icon on its tile, a bundled folder icon as a glass folder.
+ * @param role for a file icon, the role to mark over its corner
+ */
+const glassIcon = (svg: string, kind: IconKind, metric?: IconMetric, role?: IconRole): string =>
+  kind === 'file' ? glassFile(svg, metric, role) : glassFolder(svg, kind === 'folderOpen', metric);
 
 export {
   glassFile,
@@ -468,6 +553,7 @@ export {
   glassIcon,
   luminance,
   mainPaint,
+  markedFile,
   mixColors,
   paintCount,
   parseFolder,
@@ -475,4 +561,4 @@ export {
   toEntry,
   toMetric,
 };
-export type { FolderParts, GlyphBox, IconGroup, IconKind, IconMetric, IconMetrics, MetricEntry, SvgParts };
+export type { FolderParts, GlyphBox, IconGroup, IconKind, IconMetric, IconMetrics, IconRole, MetricEntry, SvgParts };

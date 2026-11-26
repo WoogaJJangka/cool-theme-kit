@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file. Dates are displayed in UTC.
 
+#### 1.8.0 (2026-11-26)
+
+- feat: **marks for the names with a role**. A file whose name says what it is in its project keeps the icon of its
+  language and gets a small mark over its corner, the way the JetBrains IDEs mark a runnable class or a test class:
+  a green triangle where the program starts (`main.py`, `__main__.py`, `app.py`, `main.go`, `main.rs`, `main.c`,
+  `Main.java`, `Program.cs`, `main.tsx`…), a blue dot for what makes a folder a package (`__init__.py`, `mod.rs`,
+  `lib.rs`), a teal check for tests (`conftest.py`, `tests.py`, `test.go`…) and a gray gear for settings and
+  constants (`settings.py`, `config.py`, `setup.py`, `config.ts`, `constants.ts`…). Every Python file had the same
+  icon before, and `main.go` looked like any Go file. A name with an icon of its own keeps it (`main.js`, `test.kt`),
+  and so does a name of `filesAssociations`. In both icon styles.
+- feat: `a-file-icon-vscode.roleMarks` (on by default): off, these files get the icon of their language alone, as in
+  the JetBrains IDEs. Add it to `workbench.settings.applyToAllProfiles` with the other theme settings when you use
+  several VS Code profiles.
+- feat: an icon for about 200 **common folder names** that showed the plain folder: `datasets`, `raw`, `processed`,
+  `results`, `plots`, `experiments`, `checkpoints`, `workers`, `sockets`, `crawlers`, `llm`, `homework`,
+  `lectures`, `slides`, `wiki`, `sandbox`, `legacy`, `third_party`, `ctf`, `leetcode`, `sprites`, `.claude`,
+  `cpp`, `csharp`, `.mypy_cache`, `.ruff_cache`… Eight folder icons are new (C, C++, C#, Swift, Claude, lab, study,
+  slides), each made of the folder and of a file icon the JetBrains icon plugin already draws.
+- feat: an icon for **common file names** that showed the icon of their extension or the plain file: `.env.local`,
+  `.env.example` and the other kinds of `.env` file, `requirements-dev.txt`, `environment.yml`,
+  `docker-compose.override.yml`, `Dockerfile.dev`, `id_rsa`, `known_hosts`, `secrets.json`, `.mcp.json`,
+  `notes.md`, `NOTICE`…
+- change: a few everyday names no longer show the icon of one tool that uses the name. `state` and `store` folders
+  (Redux in the JetBrains plugin) are storage folders, `charts` (Helm) a charts folder, `schemas` (GraphQL) a models
+  folder, `data` a database folder, `output` a build folder like `out` and `dist`, `tutorials` a docs folder;
+  `config.yaml` (GitHub Actions) and `config.toml` (Hugo) are YAML and TOML files, and `id_rsa.pub` (Microsoft
+  Publisher) is a key. The list is `src/icons/exceptions.ts`; every other name still follows the plugin.
+
 #### 1.7.0 (2026-11-26)
 
 - feat: the **glass icon style**, the new default look of Cool Icons. Every file icon is a glyph on the same rounded

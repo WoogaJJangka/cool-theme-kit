@@ -72,6 +72,7 @@
   "configuration.languages.associations": "Set custom language icon associations.",
   "configuration.monochrome": "Display the file and folder icons in a single color (see monochromeColor).",
   "configuration.monochromeColor": "Color of the icons when monochrome is enabled.",
+  "configuration.roleMarks": "Mark the files whose name says what they are in the project, over the corner of the icon of their language: where the program starts (`main.py`, `main.go`, `Program.cs`), a package (`__init__.py`, `mod.rs`), tests (`conftest.py`, `tests.py`), settings (`settings.py`, `config.ts`). Off: these files get the icon of their language alone, as in the JetBrains IDEs.",
   "configuration.opacity": "Change the opacity of the icons.",
   "configuration.productIconByName": "Icon id or glob of them (`debug-*`) -> id of the installed product icon theme giving its icon (as in `workbench.productIconTheme`). Wins over everything else.",
   "configuration.productIconThemeLayers": "Other installed product icon themes mixed with Cool Islands Icons, the first listed wins. An entry is a theme id (as in `workbench.productIconTheme`), or an object with the theme and how it mixes. Reload the window to see the change.",

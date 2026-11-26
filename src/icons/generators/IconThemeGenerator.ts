@@ -7,7 +7,8 @@ import { findCustomIcon, findCustomOpenFolderIcon, getCustomIconName, isCustomIc
 import { FileCopies } from 'src/helpers/fileCopies';
 import { writeFileAtomicAsync } from 'src/helpers/fsUtils';
 import { getFileConfigHash, withDefaults } from 'src/icons/configUtils';
-import { glassIcon, toMetric } from 'src/icons/glass/glassIcons';
+import { glassIcon, markedFile, toMetric } from 'src/icons/glass/glassIcons';
+import { ROLE_ICON_PREFIX } from 'src/icons/roles';
 import { IconConfiguration } from 'src/models/IconConfiguration';
 
 import { FileJsonGenerator } from './FileJsonGenerator';
@@ -22,7 +23,7 @@ import { ThemeLayerGenerator } from './ThemeLayerGenerator';
 
 import type { AtomConfig } from 'src/@types/config';
 import type { LanguageLookup, LayerTheme } from 'src/helpers/themeLayers';
-import type { IconGroup, IconKind, IconMetric, IconMetrics } from 'src/icons/glass/glassIcons';
+import type { IconGroup, IconKind, IconMetric, IconMetrics, IconRole } from 'src/icons/glass/glassIcons';
 
 /** The measures of the bundled icons the glass style places them with (`bun run sync:metrics`), in `assets/icons` */
 const METRICS_FILE = 'metrics.json';
@@ -43,10 +44,11 @@ const customValues = (associations?: Record<string, string>) =>
   Object.values(associations ?? {}).filter((value) => typeof value === 'string' && isCustomIconPath(value));
 
 /**
- * Icons written for other settings: `name~hash.svg` (a filter setting that is not the default) and the custom icons
- * of the user (`custom-…`). Without a cleanup, every filter change left a full copy of the icons in the extension folder.
+ * Icons written for other settings: `name~hash.svg` (a filter setting that is not the default), the custom icons
+ * of the user (`custom-…`) and the icons with the mark of a role (`role-…`, for the names of the settings of the
+ * moment). Without a cleanup, every filter change left a full copy of the icons in the extension folder.
  */
-const isGeneratedIcon = (file: string) => /~-?\d+\.svg$/.test(file) || file.startsWith('custom-');
+const isGeneratedIcon = (file: string) => /~-?\d+\.svg$/.test(file) || file.startsWith('custom-') || file.startsWith(ROLE_ICON_PREFIX);
 
 /**
  * `name.svg` (or `name~old.svg`) -> `name<hash>.svg`: the name up to its first `.` or `~`, then the hash of the filter
@@ -88,6 +90,8 @@ export class IconThemeGenerator {
   /** The files of the New UI glyphs (`json.svg`), and their folder: none with the flat style */
   private glyphs = new Set<string>();
   private glyphsPath = '';
+  /** Where each bundled file icon is drawn from (`go.svg`), and how: an icon with the mark of a role is drawn from it again */
+  private readonly fileSources = new Map<string, { file: string; glass?: Glass }>();
 
   languageGenerator: LanguageJsonGenerator;
   fileGenerator: FileJsonGenerator;
@@ -154,12 +158,28 @@ export class IconThemeGenerator {
 
     // Load file icons onto the config
     this.fileGenerator.loadFileIconAssociations();
+    this.writeRoleIcons();
 
     // Load folder icons onto the config
     this.folderGenerator.loadFolderIconAssociations();
 
     // Last, mix the other installed icon themes
     this.loadThemeLayers();
+  }
+
+  /**
+   * The icons with the mark of a role the file names point to (`role-run-go.svg` for `main.go`): the file icon under
+   * the mark, drawn with the mark over its corner.
+   * @private
+   */
+  private writeRoleIcons() {
+    const destination = getFilesPath(this.iconPath());
+    const fileConfigHash = getFileConfigHash(this.atomConfig);
+
+    for (const [name, { icon, role }] of this.fileGenerator.roleIcons) {
+      const source = this.fileSources.get(`${icon}.svg`);
+      if (source) this.writeIcon(destination, hashedIconName(`${name}.svg`, fileConfigHash), source.file, source.glass, role);
+    }
   }
 
   /**
@@ -257,9 +277,17 @@ export class IconThemeGenerator {
     this.copyMissingOpenFolders(foldersPath, foldersOpenPath, distributionFoldersOpenPath);
 
     // icons of this fork that are not in iconGenerator (assets/icons/NOTICE.md), next to the submodule
-    const extraFilesPath = getFilesPath(join(this.iconGeneratorPath(), '..', 'assets', 'icons'));
+    const extraPath = join(this.iconGeneratorPath(), '..', 'assets', 'icons');
+    const extraFilesPath = getFilesPath(extraPath);
     const extraFiles = existsSync(extraFilesPath) ? readdirSync(extraFilesPath) : [];
     if (extraFiles.length > 0) this.applyFiltersAndCopy(extraFilesPath, distributionFilesPath, 'files');
+    // its folder icons (src/scripts/icons/folderBadges.ts), each with its expanded icon
+    for (const [path, destination, group] of [
+      [getFoldersPath(extraPath), distributionFoldersPath, 'folders'],
+      [getFoldersOpenPath(extraPath), distributionFoldersOpenPath, 'foldersOpen'],
+    ] as const) {
+      if (existsSync(path)) this.applyFiltersAndCopy(path, destination, group);
+    }
 
     this.copyCustomIcons(distributionPath);
 
@@ -361,22 +389,25 @@ export class IconThemeGenerator {
       // a file type the JetBrains IDEs have their own icon for: its glyph in place of the icon, in the glass style
       const glyph = group === 'files' && this.glyphs.has(iconFile);
       const file = glyph ? join(this.glyphsPath, iconFile) : join(source, iconFile);
-      this.writeIcon(destination, hashedFile, file, this.glass(glyph ? 'glyphs' : group, iconFile, KINDS[group]));
+      const glass = this.glass(glyph ? 'glyphs' : group, iconFile, KINDS[group]);
+      if (group === 'files') this.fileSources.set(iconFile, { file, glass });
+      this.writeIcon(destination, hashedFile, file, glass);
     }
   }
 
   /**
    * Write an icon of a source file to a dist folder, with the filters, and remember it to keep it in
    * {@link removeStaleIcons}. It is written with the other icons by {@link createJsonTheme}.
+   * @param role for a file icon, the role to mark over its corner
    */
-  private writeIcon(folder: string, file: string, source: string, glass?: Glass) {
+  private writeIcon(folder: string, file: string, source: string, glass?: Glass, role?: IconRole) {
     let written = this.writtenIcons.get(folder);
     if (!written) {
       written = new Set();
       this.writtenIcons.set(folder, written);
     }
     written.add(file);
-    this.copies.add({ change: (svg) => this.filterSvg(svg, glass), source, target: join(folder, file) });
+    this.copies.add({ change: (svg) => this.filterSvg(svg, glass, role), source, target: join(folder, file) });
   }
 
   /**
@@ -393,16 +424,17 @@ export class IconThemeGenerator {
   /**
    * The filters of the icons (folder color, glass style, monochrome, opacity, saturation), for the content of an svg
    * file. The glass style comes after the folder color, which it reads from the icon, and before the others, which
-   * work on any svg.
+   * work on any svg. The mark of a role is drawn with the glass style, or alone on a flat icon.
    */
-  private filterSvg(content: string, glass?: Glass) {
+  private filterSvg(content: string, glass?: Glass, role?: IconRole) {
     let svg = content;
 
     // folder color
     svg = folderColorService.applyFolderColor(svg, this.atomConfig.folderColor);
 
     // glass style
-    if (glass && this.atomConfig.iconStyle === IconStyle.Glass) svg = glassIcon(svg, glass.kind, glass.metric);
+    if (glass && this.atomConfig.iconStyle === IconStyle.Glass) svg = glassIcon(svg, glass.kind, glass.metric, role);
+    else if (role) svg = markedFile(svg, role);
 
     // Monochrome
     svg = monochromeService.applyMonochrome(svg, this.atomConfig.monochrome, this.atomConfig.monochromeColor);

@@ -44,6 +44,7 @@ activeIconPacks: [
     monochromeColor: DEFAULT_MONOCHROME_COLOR,
     opacity: DEFAULT_OPACITY,
     productIconThemeLayers: [],
+    roleMarks: true,
     saturation: DEFAULT_SATURATION,
     showFontMessage: true,
     showReloadMessage: true,

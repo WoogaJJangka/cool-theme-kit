@@ -28,8 +28,9 @@ const vsixIndex = args.indexOf('--vsix');
 const vsix = vsixIndex === -1 ? undefined : resolve(args[vsixIndex + 1]);
 const presetIndex = args.indexOf('--preset');
 const presetArgument = presetIndex === -1 ? undefined : args[presetIndex + 1];
-const version =
-  args.find((argument, index) => !argument.startsWith('--') && index !== vsixIndex + 1 && index !== presetIndex + 1) ?? 'stable';
+// the value of an option that is not given is no argument: `-1 + 1` would leave out the first one, the version
+const optionValues = new Set([vsixIndex, presetIndex].filter((index) => index !== -1).map((index) => index + 1));
+const version = args.find((argument, index) => !argument.startsWith('--') && !optionValues.has(index)) ?? 'stable';
 
 /** The presets of `--preset` (`all`: every one), read from the TypeScript source through esbuild */
 const loadPresets = () => {
@@ -151,6 +152,9 @@ const SAMPLE = {
   'src/app/__init__.py': '',
   'src/app/main.py': MAIN_PY,
   'src/app/models.py': '"""모델."""\n',
+  'src/app/settings.py': 'DEBUG = False\n',
+  'src/conftest.py': 'import pytest\n',
+  'datasets/주문.csv': '고객,합계\n김코딩,89000\n',
   'src/app/주문.json': '{ "customer": "김코딩" }\n',
   'tests/test_main.py': 'from app.main import parse_price\n\n\ndef test_parse_price():\n    assert parse_price("1000원") == 1000\n',
   'tsconfig.json': '{ "compilerOptions": { "strict": true } }\n',

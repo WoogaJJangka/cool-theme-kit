@@ -10,15 +10,28 @@ import {
 } from 'src/helpers/constants';
 import { findCustomIcon, getCustomIconName, isCustomIconPath } from 'src/helpers/customIcons';
 import { normalizeName } from 'src/helpers/utils';
+import { fileExceptions } from 'src/icons/exceptions';
+import { commonFiles } from 'src/icons/files/common';
 import { AbstractJsonGenerator } from 'src/icons/generators/AbstractJsonGenerator';
 import { upstreamFiles } from 'src/icons/files/upstream';
 import { fileIcons } from 'src/icons/index';
+import { ROLE_NAMES, roleIconName } from 'src/icons/roles';
 
 import type { AtomConfig } from 'src/@types/config';
 import type { FileAssociation, FileAssociations } from 'src/@types/associations';
+import type { IconRole } from 'src/icons/glass/glassIcons';
 import type { IconConfiguration } from 'src/models/IconConfiguration';
 
+/** The sections of the theme a name has an icon in: the dark themes, the light ones, the high contrast ones */
+const VARIANTS = ['dark', 'light', 'highContrast'] as const;
+
 export class FileJsonGenerator extends AbstractJsonGenerator {
+  /**
+   * The icons with the mark of a role the theme points to, by name: the file icon under the mark, and the role.
+   * The theme generator draws them once the associations are loaded.
+   */
+  public readonly roleIcons = new Map<string, { icon: string; role: IconRole }>();
+
   constructor(override readonly atomConfig: AtomConfig, override readonly iconConfig: IconConfiguration) {
     super(atomConfig, iconConfig);
   }
@@ -35,13 +48,16 @@ export class FileJsonGenerator extends AbstractJsonGenerator {
     const enabledAssociations = this.disableAssociationsByPack(fileIcons);
     // Order, the last one wins: hand-written associations, then their icon packs (an active pack replaces the base
     // icon of the same name), then the associations generated from the JetBrains plugin, which decide the icon
-    // of every name the JetBrains plugin knows, as PyCharm shows it
+    // of every name the JetBrains plugin knows, as PyCharm shows it, then what this theme decides for itself: the
+    // common names the plugin has no icon of their own for, and the few exceptions
     const upstream = new Set<unknown>(upstreamFiles);
-    const manualAssociations = enabledAssociations.filter((icon) => !upstream.has(icon));
+    const own = new Set<unknown>([...commonFiles, ...fileExceptions]);
+    const manualAssociations = enabledAssociations.filter((icon) => !upstream.has(icon) && !own.has(icon));
     const ordered = [
       ...manualAssociations.filter((icon) => !icon.enabledFor),
       ...manualAssociations.filter((icon) => icon.enabledFor),
       ...enabledAssociations.filter((icon) => upstream.has(icon)),
+      ...enabledAssociations.filter((icon) => own.has(icon)),
     ];
 
     for (const fileAssoc of ordered) {
@@ -56,12 +72,67 @@ export class FileJsonGenerator extends AbstractJsonGenerator {
     }
 
     // last, the user's custom file associations win over everything
-    for (const fileAssoc of this.getCustomAssociations()) {
+    const customAssociations = this.getCustomAssociations();
+    for (const fileAssoc of customAssociations) {
       this.loadFileAssociation(fileAssoc);
     }
 
+    // the names with a role get its mark, but the names the user gave an icon to
+    if (this.atomConfig.roleMarks) this.loadRoleMarks(new Set(customAssociations.flatMap((fileAssoc) => fileAssoc.fileNames ?? [])));
+
     // next, add the default file icon
     this.loadDefaultFileAssociation();
+  }
+
+  /**
+   * Give the file names with a role (`main.py`, `__init__.py`, `conftest.py`…, src/icons/roles.ts) the icon of their
+   * extension with the mark of the role. A name with an icon of its own keeps it: `test.js` (the icon of a JavaScript
+   * test), `manage.py` without the pycharm pack (Django). So does a name of a language without an icon, and a name
+   * whose extension has an svg of the user as its icon.
+   * @param customNames the names the user gave an icon to
+   * @private
+   */
+  private loadRoleMarks(customNames: Set<string>) {
+    const sections = { dark: this.iconConfig, highContrast: this.iconConfig.highContrast, light: this.iconConfig.light };
+
+    for (const { fileNames, role } of ROLE_NAMES) {
+      for (const fileName of fileNames.map((name) => normalizeName(name))) {
+        if (customNames.has(fileName)) continue;
+
+        const extension = this.extensionOf(fileName);
+        const icon = extension && this.iconConfig.fileExtensions?.[extension];
+        if (!extension || !icon || !this.isBundledFileIcon(icon)) continue;
+
+        const own = this.iconConfig.fileNames?.[fileName];
+        if (own && own !== icon) continue;
+
+        // the icon of the extension in each kind of theme, with the mark; a kind without one falls back to the dark one
+        for (const variant of VARIANTS) {
+          const section = sections[variant];
+          const base = section?.fileExtensions?.[extension];
+          if (!section || !base || !this.isBundledFileIcon(base)) {
+            if (variant !== 'dark') delete section?.fileNames?.[fileName];
+            continue;
+          }
+
+          const marked = roleIconName(role, base);
+          this.roleIcons.set(marked, { icon: base, role });
+          this.addFileIconDefinition(marked);
+          section.fileNames ??= {};
+          section.fileNames[fileName] = marked;
+        }
+      }
+    }
+  }
+
+  /** The extension VS Code gives the icon of to a file name: the longest one with an icon */
+  private extensionOf(fileName: string): string | undefined {
+    const parts = fileName.split('.');
+    for (let index = 1; index < parts.length; index++) {
+      const extension = parts.slice(index).join('.');
+      if (this.iconConfig.fileExtensions?.[extension]) return extension;
+    }
+    return undefined;
   }
 
   /**

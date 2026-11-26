@@ -82,6 +82,8 @@ export type AtomConfig = {
   productIconByName?: Record<string, string>,
   /** other installed product icon themes mixed with Cool Islands Icons, the first listed wins (not an icon setting) */
   productIconThemeLayers: ProductIconLayer[],
+  /** mark the files whose name gives them a role (`main.py`, `__init__.py`, `conftest.py`…) over the corner of their icon */
+  roleMarks: boolean,
   saturation: number,
   /** suggest installing the fonts of the default editor font when they are missing */
   showFontMessage: boolean,
@@ -189,6 +191,7 @@ export const ICON_SETTING_KEYS = [
   'monochrome',
   'monochromeColor',
   'opacity',
+  'roleMarks',
   'saturation',
 ] as const;
 

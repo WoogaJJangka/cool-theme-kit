@@ -30,6 +30,8 @@ const EMPTY_DEFAULTS: Partial<IconSettings> = {
   languagesAssociations: {},
   monochrome: false,
   monochromeColor: getDefaultConfig().monochromeColor,
+  // no file had a mark before the setting
+  roleMarks: false,
 };
 
 export class ConfigService implements AtomConfig {
@@ -249,6 +251,14 @@ export class ConfigService implements AtomConfig {
     this.setConfigValue('monochromeColor', v, ConfigurationTarget.Workspace);
   }
 
+  get roleMarks(): boolean {
+    return this.getConfigValue<boolean>('roleMarks') ?? getDefaultConfig().roleMarks;
+  }
+
+  set roleMarks(v: boolean) {
+    this.setConfigValue('roleMarks', v, ConfigurationTarget.Workspace);
+  }
+
   // endregion
 
   // region --------------------- Icon Theme Config ----------------------
@@ -354,6 +364,7 @@ export class ConfigService implements AtomConfig {
       monochrome: this.monochrome,
       monochromeColor: this.monochromeColor,
       opacity: this.opacity,
+      roleMarks: this.roleMarks,
       saturation: this.saturation,
     };
   }
@@ -398,6 +409,7 @@ export class ConfigService implements AtomConfig {
     this.opacity = defaultConfig.opacity;
     this.productIconThemeLayers = defaultConfig.productIconThemeLayers;
     this.productIconByName = undefined;
+    this.roleMarks = defaultConfig.roleMarks;
     this.saturation = defaultConfig.saturation;
     this.showFontMessage = true;
     this.showReloadMessage = true;

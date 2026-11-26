@@ -327,9 +327,10 @@ describe('ConfigChangeDetector', () => {
         assert.equal(theme.fileExtensions?.[extension], 'pycharm-python_dark', extension);
         assert.equal(theme.light?.fileExtensions?.[extension], 'pycharm-python', extension);
       }
-      for (const name of ['manage.py', '__init__.py']) {
-        assert.equal(theme.fileNames?.[name], 'pycharm-python_dark', name);
-      }
+      // `urls.py` is the Django icon in the icon plugin; the names with a role get its mark on the Python icon
+      assert.equal(theme.fileNames?.['urls.py'], 'pycharm-python_dark');
+      assert.equal(theme.fileNames?.['manage.py'], 'role-run-pycharm-python_dark');
+      assert.equal(theme.fileNames?.['__init__.py'], 'role-package-pycharm-python_dark');
       assert.equal(theme.languageIds?.python, 'pycharm-python_dark');
       assert.match(readIcon(theme, 'pycharm-python_dark'), /#548AF7/);
     });
@@ -346,6 +347,53 @@ describe('ConfigChangeDetector', () => {
       await applySettings({ filesAssociations: { 'manage.py': 'docker' } });
 
       assert.equal(readTheme().fileNames?.['manage.py'], 'docker');
+    });
+  });
+
+  describe('roleMarks', () => {
+    const roleIcons = () => readdirSync(join(testState.extensionPath, 'dist', 'files')).filter((file) => file.startsWith('role-'));
+
+    it('gives every Python file the Python icon alone when off, and removes the icons with a mark', async () => {
+      await applySettings({ opacity: 0.9 });
+      assert.ok(roleIcons().length > 0);
+
+      await applySettings({ opacity: 0.9, roleMarks: false });
+      const theme = readTheme();
+      for (const name of ['manage.py', '__init__.py']) assert.equal(theme.fileNames?.[name], 'pycharm-python_dark', name);
+      assert.equal(theme.fileNames?.['main.go'], undefined);
+      assert.equal(theme.atomConfig?.roleMarks, false);
+      assert.deepEqual(Object.keys(theme.iconDefinitions ?? {}).filter((name) => name.startsWith('role-')), []);
+      assert.deepEqual(roleIcons(), []);
+    });
+
+    it('names the icons with a mark with the hash of the filter settings', async () => {
+      await applySettings({ opacity: 0.9 });
+
+      const theme = readTheme();
+      const definition = theme.fileNames?.['main.go'];
+      assert.equal(definition, 'role-run-go');
+      assert.match(theme.iconDefinitions?.[definition ?? '']?.iconPath ?? '', /\/files\/role-run-go~-?\d+\.svg$/);
+      assert.match(readIcon(theme, 'role-run-go'), /opacity="0\.9"/);
+    });
+
+    it('keeps the icon a name has of its own, and the icon the user gave a name', async () => {
+      // without the pycharm pack, `manage.py` is the Django icon of the icon plugin
+      await applySettings({ activeIconPacks: ['angular', 'rails', 'tests'], filesAssociations: { 'main.go': 'docker' } });
+
+      const theme = readTheme();
+      assert.equal(theme.fileNames?.['manage.py'], 'djangoconfig');
+      assert.equal(theme.fileNames?.['main.py'], 'role-run-python');
+      assert.equal(theme.fileNames?.['main.go'], 'docker');
+    });
+
+    it('leaves a name whose extension has an svg of the user as its icon without a mark', async () => {
+      const custom = join(testState.extensionPath, 'mine.svg');
+      writeFileSync(custom, '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill="#ff0000" d="M0 0h16v16H0z"/></svg>');
+      await applySettings({ filesAssociations: { '*.go': custom } });
+
+      const theme = readTheme();
+      assert.match(theme.fileExtensions?.go ?? '', /^custom-/);
+      assert.equal(theme.fileNames?.['main.go'], undefined);
     });
   });
 

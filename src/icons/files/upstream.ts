@@ -2865,6 +2865,15 @@ export const upstreamFiles = [
       IconPack.Rails
     ],
     fileNames: [
+      'test_helper.rb'
+    ],
+    name: 'railshelper'
+  },
+  {
+    enabledFor: [
+      IconPack.Rails
+    ],
+    fileNames: [
       'routes.rb'
     ],
     name: 'railsroutes'
@@ -3547,10 +3556,28 @@ export const upstreamFiles = [
       IconPack.Tests
     ],
     fileNames: [
+      'main_test.go'
+    ],
+    name: 'testgo'
+  },
+  {
+    enabledFor: [
+      IconPack.Tests
+    ],
+    fileNames: [
       'spec.hs',
       'test.hs'
     ],
     name: 'testhaskell'
+  },
+  {
+    enabledFor: [
+      IconPack.Tests
+    ],
+    fileNames: [
+      'test.java'
+    ],
+    name: 'testjava'
   },
   {
     enabledFor: [
@@ -3575,6 +3602,15 @@ export const upstreamFiles = [
     ],
     light: true,
     name: 'testjs'
+  },
+  {
+    enabledFor: [
+      IconPack.Tests
+    ],
+    fileNames: [
+      'test.kt'
+    ],
+    name: 'testkt'
   },
   {
     enabledFor: [
