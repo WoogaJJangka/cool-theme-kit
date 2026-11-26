@@ -3,7 +3,7 @@
  * (see ./iconMetrics.ts). Run it after the icons change (the iconGenerator submodule, `assets/icons`):
  * `test/unit/glassIcons.test.ts` fails when the file is behind.
  *
- * Usage: bun run sync:metrics [-- <another file>]
+ * Usage: bun run sync:metrics
  */
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -59,8 +59,7 @@ const formatMetrics = (metrics: IconMetrics): string => {
 
 if (require.main === module) {
   const metrics = measureIcons(root);
-  // another file to look at the measures without replacing them
-  writeFileSync(process.argv[2] ?? join(root, METRICS_FILE), formatMetrics(metrics));
+  writeFileSync(join(root, METRICS_FILE), formatMetrics(metrics));
   const holes = Object.values(metrics.files).filter((entry) => entry.includes('h')).length;
   console.log(
     `${METRICS_FILE}: ${Object.keys(metrics.files).length} file icons (${holes} with holes), ` +

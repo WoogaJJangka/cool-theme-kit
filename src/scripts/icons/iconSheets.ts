@@ -2,11 +2,13 @@
  * Draws every bundled icon on contact sheets, at the size of the explorer (16px) and twice that, to review them by eye:
  * which ones fall apart when small, which glyph does not read on its tile.
  *
- * Usage: bun run sheet:icons -- <output folder> [--flat] [--light] [--only <icon names, with commas>] [--group files|folders|foldersOpen] [--metrics <another metrics.json>]
+ * Usage: bun run sheet:icons [-- --flat] [--light] [--only <icon names, with commas>] [--group files|folders|foldersOpen]
+ * The sheets go to `out/icon-sheets/<glass|flat>-<dark|light>/` (not in git), emptied first.
  */
 import { Resvg } from '@resvg/resvg-js';
-import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { compareCodeUnits } from 'src/helpers/utils';
 import { glassIcon, toMetric } from 'src/icons/glass/glassIcons';
 
 import { iconFolders, METRICS_FILE } from './syncIconMetrics';
@@ -26,17 +28,21 @@ const FONT = existsSync(LABEL_FONT) ? { defaultFontFamily: 'Segoe UI', fontFiles
 const escapeXml = (text: string) => text.replaceAll('&', '&amp;').replaceAll('<', '&lt;');
 const option = (name: string) => (process.argv.includes(name) ? process.argv[process.argv.indexOf(name) + 1] : undefined);
 
-const sheets = () => {
-  const output = process.argv[2];
-  if (!output || output.startsWith('--')) throw new Error('Usage: bun run sheet:icons -- <output folder> [--flat] [--light] [--only <names>] [--group <group>]');
-  mkdirSync(output, { recursive: true });
+/** Where the sheets go: a folder of the repository that git ignores, never a path of the command line */
+const OUTPUT = join(root, 'out', 'icon-sheets');
 
+const sheets = () => {
   const flat = process.argv.includes('--flat');
   const light = process.argv.includes('--light');
   const only = new Set(option('--only')?.split(',').filter(Boolean));
   const group = option('--group');
   const background = light ? '#f7f8fa' : '#191a1c';
-  const metrics = JSON.parse(readFileSync(option('--metrics') ?? join(root, METRICS_FILE), 'utf8')) as IconMetrics;
+  const metrics = JSON.parse(readFileSync(join(root, METRICS_FILE), 'utf8')) as IconMetrics;
+
+  // the sheets of an earlier run, for other icons, would be read as the ones of this run
+  const output = join(OUTPUT, `${flat ? 'flat' : 'glass'}-${light ? 'light' : 'dark'}`);
+  rmSync(output, { force: true, recursive: true });
+  mkdirSync(output, { recursive: true });
 
   const { glyphs: glyphFolders, ...iconGroups } = iconFolders(root);
   // the New UI glyph of a file icon, as the generator draws it in the glass style
@@ -50,7 +56,7 @@ const sheets = () => {
     for (const folder of folders.filter((path) => existsSync(path))) {
       for (const file of readdirSync(folder).filter((item) => item.endsWith('.svg'))) icons.set(file.slice(0, -4), join(folder, file));
     }
-    const names = [...icons.keys()].filter((icon) => only.size === 0 || only.has(icon)).sort();
+    const names = [...icons.keys()].filter((icon) => only.size === 0 || only.has(icon)).sort(compareCodeUnits);
 
     for (let first = 0; first < names.length; first += PER_SHEET) {
       const part = names.slice(first, first + PER_SHEET);

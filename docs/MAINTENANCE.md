@@ -263,7 +263,9 @@ Cool Theme Kit 을 고칠 때 지키는 규칙과, 그 규칙을 지키는지 �
 - **Hotspot**: 웹뷰, 파일 쓰기, 정규식(ReDoS), 경로 처리가 주로 나온다. 검토하고 "Safe" 로 닫을 때는 이유를 남긴다.
 - 자주 나오는 지적과 이 저장소의 답:
   - 비교 함수 없는 `sort()`(S2871): `helpers/utils.compareCodeUnits`(같은 순서를 적어 둔 것, 로캘에 따라 바뀌지 않음).
-  - 끝의 `/` 지우기 같은 정규식 백트래킹(S8786): `trimTrailingSlashes` 처럼 반복문으로.
+  - 끝의 `/` 지우기 같은 정규식 백트래킹(S8786): `trimTrailingSlashes` 처럼 반복문으로(`glassIcons.attributesOf` 도 같은 이유).
+  - 개발 스크립트(`src/scripts`)가 명령줄 인자를 경로로 쓰는 것(S8707 "Path Traversal"): 인자로 경로를 받지 않고 저장소 안 고정 위치에 쓴다
+    (`sheet:icons` → `out/icon-sheets/`). 인자는 깃발과 이름 목록만.
   - 웹뷰 `message` 의 출처(S2819): `event.origin !== window.origin` 이면 버린다. VS Code 는 확장의 메시지를 웹뷰 페이지와 같은 출처의
     호스트 프레임에서 `postMessage(…, window.origin)` 로 넘긴다(1.95·1.147 `webview/browser/pre/index.html` 확인).
   - 빌드 스크립트가 받는 JetBrains 커밋(URL·로그에 들어감): `scripts/jetbrainsSource.checkedCommit`(40자 hex 만).
@@ -277,7 +279,7 @@ Cool Theme Kit 을 고칠 때 지키는 규칙과, 그 규칙을 지키는지 �
 | 주기 | 할 일 |
 |---|---|
 | 모든 PR | PR 템플릿의 확인 목록, 모든 검사 통과 |
-| 매주 (자동) | 월 `sync-upstream.yml`, 월 Dependabot(Actions), 화 `security.yml`, 수 `smoke.yml` — 실패하면 그 주에 본다. `sync-upstream` PR 에 새 아이콘이 있으면 `bun run sheet:icons -- <폴더>` 로 유리 스타일 모습을 보고, 글리프가 어색한 이름을 `src/scripts/icons/iconMetrics.ts` 의 `PLAIN`·`ONE_COLOR` 에 넣는다 |
+| 매주 (자동) | 월 `sync-upstream.yml`, 월 Dependabot(Actions), 화 `security.yml`, 수 `smoke.yml` — 실패하면 그 주에 본다. `sync-upstream` PR 에 새 아이콘이 있으면 `bun run sheet:icons` 로 유리 스타일 모습을 보고(`out/icon-sheets/`), 글리프가 어색한 이름을 `src/scripts/icons/iconMetrics.ts` 의 `PLAIN`·`ONE_COLOR` 에 넣는다 |
 | 매월 | Dependabot bun 묶음 PR 처리, `audit:shipped` summary 의 빌드 도구 advisory 수 확인, Sonar 이슈·Hotspot 정리 |
 | 릴리스 전 | main 의 smoke(1.95.0·stable·다른 확장) 통과, 격리 프로필에서 VSIX 확인(한국어 글꼴 포함), 크기 예산 표 확인 |
 | 분기 | 엔진 하한 재검토, `COMPAT_EXTENSIONS` 갱신, 토큰 만료일 확인, 이 문서의 예산·점검 결과 갱신 |

@@ -89,4 +89,4 @@ jobs:
 
             Lint, build (including the icon checks) and unit tests passed on this change.
             Review the new associations in `src/icons/*/upstream.ts` and the color changes in `themes/` before merging,
-            and look at the new icons in the glass style (`bun run sheet:icons -- <folder>`).
+            and look at the new icons in the glass style (`bun run sheet:icons`, written to `out/icon-sheets/`).

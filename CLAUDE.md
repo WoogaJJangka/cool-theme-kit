@@ -64,7 +64,7 @@
 | JetBrains 연결 규칙 동기화 | `bun run sync:upstream` |
 | 유리 스타일의 JetBrains New UI 글리프 받기 (`assets/icons/glass/files`, 대응표를 고치거나 고정 커밋이 바뀌면. 뒤에 `sync:metrics`) | `bun run sync:glyphs` |
 | 유리 스타일용 아이콘 측정값 다시 쓰기 (`assets/icons/metrics.json`, 아이콘 SVG 가 바뀌면) | `bun run sync:metrics` |
-| 전체 아이콘을 16px·32px 시트로 그려 눈으로 검토 (무너지는 글리프 찾기) | `bun run sheet:icons -- <폴더>` (`--flat` 평면, `--light`, `--only <이름,이름…>`, `--group files\|folders\|foldersOpen`) |
+| 전체 아이콘을 16px·32px 시트로 그려 눈으로 검토 (무너지는 글리프 찾기) | `bun run sheet:icons` (`-- --flat` 평면, `--light`, `--only <이름,이름…>`, `--group files\|folders\|foldersOpen`. 그림은 `out/icon-sheets/<glass\|flat>-<dark\|light>/`) |
 | JetBrains 색 테마 동기화 (고정 커밋 / 최신) | `bun run sync:colors` / `bun run sync:colors -- --latest` |
 | 문법 색을 JetBrains 와 비교 (실제 VS Code 문법으로 `test/colors` 샘플을 토큰으로 나눔, `.vscode-test` 에 받음) | `bun run check:colors` (`-- --report` 토큰마다 scope·색·규칙, 색 없는 scope) |
 | 같은 비교를 VS Code 내장 TypeScript 서버의 의미 토큰까지 얹어서 (TS·JS 샘플, 실제 VS Code 를 띄움, Linux 는 `xvfb-run -a`) | `bun run check:semantic` (`-- --report` 의미 토큰마다 종류·수식어·스타일) |
@@ -246,7 +246,9 @@
     `assets/icons/metrics.json`(생성물, **손대지 않는다**, VSIX 에 들어감)에 미리 잰다. 측정으로 알 수 없는 것은 `iconMetrics.ts` 의
     `PLAIN`(구멍이 글리프가 아닌 배지: 자물쇠·봉투·카메라·글자 속 구멍)·`ONE_COLOR`(여러 색이지만 한 색 글리프가 나은 것: Docker Compose).
     아이콘이 바뀌면 다시 쓴다(`sync-upstream.yml` 이 같이 돌린다). `glassIcons.test.ts` 가 뒤처진 측정값을 잡는다(`<text>` 로 그린
-    아이콘은 PC 글꼴에 따라 달라 비교에서 뺀다). 새 아이콘이 들어오면 `sheet:icons` 로 보고 필요한 이름을 두 목록에 넣는다.
+    아이콘은 PC 글꼴에 따라 상자가 달라 재지 않는다: 번들되지 않은 아이콘처럼 viewBox 로 놓는다. Linux CI 에는 글꼴이 없다).
+    개발 스크립트도 Sonar·CodeQL 이 본다: 명령줄 인자로 받은 문자열을 경로(S8707)나 정규식(js/regex-injection)으로 쓰지 않는다
+    (`sheet:icons` 는 고정 폴더에 쓰고 `--only` 는 이름 목록). 새 아이콘이 들어오면 `sheet:icons` 로 보고 필요한 이름을 두 목록에 넣는다.
   - 측정값이 없는 아이콘(사용자 커스텀 SVG, 섞는 다른 테마의 **파일** 아이콘)은 viewBox 로 놓고 같은 타일에 올린다. 다른 테마·사용자의
     **폴더** 아이콘은 통째 그림이라 그대로 둔다(`ThemeLayerGenerator` 가 파일용·폴더용 정의를 따로 복사한다).
   - `iconStyle` 은 기본값(glass)이 아닐 때만 아이콘 파일 이름 해시에 들어간다(`getFileConfigHash`). 밝은·어두운 테마 변형(`_dark`)은

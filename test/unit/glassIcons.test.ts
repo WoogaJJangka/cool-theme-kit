@@ -71,6 +71,12 @@ describe('glass icons', () => {
       });
     });
 
+    it('reads the attributes of the root whatever their quotes and spaces, and a sign inside a value', () => {
+      const parts = parseSvg(`<svg viewBox = '0 0 8 8'\n  style="a=b; fill:#111" fill='#222' width=16><path/></svg>`);
+      assert.deepEqual(parts?.viewBox, [0, 0, 8, 8]);
+      assert.equal(parts?.attributes, `style="a=b; fill:#111" fill='#222'`);
+    });
+
     it('takes the size of an svg without a viewBox, and leaves the comments out', () => {
       const parts = parseSvg('<svg width="32px" height="24"><!-- a > b --><path/><!-- end --></svg>');
       assert.deepEqual(parts?.viewBox, [0, 0, 32, 24]);

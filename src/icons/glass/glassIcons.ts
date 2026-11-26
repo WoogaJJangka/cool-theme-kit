@@ -156,7 +156,35 @@ const stripComments = (svg: string): string => {
   return text + svg.slice(from);
 };
 
-const ATTRIBUTE = /([\w:-]+)\s*=\s*("[^"]*"|'[^']*')/g;
+const isSpace = (character: string | undefined): boolean => character === ' ' || character === '\n' || character === '\t' || character === '\r';
+const NAME_CHARACTER = /[\w:-]/;
+
+/**
+ * The attributes of a tag, each with the quotes of its value: `name="value"` or `name='value'`.
+ * Read with a loop: a regular expression that takes a name, spaces and the sign backtracks over a long run of letters.
+ */
+const attributesOf = (tag: string): Map<string, string> => {
+  const attributes = new Map<string, string>();
+  let from = 0;
+  for (let sign = tag.indexOf('=', from); sign !== -1; sign = tag.indexOf('=', from)) {
+    let quoteAt = sign + 1;
+    while (isSpace(tag[quoteAt])) quoteAt++;
+    const quote = tag[quoteAt];
+    const end = quote === '"' || quote === "'" ? tag.indexOf(quote, quoteAt + 1) : -1;
+    if (end === -1) {
+      from = sign + 1;
+    } else {
+      let nameEnd = sign;
+      while (nameEnd > from && isSpace(tag[nameEnd - 1])) nameEnd--;
+      let nameStart = nameEnd;
+      while (nameStart > from && NAME_CHARACTER.test(tag[nameStart - 1])) nameStart--;
+      if (nameEnd > nameStart) attributes.set(tag.slice(nameStart, nameEnd), tag.slice(quoteAt, end + 1));
+      // past the value: a sign in it is not an attribute
+      from = end + 1;
+    }
+  }
+  return attributes;
+};
 
 /** The attributes of the root that its content inherits: they move to a group around the content */
 const INHERITED = new Set([
@@ -197,8 +225,7 @@ const parseSvg = (svg: string): SvgParts | undefined => {
   const end = text.lastIndexOf('</svg>');
   if (start === -1 || rootEnd === -1 || end < rootEnd) return undefined;
 
-  const root = new Map<string, string>();
-  for (const match of text.slice(start, rootEnd).matchAll(ATTRIBUTE)) root.set(match[1], match[2]);
+  const root = attributesOf(text.slice(start, rootEnd));
 
   const value = (name: string) => root.get(name)?.slice(1, -1);
   const box = numbers(value('viewBox'));
