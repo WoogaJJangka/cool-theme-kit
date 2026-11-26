@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. Dates are displayed in UTC.
 
-#### Unreleased
+#### 1.7.0 (2026-11-26)
 
 - feat: the **glass icon style**, the new default look of Cool Icons. Every file icon is a glyph on the same rounded
   tile in the color of the icon, and every folder the same rounded folder in its color with its badge as a glyph on the
