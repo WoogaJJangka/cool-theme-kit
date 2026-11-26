@@ -46,6 +46,11 @@
 - 폰트: JetBrains 글꼴(JetBrains Mono, Markdown 미리보기는 Inter) + 한글 대체 글꼴을 사용자가 고를 때만 사용자 설정에 쓴다
   (`configurationDefaults` 는 쓰지 않는다, `fonts.test.ts`). VS Code 화면(UI) 글꼴은 확장이 못 바꾼다.
 - 한국어 호환이 중요하다: 사용자 글꼴 `'Roboto Mono', 'D2Coding', monospace` 로 한글 이름·주석·화면 문구가 깨지지 않는지 확인.
+- **JetBrains 플러그인과 같은 화면(2026-11-26 사용자 결정)**: `D:\dev\projects\cool-theme-kit-jetbrains`(Cool Icons 를 PyCharm 으로
+  가져가는 플러그인)와 방향을 같이 하고 서로 참고해서, VS Code 와 PyCharm 을 번갈아 써도 같은 화면처럼 보이게 한다. 부분마다 원본은
+  한 곳(아이콘 = 여기, 색·UI 아이콘·글꼴 = JetBrains)이고 다른 쪽이 따라간다. 한쪽을 바꾸면 같은 작업에서 다른 쪽을 본다(아이콘을 바꾸면
+  `bun run build` → 플러그인 `gradlew syncIcons`). 부분별 표·일부러 다른 것·아직 다른 것·비교 방법은 `docs/SAME_SCREEN.md`.
+  새 기능을 넣을 때 플러그인 쪽에서 같은 모양이 가능한지 그 문서에 적는다.
 - 단계별 로드맵은 포크 이슈 #19~#23, 진행 상황은 메모리(`project-status`).
 
 ## 환경 (Node·bun 은 conda env)
