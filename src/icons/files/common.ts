@@ -1,9 +1,12 @@
 /**
- * Common file names the JetBrains icon plugin has no icon for in VS Code: it matches them with a pattern VS Code
- * cannot express (`.env.*`), or does not know them, and they showed the icon of their extension or the plain file.
- * Hand kept, applied like the other hand-written associations: if the plugin gives one of these names another icon,
- * that icon wins (`bun run sync:upstream`). The names this theme gives another icon than the plugin on purpose are
- * in `src/icons/exceptions.ts`. The marks of `main.py`, `__init__.py`… are in `src/icons/roles.ts`.
+ * Common file names the JetBrains icon plugin has no icon of their own for in VS Code: it matches them with a pattern
+ * VS Code cannot express (`.env.*`), or only knows their extension (`secrets.json` is a JSON file), or does not know
+ * them, and they showed the icon of their extension or the plain file.
+ * Hand kept, applied after the associations generated from the plugin: `bun run sync:upstream` takes the icon the
+ * plugin gives the extension of a name for the icon of that name, and would replace these.
+ * test/unit/jetbrainsParity.test.ts fails when the plugin gives one of these names an icon of its own: the name then
+ * follows the plugin (take it out), or moves to the names this theme gives another icon than the plugin on purpose,
+ * `src/icons/exceptions.ts`. The marks of `main.py`, `__init__.py`… are in `src/icons/roles.ts`.
  */
 export const commonFiles = [
   {

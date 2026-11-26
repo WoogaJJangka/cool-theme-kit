@@ -1,8 +1,8 @@
 /**
  * Common folder names the JetBrains icon plugin has no icon for, which showed the plain folder. Hand kept, applied
- * like the other hand-written associations: if the plugin learns one of these names, its icon wins
- * (`bun run sync:upstream`). The names this theme gives another icon than the plugin on purpose are in
- * `src/icons/exceptions.ts`.
+ * after the associations generated from the plugin. test/unit/jetbrainsParity.test.ts fails when the plugin learns
+ * one of these names: the name then follows the plugin (take it out), or moves to the names this theme gives another
+ * icon than the plugin on purpose, `src/icons/exceptions.ts`.
  *
  * The icons `c`, `cpp`, `csharp`, `swift`, `claude`, `lab`, `study` and `slides` are this fork's
  * (src/scripts/icons/folderBadges.ts); the others are the folder icons of the plugin.
