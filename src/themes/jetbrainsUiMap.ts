@@ -190,7 +190,11 @@ export const UI_MAP: Record<string, ColorSource[]> = {
   'editor.selectionBackground': ['color:SELECTION_BACKGROUND'],
   'editor.selectionForeground': ['color:SELECTION_FOREGROUND'],
   'editor.inactiveSelectionBackground': ['color:SELECTION_BACKGROUND'],
-  'editor.selectionHighlightBackground': ['bg:IDENTIFIER_UNDER_CARET_ATTRIBUTES'],
+  // The IDE has no highlight of the selected text, only of the identifier under the caret (the word highlight). VS Code
+  // draws both on the other occurrences of a selected word (every language has at least its textual word highlight), the
+  // word highlight on top: with translucent colors (translucent.ts) a visible selection highlight changes the color of the
+  // IDE there (fork #91, user's choice 2026-11-25). Text selections that are not a word get no occurrences, like the IDE
+  'editor.selectionHighlightBackground': ['#00000000'],
   'editor.wordHighlightBackground': ['bg:IDENTIFIER_UNDER_CARET_ATTRIBUTES'],
   'editor.wordHighlightStrongBackground': ['bg:WRITE_IDENTIFIER_UNDER_CARET_ATTRIBUTES', '=editor.wordHighlightBackground'],
   'editor.findMatchBackground': ['bg:SEARCH_RESULT_ATTRIBUTES'],
