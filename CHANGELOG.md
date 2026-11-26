@@ -22,6 +22,12 @@ All notable changes to this project will be documented in this file. Dates are d
   settings when you use several VS Code profiles.
 - fix: the saturation filter was added to the first svg element closed in an icon, not to the icon itself, in an icon
   that holds another svg.
+- fix: in Cool Islands, a selected word shows its selection again. The highlight of the word under the caret came from
+  JetBrains as an opaque color, and VS Code draws it above the selection, so selecting a highlighted word showed only
+  the highlight, not how much of it was selected. The editor highlights (word under the caret, search results, folded
+  ranges, the matching bracket) are now translucent colors that look the same on the editor background. The highlight
+  of other occurrences of selected text is off, like in the IDE: the other occurrences of a selected word still show,
+  with the word highlight.
 
 #### 1.6.1 (2026-11-23)
 

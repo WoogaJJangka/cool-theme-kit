@@ -5,6 +5,7 @@ import { fallbackChain } from './jetbrainsFallbacks';
 import { SEMANTIC_RULES, TOKEN_RULES } from './jetbrainsTokenMap';
 import { UI_MAP } from './jetbrainsUiMap';
 import { selectorScore, TEXTMATE_LANGUAGES, textMateAttributes, textMateScopes } from './textMateTheme';
+import { withTranslucentHighlights } from './translucent';
 
 import type { ResolvedScheme, ResolvedUiTheme, TextAttributes } from './jetbrainsTheme';
 import type { ColorSource } from './jetbrainsUiMap';
@@ -182,7 +183,7 @@ export const convertJetbrainsTheme = (
   return {
     theme: {
       $schema: 'vscode://schemas/color-theme',
-      colors,
+      colors: withTranslucentHighlights(colors),
       name,
       semanticHighlighting: true,
       semanticTokenColors,

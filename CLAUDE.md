@@ -136,7 +136,10 @@
   **뒤에 적용된 값이 이김** → 자식의 `*` 가 부모 명시 키를 덮음), scheme 은 parent 체인 + `baseAttributes`(값이 같이 있으면 자기 값)
   + 추가 속성(그 scheme 을 부모로 둔 scheme 이 물려받음). `jetbrainsUiMap.ts`(VS Code 색 id ← `ui:`/`color:`/`fg:`·`bg:`… 후보)와
   `jetbrainsTokenMap.ts`(TextMate·semantic ← 속성 키 후보, 코드에만 있는 대체 키는 여기 적음)로 `themes/cool-islands-*.base.json`
-  (생성물, **손대지 않는다**)을 만들고, `ColorThemeGenerator` 가 빌드 때 `dist/` 로 쓴다. Python 규칙은 PyCharm `PyHighlighter.java`
+  (생성물, **손대지 않는다**)을 만들고, `ColorThemeGenerator` 가 빌드 때 `dist/` 로 쓴다. IDE 는 선택 영역을 강조 위에 그리지만 VS Code 는
+  강조(단어·검색 결과·접기·괄호)를 선택 위에 그려서, 그 색들은 `translucent.ts` 가 에디터 배경 위에서 같은 색이 되는 가장 투명한 색으로 바꾼다
+  (불투명하면 선택이 가려짐, 포크 #91). 선택 강조(`editor.selectionHighlightBackground`)는 투명: VS Code 는 선택한 단어의 다른 위치에 단어 강조와
+  겹쳐 그리는데 IDE 에는 없는 강조라 겹치면 색이 달라진다(2026-11-25 사용자 결정). Python 규칙은 PyCharm `PyHighlighter.java`
   의 키·대체 키 기준(상수·속성 색 없음, 메서드 호출 = 함수 호출). 정규식은 `RegExpHighlighter.java`, XML·HTML 은 `XmlHighlighterColors.java`,
   properties 는 `PropertiesHighlighter.java` 의 대체 키를 따른다. 닫힌 플러그인 키(JS.*)는 scheme 에 있는 값만 쓰고 대체 키는 원래 규칙을 둔다.
   Sass·Less·Kotlin·JSX 컴포넌트 키는 VS Code 쪽 scope 를 확정할 수 없거나(VS Code 에 Kotlin 문법 없음) 쓰임을 공개 소스로 확인할 수 없어 넣지 않았다.
