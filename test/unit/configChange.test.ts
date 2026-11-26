@@ -4,6 +4,7 @@ import { tmpdir } from 'node:os';
 import { basename, dirname, join } from 'node:path';
 import { EXTENSION_KEY, ICON_THEME_ID, JSON_FILE_NAME, JSON_PRODUCT_FILE_NAME } from 'src/helpers/constants';
 import { writeFileAtomic } from 'src/helpers/fsUtils';
+import { glassFile } from 'src/icons/glass/glassIcons';
 import { configChangeDetector } from 'src/services/ConfigChangeDetector';
 import { configService } from 'src/services/ConfigService';
 
@@ -432,6 +433,19 @@ describe('ConfigChangeDetector', () => {
       assert.match(readIcon(theme, name), /#123456/);
     });
 
+    it('puts a custom file icon on a tile of the glass style, and leaves a custom folder icon as it is drawn', async () => {
+      const icon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill="#123456" d="M0 0h16v16H0z"/></svg>';
+      writeFileSync(join(iconsDirectory, 'foo.svg'), icon);
+      await applySettings({
+        filesAssociations: { '*.foo': join(iconsDirectory, 'foo.svg') },
+        foldersAssociations: { recipes: join(iconsDirectory, 'foo.svg') },
+      });
+
+      const theme = readTheme();
+      assert.equal(readIcon(theme, theme.fileExtensions?.foo ?? ''), glassFile(icon));
+      assert.equal(readIcon(theme, theme.folderNames?.recipes ?? ''), icon);
+    });
+
     it('uses the -open sibling for expanded folders', async () => {
       await applySettings({ foldersAssociations: { recipes: join(iconsDirectory, 'foo.svg') } });
 
@@ -523,9 +537,12 @@ describe('ConfigChangeDetector', () => {
       return readTheme();
     };
 
-    /** Color of the svg of the icon the theme gives to a name of one of its maps */
+    /**
+     * Color of the svg of the icon the theme gives to a name of one of its maps: of its path, since a file icon is
+     * on the tile of the glass style
+     */
     const colorOf = (theme: IconConfiguration, definition: string | undefined) =>
-      /fill="(#\w+)"/.exec(readIcon(theme, definition ?? ''))?.[1];
+      /<path fill="(#\w+)"/.exec(readIcon(theme, definition ?? ''))?.[1];
 
     beforeEach(() => {
       testState.extensions = [];
@@ -544,7 +561,8 @@ describe('ConfigChangeDetector', () => {
 
       const definition = theme.fileNames?.['zz-unknown'];
       assert.ok(definition, 'zz-unknown not mapped');
-      assert.equal(readIcon(theme, definition), SVG('#123456'));
+      // a file icon of another theme goes on a tile, like the file icons of this theme
+      assert.equal(readIcon(theme, definition), glassFile(SVG('#123456')));
       assert.equal(theme.fileNames?.['sub/zz-unknown2'], definition);
       assert.equal(theme.fileNames?.zzbuildfile2, definition);
       assert.equal(theme.fileExtensions?.zzq, definition);
@@ -582,6 +600,17 @@ describe('ConfigChangeDetector', () => {
       assert.ok(theme.folderNames?.['.github/fb-sub']);
       assert.ok(theme.folderNamesExpanded?.['fb-folder']);
       assert.notEqual(theme.folderNamesExpanded?.['fb-folder'], theme.folderNames?.['fb-folder']);
+      // a folder icon of another theme is a whole drawing: not one the glass style can make a glass folder of
+      assert.equal(readIcon(theme, theme.folderNames?.['fb-folder'] ?? ''), SVG('#123456'));
+    });
+
+    it('keeps the file icons of a layer as they are drawn with the flat icon style', async () => {
+      installFallbackTheme();
+      await applySettings({ iconStyle: 'flat' });
+      const theme = readTheme();
+
+      assert.equal(readIcon(theme, theme.fileNames?.['zz-unknown'] ?? ''), SVG('#123456'));
+      assert.equal(readIcon(theme, theme.folderNames?.['fb-folder'] ?? ''), SVG('#123456'));
     });
 
     it('adds no folder with the classic folder theme and no file with hidden file icons', async () => {
@@ -627,7 +656,7 @@ describe('ConfigChangeDetector', () => {
       assert.equal(theme.fileNames?.['escape.zzz'], undefined);
       assert.equal(theme.fileNames?.['absolute.zzz'], undefined);
       // `./../icons` from the folder of the theme json is still in the extension
-      assert.equal(readIcon(theme, theme.fileNames?.['zz-unknown'] ?? ''), SVG('#123456'));
+      assert.equal(readIcon(theme, theme.fileNames?.['zz-unknown'] ?? ''), glassFile(SVG('#123456')));
       const layers = join(testState.extensionPath, 'dist', 'layers');
       for (const file of readdirSync(layers, { withFileTypes: true }).filter((entry) => entry.isFile())) {
         assert.ok(!readFileSync(join(layers, file.name), 'utf8').includes('#abcdef'), file.name);
@@ -640,8 +669,8 @@ describe('ConfigChangeDetector', () => {
       const theme = readTheme();
 
       const icon = readIcon(theme, theme.fileNames?.['zz-unknown'] ?? '');
-      assert.notEqual(icon, SVG('#123456'));
-      assert.match(icon, /opacity/);
+      assert.notEqual(icon, glassFile(SVG('#123456')));
+      assert.match(icon, /^<svg opacity="0.5"/);
     });
 
     it('removes the icons of the other themes when the layers are emptied', async () => {

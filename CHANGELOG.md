@@ -2,8 +2,26 @@
 
 All notable changes to this project will be documented in this file. Dates are displayed in UTC.
 
-#### Unreleased
+#### 1.7.0 (2026-11-26)
 
+- feat: the **glass icon style**, the new default look of Cool Icons. Every file icon is a glyph on the same rounded
+  tile in the color of the icon, and every folder the same rounded folder in its color with its badge as a glyph on the
+  front (an expanded folder shows the sheet it holds). The icons were the logos of thousands of projects as they come:
+  other shapes, sizes and line weights, some too fine to read at 16 pixels and some too dark to see on a dark theme.
+  They are now one set: the glyphs get the same size, a logo that is a badge with its glyph cut out (TypeScript, C#,
+  HTML) becomes the tile itself, an icon of several colors keeps them on a dark tile, and a dark logo shows on any
+  theme. Which icon a name gets does not change, and the folder color, opacity, saturation and monochrome settings
+  work as before. The file icons of other themes mixed in and custom SVG file icons go on a tile too.
+- feat: in the glass style the JetBrains shapes come first. A file type the JetBrains IDEs have their own New UI
+  icon for (about fifty: JSON, YAML, XML, HTML, CSS, JavaScript, TypeScript, Java, C, C#, SQL, Markdown, shell
+  scripts, text, images, archives, fonts…) shows that icon as its glyph, on a tile of its color. They are drawn for
+  16 pixels, where a logo with fine lines (the braces of JSON, the cup of Java) fades. The other types show the logo
+  of the JetBrains icon plugin.
+- feat: `a-file-icon-vscode.iconStyle`: `glass` (the default) or `flat`, the icons as the JetBrains plugin draws
+  them (the look of the versions before). Add it to `workbench.settings.applyToAllProfiles` with the other theme
+  settings when you use several VS Code profiles.
+- fix: the saturation filter was added to the first svg element closed in an icon, not to the icon itself, in an icon
+  that holds another svg.
 - fix: in Cool Islands, a selected word shows its selection again. The highlight of the word under the caret came from
   JetBrains as an opaque color, and VS Code draws it above the selection, so selecting a highlighted word showed only
   the highlight, not how much of it was selected. The editor highlights (word under the caret, search results, folded

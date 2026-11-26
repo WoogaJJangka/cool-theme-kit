@@ -3,7 +3,7 @@
  * @returns {AtomConfig}
  * @private
  */
-import { FolderTheme, IconPack, ArrowTheme } from 'src/@types/config';
+import { FolderTheme, IconPack, IconStyle, ArrowTheme } from 'src/@types/config';
 import { DEFAULT_FOLDER_COLOR, DEFAULT_MONOCHROME_COLOR, DEFAULT_OPACITY, DEFAULT_SATURATION, MATERIAL_ICON_THEME } from 'src/helpers/constants';
 import { getHash } from 'src/helpers/utils';
 
@@ -36,6 +36,7 @@ activeIconPacks: [
     folderColor: DEFAULT_FOLDER_COLOR,
     folderTheme: FolderTheme.Specific,
     hideFileIcons: false,
+    iconStyle: IconStyle.Glass,
     // the names this theme does not know get the icon of the Material Icon Theme when it is installed.
     // Keep in sync with package.json
     iconThemeLayers: [MATERIAL_ICON_THEME],
@@ -62,7 +63,8 @@ export const withDefaults = (config: Partial<AtomConfig> = {}): AtomConfig => {
 };
 
 /**
- * The suffix of the icon file names for the settings that change the content of the icons (the SVG filters), empty
+ * The suffix of the icon file names for the settings that change the content of the icons (the SVG filters and the
+ * icon style), empty
  * with their default values. Only those settings are hashed: the icons keep their name, and are not written again,
  * when another setting changes (fork #28). A new name still makes VS Code load the icons again after a filter change.
  */
@@ -74,11 +76,14 @@ export const getFileConfigHash = (config: AtomConfig): string => {
     config.saturation !== defaults.saturation ||
     config.opacity !== defaults.opacity ||
     config.folderColor !== defaults.folderColor ||
+    config.iconStyle !== defaults.iconStyle ||
     config.monochrome !== defaults.monochrome ||
     (config.monochrome && config.monochromeColor !== defaults.monochromeColor)
   ) {
     const filters = {
       folderColor: config.folderColor,
+      // only when it is not the default: the names of the icons of the other settings do not change
+      iconStyle: config.iconStyle === defaults.iconStyle ? undefined : config.iconStyle,
       monochrome: config.monochrome,
       monochromeColor: config.monochrome ? config.monochromeColor : undefined,
       opacity: config.opacity,

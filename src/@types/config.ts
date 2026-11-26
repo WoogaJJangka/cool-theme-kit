@@ -29,6 +29,16 @@ export enum FolderTheme {
   Specific = 'specific',
 }
 
+/**
+ * How the file and folder icons are drawn:
+ * - glass: every file icon is a glyph on the same rounded tile, every folder the same rounded folder (the default)
+ * - flat: the icons as the JetBrains plugin draws them (the look before the style existed)
+ */
+export enum IconStyle {
+  Flat = 'flat',
+  Glass = 'glass',
+}
+
 export enum PredefinedOpacity {
   Transparent = 'transparent',
   SemiTransparent = 'semiTransparent',
@@ -59,6 +69,7 @@ export type AtomConfig = {
   folderColor: string,
   folderTheme: FolderTheme,
   hideFileIcons: boolean,
+  iconStyle: IconStyle,
   /** file name, `*.ext` or `folder/` -> id of the installed file icon theme giving its icon */
   iconThemeByName?: Record<string, string>,
   /** other installed file icon themes mixed with this theme, the first listed wins */
@@ -171,6 +182,7 @@ export const ICON_SETTING_KEYS = [
   'folderTheme',
   'foldersAssociations',
   'hideFileIcons',
+  'iconStyle',
   'iconThemeByName',
   'iconThemeLayers',
   'languagesAssociations',

@@ -258,8 +258,8 @@ export class ThemeLayerGenerator {
     /** the svg files to copy to `dist/layers`, with the icons of this theme */
     private readonly copies: FileCopies,
     private readonly fileConfigHash: string,
-    /** the filters of this theme, for the content of an svg file */
-    private readonly applyFilters: (svg: string) => string,
+    /** the filters of this theme, for the content of an svg file: the icon of a file, or of a folder */
+    private readonly applyFilters: (svg: string, isFile: boolean) => string,
     private readonly filterColor: (color: unknown) => string | undefined,
   ) {}
 
@@ -475,14 +475,15 @@ export class ThemeLayerGenerator {
       this.setOwn(reader, map, key, hit);
       return;
     }
-    const base = hit && this.definition(reader, reader.lookup('base', hit));
+    const isFile = MAPS.files.includes(map);
+    const base = hit && this.definition(reader, reader.lookup('base', hit), isFile);
     if (!base) return;
 
     this.iconConfig[map] ??= {};
     this.iconConfig[map][key] = base;
 
     for (const variant of VARIANTS) {
-      const definition = this.variantDefinition(reader, variant, hit);
+      const definition = this.variantDefinition(reader, variant, hit, isFile);
       if (definition) {
         this.iconConfig[variant] ??= {};
         this.iconConfig[variant][map] ??= {};
@@ -523,13 +524,14 @@ export class ThemeLayerGenerator {
   }
 
   private setDefault(reader: LayerReader, key: DefaultKey) {
+    const isFile = DEFAULTS.files.includes(key);
     const hit = reader.hitDefault(key);
-    const base = hit && this.definition(reader, reader.lookup('base', hit));
+    const base = hit && this.definition(reader, reader.lookup('base', hit), isFile);
     if (!base) return;
 
     this.iconConfig[key] = base;
     for (const variant of VARIANTS) {
-      const definition = this.variantDefinition(reader, variant, { map: key });
+      const definition = this.variantDefinition(reader, variant, { map: key }, isFile);
       if (definition) {
         this.iconConfig[variant] ??= {};
         this.iconConfig[variant][key] = definition;
@@ -542,21 +544,22 @@ export class ThemeLayerGenerator {
   /**
    * The definition of this theme for a definition of the other theme: its svg copied to `dist/layers` through the
    * same filters as the icons of this theme, or its glyph with the font copied there. Other icons (png) are skipped.
+   * An icon used for a file and for a folder is copied for each: the filters of a file icon are not those of a folder.
    */
-  private definition(reader: LayerReader, definition: string | undefined, tone: Tone = 'dark'): string | undefined {
+  private definition(reader: LayerReader, definition: string | undefined, isFile: boolean, tone: Tone = 'dark'): string | undefined {
     if (!definition) return undefined;
 
     // only the svg files drawn with `currentColor` differ between dark and light themes
     const toned = reader.usesCurrentColor && tone === 'light';
-    const cacheKey = `${reader.theme.id}\n${definition}${toned ? '\nlight' : ''}`;
+    const cacheKey = `${reader.theme.id}\n${definition}${toned ? '\nlight' : ''}${isFile ? '' : '\nfolder'}`;
     const known = this.definitions.get(cacheKey);
     if (known !== undefined) return known || undefined;
 
     const source = reader.json.iconDefinitions?.[definition];
-    const safeName = `${reader.theme.id}_${definition}${toned ? '_light' : ''}`.replaceAll(/[^\w.-]/g, '_');
+    const safeName = `${reader.theme.id}_${definition}${toned ? '_light' : ''}${isFile ? '' : '_folder'}`.replaceAll(/[^\w.-]/g, '_');
     const id = `${DEFINITION_PREFIX}${safeName}`;
     const created = typeof source?.iconPath === 'string'
-      ? this.svgDefinition(reader, source.iconPath, safeName, tone)
+      ? this.svgDefinition(reader, source.iconPath, safeName, tone, isFile)
       : this.glyphDefinition(reader, source);
     if (!created) {
       this.definitions.set(cacheKey, '');
@@ -573,18 +576,18 @@ export class ThemeLayerGenerator {
    * The definition of a variant of a hit: the variant of the other theme, or for a `usesCurrentColor` theme without a
    * light variant, its base icon in the text color of the light themes
    */
-  private variantDefinition(reader: LayerReader, variant: Variant, hit: Hit): string | undefined {
+  private variantDefinition(reader: LayerReader, variant: Variant, hit: Hit, isFile: boolean): string | undefined {
     const tone: Tone = variant === 'light' ? 'light' : 'dark';
-    const own = this.definition(reader, reader.lookup(variant, hit), tone);
+    const own = this.definition(reader, reader.lookup(variant, hit), isFile, tone);
     if (own || variant !== 'light' || !reader.usesCurrentColor) return own;
-    return this.definition(reader, reader.lookup('base', hit), 'light');
+    return this.definition(reader, reader.lookup('base', hit), isFile, 'light');
   }
 
   /**
    * An svg file of the other theme copied to `dist/layers` (with the icons of this theme, see {@link FileCopies});
    * none outside the folder of its extension, like a missing file
    */
-  private svgDefinition(reader: LayerReader, iconPath: string, safeName: string, tone: Tone) {
+  private svgDefinition(reader: LayerReader, iconPath: string, safeName: string, tone: Tone, isFile: boolean) {
     const source = reader.resolve(iconPath);
     if (!source || !/\.svg$/i.test(source) || !existsSync(source)) return;
 
@@ -592,7 +595,7 @@ export class ThemeLayerGenerator {
     const color = reader.usesCurrentColor ? CURRENT_COLORS[tone] : undefined;
     const file = `${safeName}${this.fileConfigHash}.svg`;
     this.copies.add({
-      change: (svg) => this.applyFilters(color ? svg.replaceAll(/currentColor/gi, color) : svg),
+      change: (svg) => this.applyFilters(color ? svg.replaceAll(/currentColor/gi, color) : svg, isFile),
       // removed since it was found (the other extension being updated): only that icon is missing
       optional: true,
       source,
