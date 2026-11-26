@@ -23,6 +23,11 @@ export abstract class AbstractJsonGenerator {
     return this.fileIconNames.get(value.toLowerCase()) ?? value.toLowerCase();
   }
 
+  /** Whether a file icon is one of the bundled ones (with its `_dark` when it has one), not an svg of the user */
+  protected isBundledFileIcon(name: string): boolean {
+    return this.fileIconNames.has(name.toLowerCase());
+  }
+
   /**
    * Define the icon `<name><suffix>` from the processed svg of the files folder
    * (the hash changes when color, opacity, saturation or monochrome are customized)

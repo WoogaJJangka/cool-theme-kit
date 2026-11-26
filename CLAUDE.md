@@ -30,6 +30,17 @@
   ② 없는 종류는 JetBrains 아이콘 플러그인(Atom Material Icons) 모양. 다듬는다는 것은 이 둘 안에서 고르고 크기를 맞추는 일이다. 사용자 기준: 심플·모던 최우선, 16px 에서
   무너지는 입체 표현은 쓰지 않음(그래서 그라데이션 + 위쪽 하이라이트 한 줄만 — 진짜 굴절·투명은 이 크기에서 안 보인다), 둥글고
   투명한 유리 느낌, 모든 아이콘의 통일감, 의미가 바로 보일 것.
+- **자주 쓰는 이름은 특징을 살린다(2026-11-26 사용자 결정, 세 가지)**. JetBrains 와 일부러 달라지는 곳은 이 셋뿐이고, 셋 다
+  JetBrains 규칙(`upstream.ts`) **뒤에** 적용되며 `jetbrainsParity.test.ts` 가 각각의 조건을 지킨다.
+  ① **역할 표시**(`roleMarks`, 기본 켬): 이름으로 역할을 알 수 있는 파일은 언어 아이콘을 그대로 두고 오른쪽 아래에 작은 원 표시를
+  얹는다 — 시작점(초록 ▶ `main.py`·`main.go`·`Program.cs`), 패키지(파랑 ● `__init__.py`·`mod.rs`), 테스트(청록 ✓ `conftest.py`),
+  설정(회색 톱니 `settings.py`·`config.ts`). JetBrains 가 실행 가능한 클래스·테스트에 표시를 겹치는 방식(사용자가 시안에서 "역할 그림만"
+  대신 고름). 끄면 PyCharm 처럼 언어 아이콘만.
+  ② **흔한 이름**(`src/icons/{files,folders}/common.ts`): 플러그인에 전용 아이콘이 없는 이름(`datasets`·`results`·`.claude`,
+  `.env.local`·`requirements-dev.txt`)에 기존 아이콘을 붙인다. 맞는 폴더 아이콘이 없으면 **기존 폴더 모양 + 기존 파일 아이콘의 글리프**로
+  새 폴더 아이콘을 합성한다(`folderBadges.ts`, 손으로 그리지 않는다).
+  ③ **예외**(`src/icons/exceptions.ts`): 플러그인이 특정 도구의 아이콘을 붙이는 일상적인 이름만(`state`=Redux → storage,
+  `charts`=Helm → charts, `config.yaml`=GitHub Actions → YAML). 흔하고, 그 도구와 상관없이 쓰이는 이름일 때만 넣는다.
 - **묶음이지만 opt-in(2026-11-21 사용자 결정)**: 설치만으로는 아무것도 바꾸지 않고, 사용자가 고른 것만 적용한다. 아이콘만 쓰는
   사람의 글꼴·색을 건드리지 않는다. Get Started 안내(`contributes.walkthroughs`)에 부분마다 버튼(`useTheme` 명령, `useJetBrainsFonts`).
 - 폰트: JetBrains 글꼴(JetBrains Mono, Markdown 미리보기는 Inter) + 한글 대체 글꼴을 사용자가 고를 때만 사용자 설정에 쓴다
@@ -63,6 +74,7 @@
 | lint (`vsce package` 가 먼저 돌림, 0 errors 유지) | `bun run lint` |
 | JetBrains 연결 규칙 동기화 | `bun run sync:upstream` |
 | 유리 스타일의 JetBrains New UI 글리프 받기 (`assets/icons/glass/files`, 대응표를 고치거나 고정 커밋이 바뀌면. 뒤에 `sync:metrics`) | `bun run sync:glyphs` |
+| 포크의 폴더 아이콘 다시 만들기 (`assets/icons/folders`·`foldersOpen`, `folderBadges.ts` 를 고치면. 뒤에 `sync:metrics`) | `bun run sync:folders` |
 | 유리 스타일용 아이콘 측정값 다시 쓰기 (`assets/icons/metrics.json`, 아이콘 SVG 가 바뀌면) | `bun run sync:metrics` |
 | 전체 아이콘을 16px·32px 시트로 그려 눈으로 검토 (무너지는 글리프 찾기) | `bun run sheet:icons` (`-- --flat` 평면, `--light`, `--only <이름,이름…>`, `--group files\|folders\|foldersOpen`. 그림은 `out/icon-sheets/<glass\|flat>-<dark\|light>/`) |
 | JetBrains 색 테마 동기화 (고정 커밋 / 최신) | `bun run sync:colors` / `bun run sync:colors -- --latest` |
@@ -256,6 +268,29 @@
     **폴더** 아이콘은 통째 그림이라 그대로 둔다(`ThemeLayerGenerator` 가 파일용·폴더용 정의를 따로 복사한다).
   - `iconStyle` 은 기본값(glass)이 아닐 때만 아이콘 파일 이름 해시에 들어간다(`getFileConfigHash`). 밝은·어두운 테마 변형(`_dark`)은
     그대로 두 벌이다(타일이라 둘 다 어느 배경에서나 보인다).
+- 이름 규칙의 적용 순서(뒤가 이김): 손으로 쓴 것 → 그 팩 → `upstream.ts`(JetBrains) → **`common.ts` → `exceptions.ts`** → pycharm 팩
+  → 사용자 `filesAssociations` → **역할 표시**(사용자가 정한 이름은 건너뜀). 폴더는 `folderIcons.ts` 의 나열 순서 그대로.
+  - `sync:upstream` 은 플러그인의 **확장자 규칙**(`*.json` → JSON)도 "아는 이름"으로 보고 덮어쓴다. 그래서 `secrets.json` 같은 흔한
+    이름은 손으로 쓴 목록에 두면 지워지고, `common.ts`(upstream 뒤)에 둬야 남는다. `sync:upstream` 은 `common.ts`·`exceptions.ts` 를
+    손으로 쓴 목록에서 빼고 본다(`manualInGeneratorOrder`).
+  - parity 테스트의 조건: `common.ts` 의 이름은 플러그인이 모르거나, 우리와 같거나, **그 확장자의 아이콘만** 주는 이름이어야 한다
+    (플러그인이 그 이름에 전용 아이콘을 주면 실패 → 플러그인을 따르거나 예외로 옮긴다: `known_hosts` = hosts, `outputs` = exclude 를
+    이렇게 찾음). `exceptions.ts` 의 이름은 플러그인이 **다른** 아이콘을 줘야 한다(같아지면 지운다).
+  - 역할 표시(`src/icons/roles.ts` 이름 표, 소문자·정확한 이름만 — 아이콘 테마에는 `test_*.py` 같은 패턴이 없다):
+    `FileJsonGenerator.loadRoleMarks` 가 이름마다 **확장자가 받는 아이콘**을 찾아 `role-<역할>-<아이콘>` 정의를 만들고
+    (어두운·밝은·고대비 구역마다), `IconThemeGenerator.writeRoleIcons` 가 그 아이콘의 원본을 표시와 함께 다시 그린다
+    (`glassFile(svg, metric, role)`, 평면 스타일은 `markedFile`). 표시가 붙지 않는 경우: 그 이름에 전용 아이콘이 있을 때
+    (`fileNames[이름] !== 확장자 아이콘`: `main.js` = nodejs, pycharm 팩 없는 `manage.py` = django), 확장자 아이콘이 없거나 사용자
+    SVG 일 때. `sync:upstream` 은 역할 이름도 플러그인에 물어본다(`test.kt` = testkt 는 전용 아이콘이라 표시 없이 그대로).
+    `role-` 파일은 `isGeneratedIcon` 이라 쓰지 않게 되면 지워진다. 표시는 타일을 clip-path(evenodd)로 도려내고 원을 얹는다
+    (mask 는 단색 설정이 색을 바꿔 못 쓴다). 표시 밑 글리프는 0.84 배로 줄여 왼쪽 위로 1.1 옮긴다(시안에서 확인: 안 옮기면 표시가
+    글리프를 가린다). 7px 원 안에서 살아남는 모양만 쓴다(삼각형·점·체크·톱니).
+  - 포크의 폴더 아이콘(`src/scripts/icons/folderBadges.ts` 표 → `sync:folders` → `assets/icons/folders`·`foldersOpen`, 생성물·
+    **손대지 않는다**): 플러그인의 폴더 모양(24 단위) + 파일 아이콘 하나의 모양을 한 색으로 칠해 배지 자리(12.4×10.6, 중심 16.2 15.4)에
+    놓은 것. 평면 스타일에서도 플러그인 폴더와 같은 구조(`data-folderColor` path + 배지)라 유리 엔진이 그대로 읽는다. 글리프 원본은
+    기본이 플러그인 파일 아이콘, `from: 'glass'` 는 New UI 글리프(C#·Swift: 글자가 배지 크기에서 더 잘 읽힘. C·C++ 는 반대로 육각형
+    배지가 낫다 — 그려서 비교함). 생성기·`sync:metrics`·시트 모두 `assets/icons/{folders,foldersOpen}` 를 iconGenerator 다음에 읽는다.
+    Windows 체크아웃의 CRLF 가 생성물에 섞이지 않게 원본을 LF 로 바꿔 읽는다(`glassIcons.test.ts` 가 표와 파일을 비교).
 - 아이콘 팩(`enabledFor`) 항목은 생성 때 일반 항목 뒤에 적용돼 같은 확장자를 덮어쓴다(css → css2). 기본 팩은
   `package.json` 기본값과 `getDefaultConfig` 를 같이 고친다.
 - 시작 때 설정과 생성된 테마를 비교하느라 테마 json(아이콘 735 KB + 제품 180 KB)을 통째로 파싱하지 않는다: `helpers/themeState.ts` 가
@@ -264,9 +299,9 @@
 - VS Code 프로필은 확장 폴더(`dist/`)를 같이 쓰고 설정은 따로라, 값이 다른 프로필끼리 창을 열 때마다 서로의 테마를 다시 만든다(2026-11-22 재현).
   `.state.json` 의 `writer`(마지막으로 쓴 프로필 = 그 프로필 globalState 의 무작위 `profileId`, 그때의 `THEME_SETTING_KEYS` 값, 워크스페이스 값인 키)를 보고
   `services/ProfileConflictService.regenerated(written)`(`regenerateTheme` 끝에서 부름)이 다른 설정을 출력 채널에 매번, 알림으로 한 번 알리고,
-  버튼은 `workbench.settings.applyToAllProfiles` 에 우리 키를 덧붙인 뒤 이 프로필 값을 비교 없이 모두(`THEME_SETTING_KEYS`, 21개) 쓴다(공유 직후 확장 호스트가
+  버튼은 `workbench.settings.applyToAllProfiles` 에 우리 키를 덧붙인 뒤 이 프로필 값을 비교 없이 모두(`THEME_SETTING_KEYS`, 22개) 쓴다(공유 직후 확장 호스트가
   잠깐 이 프로필 값을 돌려줘서 비교하면 쓰기를 건너뜀, 1.147 확인). 판단은 `helpers/profileConflict.ts`(순수 함수).
-  테마를 바꾸는 설정을 추가하면 `THEME_SETTING_KEYS` 와 README "VS Code profiles" 목록도 고친다(`profileConflict.test.ts`).
+  테마를 바꾸는 설정을 추가하면 `THEME_SETTING_KEYS` 와 README "VS Code profiles" 목록도 고친다(`profileConflict.test.ts`, 지금 22개).
   격리 VS Code 로 프로필 확인: `Code.exe … --profile B <폴더>` 로 한 번 열어 프로필을 만든 뒤 `code.cmd … --profile B --install-extension <vsix>`.
 - 설치된 색·제품 아이콘 테마 목록은 `extensions.onDidChange` 때만 다시 읽고(`forgetInstalled*Themes`), 섞을 테마가 없으면 읽지 않는다.
   섞기 화면은 `retainContextWhenHidden: false`: 숨기면 VS Code 가 페이지를 버리고 다시 열 때 `ready` 로 상태를 받는다. 탭·스크롤은

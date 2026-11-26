@@ -225,6 +225,12 @@ export const measureFile = (svg: string, name?: string): IconMetric | undefined 
   return metric;
 };
 
+/** The box of everything an icon draws, in the units of its svg; nothing for an svg that draws nothing */
+export const measureBox = (svg: string): GlyphBox | undefined => {
+  const parts = parseSvg(svg);
+  return parts && boxOf(parts, parts.content);
+};
+
 /**
  * The measures of a JetBrains New UI glyph of the glass style: its box, and that it is drawn with lines (larger on
  * the tile). It is already the glyph of its tile (src/scripts/icons/jetbrainsGlyphs.ts): its holes are never taken

@@ -242,6 +242,8 @@ Mix Themes page breaks Korean lines between words.
 - Replaces **folder icons**:
     - From common patterns: `src`, `main`, `app`, `img`, `docs`...
     - From specific use cases: `node_modules`, `.vscode`, `.git.`..
+- **Marks the files with a role** over the icon of their language: `main.py`, `__init__.py`, `conftest.py`,
+  `settings.py`...
 - Mixes in **other installed icon themes** for the names you choose, or for the names it has no icon for.
 
 ## Associations
@@ -249,7 +251,8 @@ Mix Themes page breaks Korean lines between words.
 The icons follow what PyCharm shows with the [Atom Material Icons plugin for JetBrains IDEs](https://github.com/AtomMaterialUI/a-file-icon-idea):
 for every file and folder name the JetBrains plugin knows and VS Code can express (a file name, an extension, a folder
 name), the theme uses the icon the JetBrains plugin picks. Names the JetBrains plugin does not know keep the icons of
-this extension.
+this extension. On top of that, the theme marks the [names with a role](#names-with-a-role) and gives an icon to
+[common names](#common-names) the plugin has none for.
 
 You can find a list of all the available associations in the following links:
 
@@ -257,6 +260,64 @@ You can find a list of all the available associations in the following links:
 - [Folder Associations](https://material-theme.com/docs/reference/folder-associations/)
 - Language Associations: [`src/icons/languageIcons.ts`](./src/icons/languageIcons.ts) (VS Code language ids, used when no file
   name or extension matches)
+
+### Names with a role
+
+Some file names say what a file is in its project, whatever its language: `main.py` is where the program starts,
+`__init__.py` makes its folder a package. In the JetBrains IDEs all of them show the icon of their language and
+nothing else. Here such a file keeps the icon of its language and gets a small mark over its corner, the way the
+JetBrains IDEs mark a runnable class or a test class:
+
+| Mark | Role | Names |
+|---|---|---|
+| green, a triangle | where the program starts | `main.py`, `__main__.py`, `app.py`, `manage.py`, `main.go`, `main.rs`, `main.c`, `main.cpp`, `Main.java`, `Program.cs`, `main.kt`, `main.dart`, `main.swift`, `main.tsx`, `main.tf`, `run.sh`… |
+| blue, a dot | what makes a folder a package or a module | `__init__.py`, `mod.rs`, `lib.rs`, `package-info.java`, `module-info.java`, `init.lua`, `doc.go` |
+| teal, a check | tests, and what they share | `conftest.py`, `test.py`, `tests.py`, `test.go`, `tests.rs`, `test.cpp`, `test.sh`… |
+| gray, a gear | settings and constants | `settings.py`, `config.py`, `setup.py`, `constants.py`, `config.ts`, `constants.ts`, `config.go`, `Config.java`, `Settings.cs`… |
+
+The full list is [`src/icons/roles.ts`](./src/icons/roles.ts). A name that has an icon of its own keeps it (`main.js`
+is the Node.js icon, `test.kt` the icon of a Kotlin test), and so does a name you gave an icon to in
+[`filesAssociations`](#file-associations). An icon theme of VS Code knows exact names only: there is no pattern for
+`test_*.py` or `*_test.go`. The marks are drawn in both [icon styles](#icon-style). To get the icon of the language
+alone, as in the JetBrains IDEs:
+
+```json
+{
+  "a-file-icon-vscode.roleMarks": false
+}
+```
+
+### Common names
+
+Common names the JetBrains plugin has no icon of their own for showed the plain folder, or the icon of their extension.
+They have an icon:
+
+- **Folders** ([`src/icons/folders/common.ts`](./src/icons/folders/common.ts)): `datasets`, `raw`, `processed`,
+  `results`, `plots`, `experiments`, `checkpoints`, `workers`, `sockets`, `crawlers`, `llm`, `homework`,
+  `lectures`, `slides`, `wiki`, `guides`, `sandbox`, `legacy`, `third_party`, `ctf`, `leetcode`, `sprites`,
+  `levels`, `.claude`, `cpp`, `csharp`, `.mypy_cache`, `.ruff_cache`… Eight folder icons are new, each made of the
+  folder and of a file icon the plugin already draws: C, C++, C#, Swift, Claude, lab, study and slides.
+- **Files** ([`src/icons/files/common.ts`](./src/icons/files/common.ts)): `.env.local`, `.env.example` and the other
+  kinds of `.env` file, `requirements-dev.txt`, `environment.yml`, `docker-compose.override.yml`, `Dockerfile.dev`,
+  `id_rsa`, `known_hosts`, `secrets.json`, `.mcp.json`, `notes.md`, `NOTICE`…
+
+A few everyday names keep **another icon than the one of the JetBrains plugin**, on purpose
+([`src/icons/exceptions.ts`](./src/icons/exceptions.ts)): the plugin gives them the icon of one tool that uses the
+name, and in most projects the name means the everyday thing.
+
+| Name | In the JetBrains plugin | Here |
+|---|---|---|
+| `state`, `store` folders | Redux | storage |
+| `charts` folder | Helm | charts |
+| `schemas` folder | GraphQL | models |
+| `data` folder | dump | database |
+| `output`, `outputs` folders | excluded folder | build output, like `out` and `dist` |
+| `tutorials` folder | home | docs |
+| `config.yaml`, `config.yml` | GitHub Actions | YAML |
+| `config.toml` | Hugo | TOML |
+| `id_rsa.pub` and the other public SSH keys | Microsoft Publisher | key |
+
+Your own [associations](#custom-associations) win over all of these.
 
 ## Icon style
 
@@ -767,7 +828,10 @@ Here's a list of the available commands:
 ## Differences with the JetBrains plugin
 
 Cool Icons gives every name the icon the JetBrains plugin gives it, and draws it in its own [glass style](#icon-style)
-by default. `"a-file-icon-vscode.iconStyle": "flat"` draws the icons as the plugin does.
+by default. `"a-file-icon-vscode.iconStyle": "flat"` draws the icons as the plugin does. Three things differ on
+purpose, all described in [Associations](#associations): the marks of the [names with a role](#names-with-a-role)
+(`"a-file-icon-vscode.roleMarks": false` removes them), the icons of [common names](#common-names) the plugin has
+none for, and a few everyday names that keep another icon than the one of the plugin.
 
 Some options of the JetBrains plugin cannot be built with the VS Code icon theme API:
 
@@ -822,6 +886,7 @@ other settings stay per profile. To do it by hand, add this to the user settings
   "a-file-icon-vscode.monochrome",
   "a-file-icon-vscode.monochromeColor",
   "a-file-icon-vscode.opacity",
+  "a-file-icon-vscode.roleMarks",
   "a-file-icon-vscode.saturation",
   "a-file-icon-vscode.accentColor",
   "a-file-icon-vscode.accentTargets",

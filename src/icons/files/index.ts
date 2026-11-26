@@ -4,6 +4,7 @@ export * from './audio';
 export * from './b';
 export * from './binaries';
 export * from './c';
+export * from './common';
 export * from './config';
 export * from './custom';
 export * from './d';

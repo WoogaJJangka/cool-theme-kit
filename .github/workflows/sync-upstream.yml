@@ -52,6 +52,10 @@ jobs:
       - name: Sync New UI glyphs 🔤
         run: bun run sync:glyphs
 
+      # the folder icons of this fork, made of the folder and the file icons that were just updated
+      - name: Draw the fork's folder icons 📁
+        run: bun run sync:folders
+
       # what the glass icon style knows about each icon (the box of its glyph), measured again for the new icons
       - name: Measure icons 📐
         run: bun run sync:metrics
@@ -77,6 +81,8 @@ jobs:
             src/icons/folders/upstream.ts
             assets/icons/metrics.json
             assets/icons/glass
+            assets/icons/folders
+            assets/icons/foldersOpen
             themes
             productIcons
           commit-message: 'chore(icons): sync iconGenerator (${{ steps.submodule.outputs.commit }}) and JetBrains colors'

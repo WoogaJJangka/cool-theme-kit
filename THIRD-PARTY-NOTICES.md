@@ -48,6 +48,13 @@ its CSS is MIT).
   contributors. The icons were changed, as the first line of each file says: drawn with one color, the fills inside
   their lines removed, by `src/scripts/icons/syncJetbrainsGlyphs.ts`. See
   [assets/icons/NOTICE.md](./assets/icons/NOTICE.md).
+- `assets/icons/folders/*.svg`, `assets/icons/foldersOpen/*.svg` (the folder icons this fork adds: C, C++, C#, Swift,
+  Claude, lab, study, slides) — made by `src/scripts/icons/syncFolderIcons.ts` from the icons above: the folder shape
+  of the folder icons of iconGenerator and the shape of one of its file icons as the badge (MIT, Copyright (c)
+  2015-2024 Elior "Mallowigi" Boukhobza), or for C# and Swift the shape of a glyph of `assets/icons/glass/files`
+  (Apache License 2.0, Copyright 2000-2025 JetBrains s.r.o. and contributors). The icons were changed, as the first
+  line of each file says: the shape is drawn in one color, in the place of the badge of a folder. See
+  [assets/icons/NOTICE.md](./assets/icons/NOTICE.md).
 - `productIcons/cool-islands-icons.woff` (Cool Islands Icons) — a font made from the New UI icons of
   [JetBrains/intellij-community](https://github.com/JetBrains/intellij-community) (`platform/icons/src/expui` and the
   terminal plugin), at the commit given in `themes/jetbrains-source.json`, Apache License 2.0, Copyright 2000-2026

@@ -20,9 +20,13 @@ import { existsSync, readdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { IconPack } from 'src/@types/config';
 import { DARK_FILE_ENDING, HIGH_CONTRAST_FILE_ENDING } from 'src/helpers/constants';
+import { fileExceptions, folderExceptions } from 'src/icons/exceptions';
+import { commonFiles } from 'src/icons/files/common';
+import { commonFolders } from 'src/icons/folders/common';
 import { fileIcons } from 'src/icons/fileIcons';
 import { getDefaultConfig } from 'src/icons/configUtils';
 import { folderIcons } from 'src/icons/folderIcons';
+import { ROLE_NAMES } from 'src/icons/roles';
 import { upstreamFiles } from 'src/icons/files/upstream';
 import { upstreamFolders } from 'src/icons/folders/upstream';
 
@@ -84,9 +88,14 @@ const sorted = (values: Iterable<string>) => [...new Set(values)].sort(byCodeUni
 const packOf = (association: CompiledAssociation): IconPack | null | undefined =>
   association.iconPack ? (PACKS[association.iconPack] ?? null) : undefined;
 
-/** Hand-written associations active with the JetBrains default packs, in the order the generator applies them */
+/**
+ * Hand-written associations active with the JetBrains default packs, in the order the generator applies them.
+ * Without what this theme decides for itself (the common names of `files/common.ts` and `folders/common.ts`, the
+ * exceptions of `exceptions.ts`): it is applied after the generated entries, whatever these say.
+ */
 const manualInGeneratorOrder = <T extends { enabledFor?: IconPack[] }>(icons: T[], generated: unknown[]) => {
-  const manual = icons.filter((icon) => !new Set<unknown>(generated).has(icon));
+  const applied = new Set<unknown>([...generated, ...commonFiles, ...commonFolders, ...fileExceptions, ...folderExceptions]);
+  const manual = icons.filter((icon) => !applied.has(icon));
   const active = manual.filter((icon) => !icon.enabledFor || icon.enabledFor.some((pack) => DEFAULT_PACKS.has(pack)));
   return [...active.filter((icon) => !icon.enabledFor), ...active.filter((icon) => icon.enabledFor)];
 };
@@ -162,11 +171,12 @@ const syncFiles = (): GeneratedEntry[] => {
     return name && pack !== null ? { name, pack } : undefined;
   };
 
-  // the example names of the JetBrains associations, then every name of the hand-written associations;
+  // the example names of the JetBrains associations, then every name of the hand-written associations and the
+  // names with a role (`test.kt` has the icon of a Kotlin test in the plugin: it keeps it, without a mark);
   // names with a folder (`.github/build.yaml`) never match in VS Code
   const keys: FileKey[] = [
     ...fileKeys(readAssociations(iconGeneratorPath, 'icon_associations.json')),
-    ...[...manualNames.keys()].map((fileName) => ({ fileName, matchedName: fileName })),
+    ...[...manualNames.keys(), ...ROLE_NAMES.flatMap(({ fileNames }) => fileNames)].map((fileName) => ({ fileName, matchedName: fileName })),
     ...[...manualExtensions.keys()].map((extension) => ({ extension, matchedName: `file.${extension}` })),
   ].filter(({ matchedName }) => !matchedName.includes('/'));
 

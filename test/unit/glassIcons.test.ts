@@ -9,9 +9,25 @@ import { IconThemeGenerator } from 'src/icons/generators/IconThemeGenerator';
 import { monochromeService } from 'src/icons/generators/MonochromeService';
 import { opacityService } from 'src/icons/generators/OpacityService';
 import { saturationService } from 'src/icons/generators/SaturationService';
-import { glassFile, glassFolder, glassIcon, luminance, mainPaint, mixColors, paintCount, parseFolder, parseSvg, toEntry, toMetric } from 'src/icons/glass/glassIcons';
-import { FILE_OVERRIDES, measureFile, measureFolder, measureGlyph } from 'src/scripts/icons/iconMetrics';
+import {
+  glassFile,
+  glassFolder,
+  glassIcon,
+  luminance,
+  mainPaint,
+  markedFile,
+  mixColors,
+  paintCount,
+  parseFolder,
+  parseSvg,
+  toEntry,
+  toMetric,
+} from 'src/icons/glass/glassIcons';
+import { ROLE_NAMES, roleIconName } from 'src/icons/roles';
+import { FOLDER_BADGES } from 'src/scripts/icons/folderBadges';
+import { FILE_OVERRIDES, measureBox, measureFile, measureFolder, measureGlyph } from 'src/scripts/icons/iconMetrics';
 import { glyphNotice, JETBRAINS_GLYPHS, toGlyph } from 'src/scripts/icons/jetbrainsGlyphs';
+import { FOLDER_NOTICE, folderIcon, folderIcons } from 'src/scripts/icons/syncFolderIcons';
 import { iconFolders, measureIcons, METRICS_FILE } from 'src/scripts/icons/syncIconMetrics';
 
 import type { IconMetrics, MetricEntry } from 'src/icons/glass/glassIcons';
@@ -228,6 +244,78 @@ describe('glass icons', () => {
     });
   });
 
+  describe('role marks', () => {
+    const metric = { box: [3, 3, 18, 18] as [number, number, number, number] };
+
+    it('draws the mark of a role over the corner of the tile, which is cut around it', () => {
+      const marked = glassFile(SQUARE, metric, 'run');
+      assert.match(marked, /<clipPath id="ctk-m"><path clip-rule="evenodd" d="M0 0H16V16H0ZM7\.8 12\.3a4\.5 4\.5 0 1 0 9 0a4\.5 4\.5 0 1 0 -9 0Z"\/>/);
+      assert.match(marked, /<g clip-path="url\(#ctk-m\)"><rect width="16" height="16" rx="4\.6" fill="url\(#ctk-t\)"\/>/, 'the tile and its glyph are what is cut');
+      assert.match(marked, /<\/g><circle cx="12\.3" cy="12\.3" r="3\.7" fill="url\(#ctk-d\)"\/>/, 'the disc is drawn over them');
+      assert.ok(marked.includes(`stop-color="${mixColors('#43a047', '#ffffff', 0.22)}"`), 'green: where the program starts');
+      assert.match(marked, /<g transform="translate\(12\.3 12\.3\)"><path d="M-1\.05-1\.7 1\.75 0-1\.05 1\.7Z" fill="#fff"/, 'a white triangle');
+    });
+
+    it('draws the glyph under a mark smaller, towards the upper left', () => {
+      const plain = glassFile(SQUARE, metric);
+      const marked = glassFile(SQUARE, metric, 'run');
+      const placed = (icon: string) => /<svg x="([\d.]+)" y="([\d.]+)" width="([\d.]+)"/.exec(icon)!.slice(1).map(Number);
+      const [x, y, width] = placed(plain);
+      const [markedX, markedY, markedWidth] = placed(marked);
+      assert.ok(Math.abs(markedWidth / width - 0.84) < 0.001);
+      assert.ok(markedX < x && markedY < y);
+      // the middle of the glyph moves 1.1 units up and left
+      assert.ok(Math.abs(markedX + markedWidth / 2 - (x + width / 2 - 1.1)) < 0.001);
+    });
+
+    it('gives each role its color and its sign', () => {
+      const signs = (['config', 'package', 'run', 'test'] as const).map((role) => {
+        const marked = glassFile(SQUARE, metric, role);
+        return marked.slice(marked.indexOf('<circle cx="12.3"'));
+      });
+      assert.equal(new Set(signs).size, 4);
+      assert.match(signs[1], /<circle r="1\.45" fill="#fff"\/>/, 'a package is a dot');
+      assert.match(signs[3], /stroke-linecap="round"/, 'a test is a check');
+    });
+
+    it('moves the box of the holes of a badge with its glyph', () => {
+      const marked = glassFile(BADGE, { box: [8, 8, 8, 8], holes: true }, 'test');
+      const [, x, , width] = /<clipPath id="ctk-c"><rect x="([\d.]+)" y="([\d.]+)" width="([\d.]+)"/.exec(marked)!.map(Number);
+      assert.ok(Math.abs(x + width / 2 - 6.9) < 0.001);
+    });
+
+    it('marks a flat icon too: the icon as it is drawn, a flat disc', () => {
+      const marked = markedFile(SQUARE, 'config');
+      assert.ok(marked.includes('<path fill="#1565C0" d="M3 3h18v18H3z"/>'), 'the icon keeps its drawing');
+      assert.ok(!marked.includes('ctk-t') && !marked.includes('ctk-d'), 'no tile, no gradient');
+      assert.match(marked, /<g clip-path="url\(#ctk-m\)"><svg x="0\.18" y="0\.18" width="13\.44" height="13\.44" viewBox="0 0 24 24"/);
+      assert.match(marked, /<circle cx="12\.3" cy="12\.3" r="3\.7" fill="#7d828c"\/>/);
+    });
+
+    it('leaves a flat icon without a viewBox as it is', () => {
+      const icon = '<svg xmlns="http://www.w3.org/2000/svg"><path d="M0 0h4v4H0z"/></svg>';
+      assert.equal(markedFile(icon, 'run'), icon);
+      assert.equal(markedFile('not an svg', 'run'), 'not an svg');
+    });
+
+    it('takes the monochrome color like the tile: the disc in the color, the sign lighter', () => {
+      const monochrome = monochromeService.applyMonochrome(glassFile(SQUARE, metric, 'package'), true, '#546E7A');
+      assert.ok(!monochrome.includes(mixColors('#548af7', '#ffffff', 0.22)), 'the disc is recolored');
+      const sign = /<circle r="1\.45" fill="(#\w+)"\/>/.exec(monochrome)![1];
+      const disc = /<linearGradient id="ctk-d"[^>]*><stop stop-color="(#\w+)"/.exec(monochrome)![1];
+      // the white of the sign becomes the gray the white of a glyph becomes on its tile
+      assert.ok(luminance(sign) > luminance(disc), `${sign} on ${disc}`);
+      assert.ok(monochrome.includes(`flood-color="${sign}"`), 'the same paint as the glyph of the tile');
+    });
+
+    it('names an icon with a mark after the role and the icon under it', () => {
+      assert.equal(roleIconName('run', 'pycharm-python_dark'), 'role-run-pycharm-python_dark');
+      const names = ROLE_NAMES.flatMap(({ fileNames }) => fileNames);
+      assert.equal(new Set(names).size, names.length, 'a name with two roles');
+      assert.deepEqual(names.filter((name) => name !== name.toLowerCase()), [], 'VS Code compares the names in lower case');
+    });
+  });
+
   describe('with the other filters of the icons', () => {
     const glass = glassFile(BADGE, { box: [8, 8, 8, 8], holes: true });
 
@@ -312,10 +400,12 @@ describe('glass icons', () => {
         }
       }
       for (const group of ['folders', 'foldersOpen'] as const) {
-        for (const file of readdirSync(folders[group][0]).filter((name) => name.endsWith('.svg'))) {
-          const parts = parseFolder(readFileSync(join(folders[group][0], file), 'utf8'));
-          // `seed` is not drawn like the others: it stays as it is
-          if (parts?.badge) assert.ok(metrics[group][file.slice(0, -4)], `${group}/${file}`);
+        for (const folder of folders[group]) {
+          for (const file of readdirSync(folder).filter((name) => name.endsWith('.svg'))) {
+            const parts = parseFolder(readFileSync(join(folder, file), 'utf8'));
+            // `seed` is not drawn like the others: it stays as it is
+            if (parts?.badge) assert.ok(metrics[group][file.slice(0, -4)], `${group}/${file}`);
+          }
         }
       }
     });
@@ -391,6 +481,71 @@ describe('glass icons', () => {
     });
   });
 
+  describe('the folder icons of this fork', () => {
+    const icons = join(repoRoot, 'assets', 'icons');
+    const GLYPH = svg('<path fill="#1565C0" d="M4 6h8v12H4z"/><path d="M14 6h6v12h-6z"/>');
+
+    it('draws the folder shape of the plugin in the color of the table, and the file icon as its badge in one color', () => {
+      const icon = folderIcon({ color: '#5C6BC0', glyph: 'x', name: 'sample' }, GLYPH, 'folders');
+      assert.ok(icon.startsWith(FOLDER_NOTICE), 'says where it comes from');
+      const parts = parseFolder(icon)!;
+      assert.equal(parts.color, '#5c6bc0');
+      // a light tint of the folder, for the shape with a paint and for the one without (drawn black otherwise)
+      const tint = mixColors('#5c6bc0', '#ffffff', 0.72);
+      assert.ok(parts.badge.includes(`<g fill="${tint}" data-folderIconColor="sample"`));
+      assert.ok(parts.badge.includes(`<path fill="${tint}" d="M4 6h8v12H4z"/>`));
+      assert.equal(paintCount(parts.badge), 1);
+    });
+
+    it('fits the badge where the plugin draws the badges of its folders', () => {
+      const box = measureFolder(folderIcon({ color: '#5C6BC0', glyph: 'x', name: 'sample' }, GLYPH, 'folders'))!.box!;
+      // 16 by 12 units scaled into 12.4 by 10.6 around 16.2 15.4
+      assert.ok(Math.abs(box[0] + box[2] / 2 - 16.2) < 0.01 && Math.abs(box[1] + box[3] / 2 - 15.4) < 0.01, JSON.stringify(box));
+      assert.ok(Math.abs(box[2] - 12.4) < 0.01 && box[3] < 10.6);
+    });
+
+    it('gives a light folder a dark badge, and an expanded folder the expanded shape', () => {
+      const icon = folderIcon({ color: '#FFE082', glyph: 'x', name: 'sample' }, GLYPH, 'foldersOpen');
+      assert.ok(icon.includes(`<g fill="${mixColors('#ffe082', '#000000', 0.55)}"`));
+      assert.ok(icon.includes('d="M20,18H4V8H20M20,6H12L10,4H4'));
+    });
+
+    it('refuses a file icon that draws nothing', () => {
+      assert.throws(() => folderIcon({ color: '#5C6BC0', glyph: 'empty', name: 'sample' }, svg(''), 'folders'), /empty: nothing to draw/);
+    });
+
+    it('names each icon once, with a name the plugin does not use', () => {
+      const names = FOLDER_BADGES.map(({ name }) => name);
+      assert.equal(new Set(names).size, names.length);
+      for (const name of names) assert.ok(!existsSync(join(repoRoot, 'iconGenerator', 'assets', 'icons', 'folders', `${name}.svg`)), name);
+    });
+
+    it('has the icon of every badge of the table, closed and expanded, and no other (bun run sync:folders)', () => {
+      const expected = folderIcons(repoRoot);
+      for (const group of ['folders', 'foldersOpen']) {
+        assert.deepEqual(readdirSync(join(icons, group)).sort(), FOLDER_BADGES.map(({ name }) => `${name}.svg`).sort(), group);
+      }
+      // where the badge is placed is measured by a renderer: the same up to the rounding of another machine
+      const PLACE = /(data-folderIconColor="[^"]*" transform=")([^"]*)/;
+      const split = (icon: string) => ({ numbers: (PLACE.exec(icon)?.[2].match(/-?[\d.]+/g) ?? []).map(Number), rest: icon.replace(PLACE, '$1') });
+      for (const [path, icon] of expected) {
+        // git may have turned the line ends into those of Windows
+        const stored = split(readFileSync(join(icons, path), 'utf8').replaceAll('\r\n', '\n'));
+        const drawn = split(icon);
+        assert.equal(stored.rest, drawn.rest, `${path}: bun run sync:folders`);
+        assert.equal(stored.numbers.length, 3, path);
+        for (const [index, value] of drawn.numbers.entries()) {
+          assert.ok(Math.abs(stored.numbers[index] - value) <= Math.max(Math.abs(value), 1) * 0.005, `${path}: ${stored.numbers.join(' ')} is not ${drawn.numbers.join(' ')}`);
+        }
+      }
+    });
+
+    it('measures the box of everything an icon draws', () => {
+      assert.deepEqual(measureBox(GLYPH), [4, 6, 16, 12]);
+      assert.equal(measureBox(svg('')), undefined);
+    });
+  });
+
   describe('the generated theme', () => {
     let directory: string;
 
@@ -452,6 +607,54 @@ describe('glass icons', () => {
       assert.ok(icon(theme.fileExtensions!.rs).includes('data-iconColor'));
     });
 
+    it('marks the files whose name gives them a role, over the icon of their language', async function () {
+      this.timeout(120_000);
+      const { icon, theme } = await generate(IconStyle.Glass);
+
+      // the icon of the extension, with the mark: for the dark themes and for the light ones
+      assert.equal(theme.fileNames!['main.py'], 'role-run-pycharm-python_dark');
+      assert.equal(theme.light!.fileNames!['main.py'], 'role-run-pycharm-python');
+      assert.equal(theme.fileNames!['__init__.py'], 'role-package-pycharm-python_dark');
+      assert.equal(theme.fileNames!['conftest.py'], 'role-test-pycharm-python_dark');
+      assert.equal(theme.fileNames!['settings.py'], 'role-config-pycharm-python_dark');
+      assert.equal(theme.fileNames!['main.go'], 'role-run-go');
+      assert.equal(theme.light?.fileNames?.['main.go'], undefined, 'an icon without a variant for the light themes has one mark icon');
+
+      const marked = icon(theme.fileNames!['main.go']);
+      assert.ok(marked.includes('url(#ctk-t)') && marked.includes('url(#ctk-d)'), 'the tile of Go, and the disc of the mark');
+      // the same tile as the icon of the language
+      const tile = (text: string) => /<linearGradient id="ctk-t".*?<\/linearGradient>/.exec(text)![0];
+      assert.equal(tile(marked), tile(icon(theme.fileExtensions!.go)));
+
+      // a name with an icon of its own keeps it
+      assert.equal(theme.fileNames!['main.js'], 'nodejs');
+      assert.equal(theme.fileNames!['test.kt'], 'testkt');
+      // every name with a role that has a mark points to an icon that was drawn
+      for (const { fileNames } of ROLE_NAMES) {
+        for (const name of fileNames) {
+          const definition = theme.fileNames![name];
+          if (definition?.startsWith('role-')) assert.ok(icon(definition).includes('ctk-m'), name);
+        }
+      }
+    });
+
+    it('gives the common folder and file names an icon, the folder icons of this fork among them', async function () {
+      this.timeout(120_000);
+      const { icon, theme } = await generate(IconStyle.Glass);
+
+      assert.equal(theme.folderNames!['.claude'], 'folder-claude');
+      assert.equal(theme.folderNamesExpanded!['.claude'], 'folder-claude-open');
+      assert.ok(icon(theme.folderNames!['.claude']).includes('url(#ctk-f)'), 'a glass folder like the others');
+      assert.ok(icon(theme.folderNamesExpanded!['.claude']).includes('opacity=".6"'), 'with its expanded icon');
+      assert.equal(theme.folderNames!.datasets, 'folder-db');
+      assert.equal(theme.folderNames!.homework, 'folder-study');
+      // the few names that keep another icon than the one of the JetBrains plugin
+      assert.equal(theme.folderNames!.state, 'folder-storage');
+      assert.equal(theme.fileNames!['config.yaml'], theme.fileExtensions!.yaml);
+      assert.equal(theme.fileExtensions!['env.local'], theme.fileExtensions!.env);
+      assert.equal(theme.fileNames!['.mcp.json'], 'mcp');
+    });
+
     it('keeps the icons as they are drawn with the flat style, under other file names', async function () {
       this.timeout(120_000);
       const { config, icon, theme } = await generate(IconStyle.Flat);
@@ -461,6 +664,10 @@ describe('glass icons', () => {
       assert.ok(!icon(theme.fileExtensions!.ts).includes('ctk-'));
       assert.ok(icon(theme.fileExtensions!.json).includes('data-iconColor="JSON"'), 'the icon of the icon plugin, not the New UI glyph');
       assert.ok(icon(theme.folderNames!.src).includes('data-folderColor'));
+      // the mark of a role goes on the flat icon, and the folder icons of this fork are flat too
+      const marked = icon(theme.fileNames!['main.go']);
+      assert.ok(marked.includes('ctk-m') && !marked.includes('ctk-t'), 'a mark, no tile');
+      assert.ok(icon(theme.folderNames!['.claude']).includes('data-folderColor="claude"'));
     });
   });
 });
