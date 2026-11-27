@@ -2,14 +2,14 @@
  * Draws every bundled icon on contact sheets, at the size of the explorer (16px) and twice that, to review them by eye:
  * which ones fall apart when small, which glyph does not read on its tile.
  *
- * Usage: bun run sheet:icons [-- --flat] [--light] [--only <icon names, with commas>] [--group files|folders|foldersOpen]
- * The sheets go to `out/icon-sheets/<glass|flat>-<dark|light>/` (not in git), emptied first.
+ * Usage: bun run sheet:icons [-- --flat|--glossy] [--light] [--only <icon names, with commas>] [--group files|folders|foldersOpen]
+ * The sheets go to `out/icon-sheets/<glass|glossy|flat>-<dark|light>/` (not in git), emptied first.
  */
 import { Resvg } from '@resvg/resvg-js';
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { compareCodeUnits } from 'src/helpers/utils';
-import { glassIcon, toMetric } from 'src/icons/glass/glassIcons';
+import { glassIcon, glossyIcon, toMetric } from 'src/icons/glass/glassIcons';
 
 import { iconFolders, METRICS_FILE } from './syncIconMetrics';
 
@@ -33,6 +33,9 @@ const OUTPUT = join(root, 'out', 'icon-sheets');
 
 const sheets = () => {
   const flat = process.argv.includes('--flat');
+  // the icons of the plugin as in flat, shaded
+  const glossy = !flat && process.argv.includes('--glossy');
+  const style = (flat && 'flat') || (glossy && 'glossy') || 'glass';
   const light = process.argv.includes('--light');
   const only = new Set(option('--only')?.split(',').filter(Boolean));
   const group = option('--group');
@@ -40,7 +43,7 @@ const sheets = () => {
   const metrics = JSON.parse(readFileSync(join(root, METRICS_FILE), 'utf8')) as IconMetrics;
 
   // the sheets of an earlier run, for other icons, would be read as the ones of this run
-  const output = join(OUTPUT, `${flat ? 'flat' : 'glass'}-${light ? 'light' : 'dark'}`);
+  const output = join(OUTPUT, `${style}-${light ? 'light' : 'dark'}`);
   rmSync(output, { force: true, recursive: true });
   mkdirSync(output, { recursive: true });
 
@@ -67,9 +70,11 @@ const sheets = () => {
       for (const [index, icon] of part.entries()) {
         const x = (index % COLUMNS) * CELL.width;
         const y = Math.floor(index / COLUMNS) * CELL.height;
-        const glyph = name === 'files' && !flat ? glyphOf(icon) : undefined;
+        const glyph = name === 'files' && style === 'glass' ? glyphOf(icon) : undefined;
         const source = readFileSync(glyph ?? icons.get(icon)!, 'utf8');
-        const svg = flat ? source : glassIcon(source, KINDS[name], toMetric(metrics[glyph ? 'glyphs' : name][icon]));
+        let svg = source;
+        if (glossy) svg = glossyIcon(source);
+        else if (!flat) svg = glassIcon(source, KINDS[name], toMetric(metrics[glyph ? 'glyphs' : name][icon]));
         const href = `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`;
         body += `<image x="${x + 4}" y="${y + 1}" width="32" height="32" href="${href}"/>`;
         body += `<image x="${x + 44}" y="${y + 9}" width="16" height="16" href="${href}"/>`;

@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. Dates are displayed in UTC.
 
+#### Unreleased
+
+- feat: a third icon style, **glossy** (`"a-file-icon-vscode.iconStyle": "glossy"`): the glass without the tile. Every
+  icon keeps the shape, the colors and the size the JetBrains icon plugin draws it with, as in the flat style, and gets
+  only the shading of the glass style over what it draws: a gradient, lighter at the top and darker at the bottom, and
+  a highlight along its top edges. Folders keep their own shape and badge, shaded the same way. The marks of the names
+  with a role go over the corner on the disc of the glass style, and the file icons of the other themes mixed in and
+  your custom SVG icons are shaded too. Glass stays the default.
+
 #### 1.8.1 (2026-11-27)
 
 - fix: Cool Islands Icons no longer spins an arrow while VS Code waits ("Detecting Kernels" of a notebook, a running

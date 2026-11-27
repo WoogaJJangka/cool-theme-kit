@@ -321,11 +321,11 @@ Your own [associations](#custom-associations) win over all of these.
 
 ## Icon style
 
-Cool Icons draws every icon in one style, **glass**:
+Cool Icons draws every icon in one style, **glass** by default:
 
-| Glass (default) | Flat |
-|---|---|
-| ![The explorer with the glass icons](docs/screenshots/icon-style-glass.png) | ![The explorer with the flat icons](docs/screenshots/icon-style-flat.png) |
+| Glass (default) | Glossy | Flat |
+|---|---|---|
+| ![The explorer with the glass icons](docs/screenshots/icon-style-glass.png) | ![The explorer with the glossy icons](docs/screenshots/icon-style-glossy.png) | ![The explorer with the flat icons](docs/screenshots/icon-style-flat.png) |
 
 - Every **file icon** is a glyph on the same rounded tile, in the color of the icon, with a soft gradient and a
   highlight on its top edge. The glyphs all get about the same size, whatever the size of the logo they come from.
@@ -341,7 +341,7 @@ Cool Icons draws every icon in one style, **glass**:
 - A dark logo (GitHub, Vercel, Deno) shows on a dark theme and a light one on a light theme: the tile carries it.
 
 Only what survives at the 16 pixels of the explorer is drawn: the rounded shape, the gradient and one highlight. Which
-icon a name gets does not change: the [associations](#associations) are the same in both styles, and so are the
+icon a name gets does not change: the [associations](#associations) are the same in every style, and so are the
 settings below (folder color, opacity, saturation, monochrome, icon packs). The file icons of the other themes
 [mixed in](#mixing-icon-themes) and your [custom SVG icons](#custom-svg-icons) go on a tile too; the folder icons of
 other themes and your custom folder icons are whole drawings, kept as they are.
@@ -351,6 +351,18 @@ To get the icons as the JetBrains icon plugin draws them, for every file type:
 ```json
 {
   "a-file-icon-vscode.iconStyle": "flat"
+}
+```
+
+**Glossy** is the glass without the tile: every icon is the one of the JetBrains icon plugin, with its own shape, colors
+and size as in flat, and only the shading of the glass style goes over what it draws: the same gradient, lighter at the
+top and darker at the bottom, and a highlight along its top edges. No tile, no border. The marks of the
+[names with a role](#names-with-a-role) go over its corner as in flat, on the disc of the glass style. The file icons of
+the other themes and your custom SVG icons are shaded too; their folder icons are kept as they are.
+
+```json
+{
+  "a-file-icon-vscode.iconStyle": "glossy"
 }
 ```
 
@@ -828,7 +840,8 @@ Here's a list of the available commands:
 ## Differences with the JetBrains plugin
 
 Cool Icons gives every name the icon the JetBrains plugin gives it, and draws it in its own [glass style](#icon-style)
-by default. `"a-file-icon-vscode.iconStyle": "flat"` draws the icons as the plugin does. Three things differ on
+by default. `"a-file-icon-vscode.iconStyle": "flat"` draws the icons as the plugin does, and `"glossy"` the same icons
+with the shading of the glass style. Three things differ on
 purpose, all described in [Associations](#associations): the marks of the [names with a role](#names-with-a-role)
 (`"a-file-icon-vscode.roleMarks": false` removes them), the icons of [common names](#common-names) the plugin has
 none for, and a few everyday names that keep another icon than the one of the plugin.

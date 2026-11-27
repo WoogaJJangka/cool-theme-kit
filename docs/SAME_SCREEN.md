@@ -40,7 +40,7 @@ Cool Theme Kit 은 두 저장소로 만든다. **목표는 VS Code 와 PyCharm �
 
 1. **강조색**: VS Code 는 `accentColor`(대상 `controls`·`tabs`·`folders`, 프리셋), JetBrains 쪽은 Islands 파랑 고정.
    사용자 PyCharm 은 Material Theme UI 의 연두가 얹혀 있다(2026-11-19 확인).
-2. **아이콘 설정**: VS Code 는 `iconStyle`(유리/평면)·`roleMarks`·폴더 색·채도·불투명도·단색을 고를 수 있고, 플러그인은
+2. **아이콘 설정**: VS Code 는 `iconStyle`(유리/광택/평면)·`roleMarks`·폴더 색·채도·불투명도·단색을 고를 수 있고, 플러그인은
    기본값으로 만든 아이콘 한 벌만 가진다.
 3. **모르는 이름**: VS Code 는 기본 섞기 층(`iconThemeLayers` = Material Icon Theme)이 Cool Icons 가 모르는 이름을 채우고,
    플러그인은 기본 파일 아이콘을 준다.
