@@ -30,6 +30,9 @@ Cool Theme Kit 은 두 저장소로 만든다. **목표는 VS Code 와 PyCharm �
   VS Code 에는 그런 정보가 없다.
 - 펼친 폴더 아이콘: VS Code 는 펼친 모양이 따로 있고, JetBrains New UI 는 펼침을 아이콘으로 구분하지 않는다
   (`syncIcons` 는 `folderNamesExpanded` 를 복사하지 않는다).
+- 제품 아이콘 `sync`: VS Code 는 이 아이콘을 돌려서 진행 표시로 쓴다("Detecting Kernels", `$(sync~spin)`). JetBrains 의
+  Update 화살표(`vcs/update`)를 돌리면 화살표가 빙빙 돌아서 새로고침 화살표(`general/refresh`)로 그린다. IDE 는 진행 표시용
+  애니메이션 아이콘이 따로 있어 이 문제가 없다. Pull(`repo-pull`)은 그대로 Update 화살표다.
 
 ## 아직 다른 것 (할 일 후보)
 
