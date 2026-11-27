@@ -47,10 +47,11 @@ Cool Theme Kit 은 두 저장소로 만든다. **목표는 VS Code 와 PyCharm �
 
 1. **아이콘 설정**: `iconStyle`(유리/광택/평면)·`roleMarks`·`filesAssociations`·`foldersAssociations`·`languagesAssociations` 는
    플러그인에도 같은 이름으로 있다(2026-11-27. 평면 아이콘과 연결 검사용 테마는 `bun run export:jetbrains-icons` →
-   `out/jetbrains-icons/`, 플러그인 `syncIcons` 가 가져감). 아이콘 색과 Material Icon Theme 층도 위 표로 옮겼다. 남은 것은
-   `folderTheme`·`hideFileIcons`·`activeIconPacks`, 층의 세부(`iconThemeByName`, override 모드, 다른 테마), 연결로 생긴 역할 표시
-   아이콘 중 `dist/` 에 없는 것(VS Code 는 테마를 만들 때 그리고, 플러그인은 표시 없이 준다), 그리고 VS Code 사용자 설정을
-   그대로 읽는 것(지금은 플러그인 설정 화면에 같은 값을 넣는다).
+   `out/jetbrains-icons/`, 플러그인 `syncIcons` 가 가져감). 아이콘 색과 Material Icon Theme 층도 위 표로 옮겼다. `folderTheme`·
+   `hideFileIcons` 도 같고, 플러그인 설정 화면의 "Import from VS Code" 가 VS Code `settings.json` 의 `a-file-icon-vscode.*` 를 한 번에
+   가져온다. 남은 것은 `activeIconPacks`, 층의 세부(`iconThemeByName`, override 모드, 다른 테마), 연결로 생긴 역할 표시 아이콘 중
+   `dist/` 에 없는 것(VS Code 는 테마를 만들 때 그리고, 플러그인은 표시 없이 준다), 그리고 VS Code 설정을 바뀔 때마다 따라가는 것
+   (지금은 버튼을 눌러 가져온다).
 2. **한글 대체 글꼴**: VS Code 는 고르면 `JetBrains Mono` 다음에 `D2Coding` 등을 쓰고, PyCharm 은 사용자가
    Settings > Editor > Font > Fallback font 에서 직접 정한다.
 
