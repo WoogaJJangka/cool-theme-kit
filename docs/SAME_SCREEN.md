@@ -15,10 +15,13 @@ Cool Theme Kit 은 두 저장소로 만든다. **목표는 VS Code 와 PyCharm �
 | 부분 | 원본 | VS Code 쪽 | JetBrains 쪽 | 맞추는 방법 |
 |---|---|---|---|---|
 | 파일·폴더 아이콘(유리 스타일, 역할 표시, 흔한 이름, 예외) | **Cool Theme Kit** (어떤 이름에 어떤 아이콘인지는 PyCharm + Atom Material Icons) | 생성기가 `dist/` 에 만든다 | `gradlew syncIcons` 가 `dist/` 를 복사(`src/main/resources/coolicons/`) | 여기서 고침 → `bun run build` → 플러그인에서 `syncIcons` → 두 저장소 다 커밋 |
-| 이름 맞추기 | VS Code 아이콘 테마 규칙 | VS Code | `CoolIcons`(파일 이름 → 긴 확장자부터 → 언어 → 기본, NFC + 소문자) | 규칙을 바꾸면 양쪽 코드와 테스트를 같이 |
+| 이름 맞추기 | VS Code 아이콘 테마 규칙 | VS Code | `CoolIcons`(파일 이름 → 긴 확장자부터 → 언어 → 기본, NFC + 소문자. JetBrains 언어 id 는 VS Code id 로 옮기고 없으면 기반 언어로) | 규칙을 바꾸면 양쪽 코드와 테스트를 같이 |
+| 펼친 폴더 | VS Code `folderNamesExpanded` | VS Code | `CoolFolderIcon`(트리가 그리는 행이 펼쳐졌으면 열린 폴더) | `syncIcons` 가 함께 복사 |
+| 아이콘 연결(`filesAssociations` 등) | Cool Theme Kit 생성기(`FileJsonGenerator` 등) | 테마를 다시 만든다 | `CoolAssociations` | 규칙을 바꾸면 `export:jetbrains-icons` 의 예시와 `CoolAssociationsParityTest` 를 같이 |
 | 색 테마(UI·문법) | **JetBrains** Islands Dark/Light (`intellij-community` 고정 커밋, `themes/jetbrains-source.json`) | Cool Islands Dark/Light (`sync:colors`) | IDE 내장 Islands 그대로 | 고정 커밋은 플러그인의 대상 PyCharm(`gradle.properties` `platformVersion`)과 같은 버전대로 올린다 |
 | UI(제품) 아이콘 | **JetBrains** New UI 아이콘 | Cool Islands Icons (`build:product-icons`) | IDE 내장 | 같은 고정 커밋 |
-| 에디터 글꼴 | **JetBrains** 기본(JetBrains Mono) + 한글 대체 글꼴 | `useJetBrainsFonts` 로 고를 때만 | IDE 기본(JetBrains Mono) | 아래 "아직 다른 것" 4 |
+| 강조색(`accentColor`·`accentTargets`, 프리셋) | **Cool Theme Kit** `src/themes/accent.ts`(Islands 파랑 → 고른 색: 그 색 그대로 / 밝기 유지한 색조 이동) | Cool Islands 색 테마를 다시 쓴다(창 다시 로드) | `CoolAccent`(포팅): Islands 의 이름 색(`UIThemeCustomizer`, IDE 다시 시작), 스크롤바·배지·편집기 선택·링크는 바로, 폴더 색 아이콘은 다시 그림 | 규칙을 바꾸면 `bun run export:jetbrains` → 플러그인 `syncIcons` → `CoolAccentTest`·`CoolFolderColorTest` |
+| 에디터 글꼴 | **JetBrains** 기본(JetBrains Mono) + 한글 대체 글꼴 | `useJetBrainsFonts` 로 고를 때만 | IDE 기본(JetBrains Mono) | 아래 "아직 다른 것" 3 |
 
 ## 일부러 다르게 둔 것
 
@@ -28,26 +31,26 @@ Cool Theme Kit 은 두 저장소로 만든다. **목표는 VS Code 와 PyCharm �
   (`README` 에 적혀 있다).
 - 소스·테스트·리소스 루트, 제외 폴더: JetBrains 쪽은 IDE 아이콘을 남긴다(폴더의 역할을 보여 주는 유일한 표시).
   VS Code 에는 그런 정보가 없다.
-- 펼친 폴더 아이콘: VS Code 는 펼친 모양이 따로 있고, JetBrains New UI 는 펼침을 아이콘으로 구분하지 않는다
-  (`syncIcons` 는 `folderNamesExpanded` 를 복사하지 않는다).
 - 제품 아이콘 `sync`: VS Code 는 이 아이콘을 돌려서 진행 표시로 쓴다("Detecting Kernels", `$(sync~spin)`). JetBrains 의
   Update 화살표(`vcs/update`)를 돌리면 화살표가 빙빙 돌아서 새로고침 화살표(`general/refresh`)로 그린다. IDE 는 진행 표시용
   애니메이션 아이콘이 따로 있어 이 문제가 없다. Pull(`repo-pull`)은 그대로 Update 화살표다.
+- 강조색이 보이는 때: VS Code 는 창 다시 로드, PyCharm 은 IDE 다시 시작(테마를 한 번만 읽는다). PyCharm 편집기 색은 구성표를
+  바꾸지 않고 열린 편집기마다 바꾼다(구성표는 IDE 가 사용자 설정으로 저장해서), 그래서 사용자가 바꾼 선택·링크 색은 그대로 둔다.
+- 없는 아이콘을 가리키는 연결: VS Code 는 `filesAssociations` 등의 값이 번들 아이콘도 있는 SVG 도 아니면 빈 아이콘을 그리고,
+  플러그인은 그 연결을 무시해 원래 아이콘을 둔다(잘못 쓴 설정을 빈칸으로 보여 줄 이유가 없다).
 
 ## 아직 다른 것 (할 일 후보)
 
 같은 화면에 가까워지려면 줄여야 할 차이다. 하나를 끝내면 이 목록에서 지우고 위 표나 "일부러 다르게 둔 것"으로 옮긴다.
 
-1. **강조색**: VS Code 는 `accentColor`(대상 `controls`·`tabs`·`folders`, 프리셋), JetBrains 쪽은 Islands 파랑 고정.
-   사용자 PyCharm 은 Material Theme UI 의 연두가 얹혀 있다(2026-11-19 확인).
-2. **아이콘 설정**: VS Code 는 `iconStyle`(유리/광택/평면)·`roleMarks`·폴더 색·채도·불투명도·단색을 고를 수 있고, 플러그인은
-   기본값으로 만든 아이콘 한 벌만 가진다.
-3. **모르는 이름**: VS Code 는 기본 섞기 층(`iconThemeLayers` = Material Icon Theme)이 Cool Icons 가 모르는 이름을 채우고,
+1. **아이콘 설정**: `iconStyle`(유리/광택/평면)·`roleMarks`·`filesAssociations`·`foldersAssociations`·`languagesAssociations` 는
+   플러그인에도 같은 이름으로 있다(2026-11-27. 평면 아이콘과 연결 검사용 테마는 `bun run export:jetbrains-icons` →
+   `out/jetbrains-icons/`, 플러그인 `syncIcons` 가 가져감). 남은 것은 폴더 색·채도·불투명도·단색, 그리고 연결로 생긴 역할 표시
+   아이콘 중 `dist/` 에 없는 것(VS Code 는 테마를 만들 때 그리고, 플러그인은 표시 없이 준다).
+2. **모르는 이름**: VS Code 는 기본 섞기 층(`iconThemeLayers` = Material Icon Theme)이 Cool Icons 가 모르는 이름을 채우고,
    플러그인은 기본 파일 아이콘을 준다.
-4. **한글 대체 글꼴**: VS Code 는 고르면 `JetBrains Mono` 다음에 `D2Coding` 등을 쓰고, PyCharm 은 사용자가
+3. **한글 대체 글꼴**: VS Code 는 고르면 `JetBrains Mono` 다음에 `D2Coding` 등을 쓰고, PyCharm 은 사용자가
    Settings > Editor > Font > Fallback font 에서 직접 정한다.
-5. **언어 id**: 아이콘 테마의 `languageIds` 는 VS Code 언어 id(`typescriptreact`)인데 플러그인은 JetBrains
-   `Language.getID()`(소문자로 비교)를 넣는다. 둘이 다른 언어는 확장자 규칙에 맡겨진다. 차이가 나는 이름이 있는지 확인이 필요하다.
 
 ## 고칠 때 규칙
 

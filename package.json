@@ -48,7 +48,9 @@
     "compare:ide": "ts-node ./src/scripts/themes/compareIde.ts",
     "build:product-icons": "ts-node ./src/scripts/productIcons/buildJetbrainsFont.ts",
     "build:logo": "ts-node ./src/scripts/buildLogo.ts",
-    "analyze:presets": "ts-node ./src/scripts/presets/analyzePresets.ts"
+    "analyze:presets": "ts-node ./src/scripts/presets/analyzePresets.ts",
+    "export:jetbrains": "ts-node ./src/scripts/jetbrains/exportJetbrains.ts",
+    "export:jetbrains-icons": "ts-node ./src/scripts/jetbrains/exportIconVariants.ts"
   },
   "dependencies": {
     "@eslint/compat": "^1.4.1",
