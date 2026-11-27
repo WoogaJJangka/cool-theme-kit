@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. Dates are displayed in UTC.
 
+#### 1.8.1 (2026-11-27)
+
+- fix: Cool Islands Icons no longer spins an arrow while VS Code waits ("Detecting Kernels" of a notebook, a running
+  cell, `$(sync~spin)` of Git and of other extensions). VS Code spins its `sync` icon as a progress icon, and Cool
+  Islands Icons drew it with the "Update" arrow of the JetBrains IDEs; it now has their round refresh arrows, which
+  look the same at every angle. Pull keeps the arrow.
+
 #### 1.8.0 (2026-11-26)
 
 - feat: **marks for the names with a role**. A file whose name says what it is in its project keeps the icon of its

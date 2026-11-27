@@ -177,4 +177,14 @@ describe('Cool Islands Icons', () => {
     }
     assert.equal(new Set(byIcon.values()).size, byIcon.size);
   });
+
+  it('draws the icons VS Code spins with round icons', () => {
+    // `~spin` turns the glyph around its middle: "Detecting Kernels" and `$(sync~spin)` spun the down arrow of
+    // vcs/update. `notebook-state-executing` falls back to `sync`.
+    const round = new Set(['general/refresh', 'general/settings']);
+    for (const id of ['sync', 'loading', 'gear', 'refresh', 'notebook-state-executing']) {
+      const icon = JETBRAINS_ICONS[id];
+      if (icon !== undefined) assert.ok(round.has(icon), `${id}: ${icon}`);
+    }
+  });
 });

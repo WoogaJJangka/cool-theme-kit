@@ -172,7 +172,9 @@ export const JETBRAINS_ICONS: Record<string, string> = {
   'repo-push': 'vcs/push',
   'repo-pull': 'vcs/update',
   'repo-fetch': 'vcs/fetch',
-  sync: 'vcs/update',
+  // VS Code and extensions spin `sync` as a progress icon ("Detecting Kernels", `$(sync~spin)`), and an arrow that
+  // turns around its middle looks broken: the round refresh arrows of the IDE look the same at every angle
+  sync: 'general/refresh',
   discard: 'vcs/revert',
   'diff-added': 'general/add',
   'diff-removed': 'general/remove',
