@@ -89,6 +89,7 @@
 | IDE 서식 복사(`test/colors/ide/*.rtf`)와 글자 단위 비교 (다른 곳만 출력, 실패하지 않음) | `bun run compare:ide` (`-- ruby php` 이름 일부로 고름) |
 | New UI 제품 아이콘 글꼴 만들기 (확인용 그림 포함) | `bun run build:product-icons` (`-- --sheet <png>`) |
 | VSIX 만들기 | `npx --yes @vscode/vsce@3.6.0 package --no-dependencies --allow-missing-repository --skip-license -o <경로>.vsix` |
+| JetBrains 플러그인에 넘길 강조색 기준값 (`out/jetbrains/`: 프리셋·`accentColors` 결과·Islands 편집기 색, 폴더 색이 바뀌는 아이콘 유리·평면) | `bun run export:jetbrains` (뒤에 플러그인 `gradlew syncIcons`, 플러그인 테스트가 이 값과 비교) |
 
 - `tsc --noEmit` 의 `@types/lodash` ↔ TS lib `WeakMap` 오류 4개는 원래 있던 것. 그 밖의 오류만 본다.
 - `npx tsc` 는 엉뚱한 `tsc` 패키지를 받는다. `node node_modules/typescript/bin/tsc` 로 부른다.
