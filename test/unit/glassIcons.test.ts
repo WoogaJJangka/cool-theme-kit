@@ -13,6 +13,7 @@ import {
   glassFile,
   glassFolder,
   glassIcon,
+  glossyIcon,
   luminance,
   mainPaint,
   markedFile,
@@ -313,6 +314,76 @@ describe('glass icons', () => {
       const names = ROLE_NAMES.flatMap(({ fileNames }) => fileNames);
       assert.equal(new Set(names).size, names.length, 'a name with two roles');
       assert.deepEqual(names.filter((name) => name !== name.toLowerCase()), [], 'VS Code compares the names in lower case');
+    });
+  });
+
+  describe('glossyIcon', () => {
+    it('keeps the shape and the colors of the icon, placed as VS Code shows it, without a tile', () => {
+      const glossy = glossyIcon(TWO_COLORS);
+      assert.match(glossy, /^<svg xmlns="http:\/\/www\.w3\.org\/2000\/svg" viewBox="0 0 16 16" width="16px" height="16px">/);
+      assert.ok(
+        glossy.includes('<g id="ctk-i"><svg x="0" y="0" width="16" height="16" viewBox="0 0 24 24" overflow="visible"><g ><path fill="#1565C0" d="M3 3h18v18H3z"/><path fill="#ffca28" d="M8 8h8v8H8z"/></g></svg></g>'),
+        'the icon as it is drawn, its viewBox on the 16 units',
+      );
+      assert.ok(!glossy.includes('ctk-t') && !glossy.includes('ctk-k') && !glossy.includes('<rect width="16" height="16" rx='), 'no tile, no glyph color');
+    });
+
+    it('places an icon that is not square in the middle, by its longest side', () => {
+      const wide = glossyIcon(svg('<path fill="#1565C0" d="M0 0h32v16H0z"/>', 'viewBox="0 0 32 16"'));
+      assert.ok(wide.includes('<svg x="0" y="4" width="16" height="8" viewBox="0 0 32 16" overflow="visible">'));
+    });
+
+    it('shades what the icon draws: a gradient over its shape, a highlight over its top edges', () => {
+      const glossy = glossyIcon(SQUARE);
+      // the shape of the icon: what it draws, in white; its top edges: the same without the icon moved down
+      assert.ok(glossy.includes('<mask id="ctk-s" maskUnits="userSpaceOnUse" x="0" y="0" width="16" height="16"><use href="#ctk-i" filter="url(#ctk-w)"/></mask>'));
+      assert.match(glossy, /<mask id="ctk-e"[^>]*><use href="#ctk-i" filter="url\(#ctk-w\)"\/><use href="#ctk-i" y="[\d.]+" filter="url\(#ctk-n\)"\/><\/mask>/);
+      // white or black whatever the colors of the icon, only where it is nearly opaque: not over its edges and thin gaps
+      const opaque = '<feComponentTransfer><feFuncA type="table" tableValues="0 0 1"/></feComponentTransfer></filter>';
+      assert.ok(/<filter id="ctk-w"[^>]*><feColorMatrix values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"\/>(.*?)<\/filter>/.exec(glossy)![0].endsWith(opaque));
+      assert.ok(/<filter id="ctk-n"[^>]*><feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0"\/>(.*?)<\/filter>/.exec(glossy)![0].endsWith(opaque));
+      // lighter at the top and darker at the bottom, over the icon
+      assert.match(glossy, /<\/g><rect width="16" height="16" fill="url\(#ctk-g\)" mask="url\(#ctk-s\)"\/><rect width="16" height="16" fill="#fff" fill-opacity="[\d.]+" mask="url\(#ctk-e\)"\/><\/svg>$/);
+      assert.match(glossy, /<linearGradient id="ctk-g" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff" stop-opacity="[\d.]+"\/>.*<stop offset="1" stop-opacity="[\d.]+"\/><\/linearGradient>/);
+    });
+
+    it('keeps the namespaces of the icon and what its content inherits from its root', () => {
+      const glossy = glossyIcon(svg('<use xlink:href="#a"/>', 'xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" fill="#1565C0"'));
+      assert.ok(glossy.startsWith('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 16 16"'));
+      assert.ok(glossy.includes('<g fill="#1565C0"><use xlink:href="#a"/></g>'));
+    });
+
+    it('uses ids no icon would use', () => {
+      const ids = [...glossyIcon(SQUARE, 'run').matchAll(/\sid="([^"]+)"/g)].map((match) => match[1]);
+      assert.ok(ids.length > 0 && ids.every((id) => id.startsWith('ctk-')), ids.join());
+      assert.equal(new Set(ids).size, ids.length, 'an id twice');
+    });
+
+    it('marks a role like a flat icon, with the disc of the glass style, and shades the icon under it', () => {
+      const marked = glossyIcon(SQUARE, 'run');
+      assert.match(marked, /<g clip-path="url\(#ctk-m\)"><g id="ctk-i"><svg x="0\.18" y="0\.18" width="13\.44" height="13\.44" viewBox="0 0 24 24"/);
+      assert.match(marked, /mask="url\(#ctk-e\)"\/><\/g><circle cx="12\.3" cy="12\.3" r="3\.7" fill="url\(#ctk-d\)"\/>/, 'the shading is cut with the icon');
+      assert.ok(!marked.includes('ctk-t'));
+    });
+
+    it('leaves what is not an svg, or has no size, as it is', () => {
+      const icon = '<svg xmlns="http://www.w3.org/2000/svg"><path d="M0 0h4v4H0z"/></svg>';
+      assert.equal(glossyIcon(icon), icon);
+      assert.equal(glossyIcon(icon, 'run'), icon);
+      assert.equal(glossyIcon('not an svg'), 'not an svg');
+    });
+
+    it('takes the monochrome color on the icon and the shading, and keeps its masks white and black', () => {
+      const monochrome = monochromeService.applyMonochrome(glossyIcon(SQUARE), true, '#546E7A');
+      assert.ok(!monochrome.includes('#1565C0'), 'the icon is recolored');
+      // the masks are made with a color matrix, which the monochrome setting does not touch: a recolored mask would be a transparency
+      assert.ok(!monochrome.includes('flood-color'));
+      assert.match(monochrome, /values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"/);
+    });
+
+    it('takes the opacity and the saturation on its root', () => {
+      const filtered = saturationService.applySaturation(opacityService.applyOpacity(glossyIcon(SQUARE), 0.5), 0.3);
+      assert.match(filtered, /^<svg filter="url\(#saturation\)" opacity="0.5" xmlns=/);
     });
   });
 
@@ -668,6 +739,23 @@ describe('glass icons', () => {
       const marked = icon(theme.fileNames!['main.go']);
       assert.ok(marked.includes('ctk-m') && !marked.includes('ctk-t'), 'a mark, no tile');
       assert.ok(icon(theme.folderNames!['.claude']).includes('data-folderColor="claude"'));
+    });
+
+    it('shades the icons of the icon plugin with the glossy style, under other file names', async function () {
+      this.timeout(120_000);
+      const { config, icon, theme } = await generate(IconStyle.Glossy);
+
+      assert.notEqual(getFileConfigHash(config), '');
+      assert.notEqual(getFileConfigHash(config), getFileConfigHash({ ...config, iconStyle: IconStyle.Flat }), 'not the names of the flat icons');
+      const ts = icon(theme.fileExtensions!.ts);
+      assert.ok(ts.includes('mask="url(#ctk-s)"') && !ts.includes('ctk-t'), 'shaded, no tile');
+      assert.ok(icon(theme.fileExtensions!.json).includes('data-iconColor="JSON"'), 'the icon of the icon plugin, not the New UI glyph');
+      // the folder of the plugin as it is drawn, shaded: not a glass folder
+      const src = icon(theme.folderNames!.src);
+      assert.ok(src.includes('data-folderColor') && src.includes('mask="url(#ctk-s)"') && !src.includes('ctk-f'));
+      assert.ok(icon(theme.folderNamesExpanded!.src).includes('mask="url(#ctk-s)"'));
+      const marked = icon(theme.fileNames!['main.go']);
+      assert.ok(marked.includes('ctk-m') && marked.includes('url(#ctk-d)') && marked.includes('ctk-s'), 'a mark over the shaded icon');
     });
   });
 });

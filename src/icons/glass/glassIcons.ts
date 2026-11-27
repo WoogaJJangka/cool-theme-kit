@@ -540,6 +540,61 @@ const glassFolder = (svg: string, open: boolean, metric?: IconMetric): string =>
 
 // endregion
 
+// region glossy icons
+
+/**
+ * The shading of the glossy style, the glass of the tile without the tile: what the icon draws is lighter at the top
+ * and darker at the bottom (the white of `top`, the black of `bottom`), with a highlight along its top edges (as the
+ * rim of the tile), `edge` units wide. Stronger than the gradient of the tile (.18 and .16), which also has its rim and
+ * its edge against the background: on the shape alone, that much hardly shows at 16 pixels (chosen by the user from four
+ * drafts, 2026-11-27; a sheen over the upper half like the tile was the other choice).
+ */
+const GLOSS = { bottom: 0.24, edge: 0.8, highlight: 0.6, top: 0.32 };
+
+/**
+ * Paints what a group draws in white, or in black, whatever its colors: the content of a mask. A color matrix and not
+ * a flood: the monochrome setting recolors a flood color, and a mask of another color would be a transparency.
+ * Only where the group is nearly opaque (its alpha from .5 to 1 becomes 0 to 1): the shading is drawn over the icon,
+ * and over a pixel it half covers (an edge, a thin gap between two shapes) it would fill in what the icon leaves open.
+ */
+const maskFilter = (id: string, value: 0 | 1) =>
+  `<filter id="${ID}${id}" ${FILTER_AREA}><feColorMatrix values="0 0 0 0 ${value} 0 0 0 0 ${value} 0 0 0 0 ${value} 0 0 0 1 0"/><feComponentTransfer><feFuncA type="table" tableValues="0 0 1"/></feComponentTransfer></filter>`;
+
+const MASK_AREA = `maskUnits="userSpaceOnUse" x="0" y="0" width="${SIZE}" height="${SIZE}"`;
+
+/**
+ * An icon in the glossy style: its own shape and colors, as in the flat style, with the shading of the glass style over
+ * what it draws. Two masks of the icon: its shape for the gradient, and its shape without itself moved down for the
+ * highlight of its top edges. Masks and not filters: a filter cannot draw a gradient.
+ * @param role the role to mark over its corner, for a file whose name gives it one
+ * @returns the icon unchanged when it has no viewBox to place it by
+ */
+const glossyIcon = (svg: string, role?: IconRole): string => {
+  const parts = parseSvg(svg);
+  const box = parts?.viewBox;
+  if (!parts || !box) return svg;
+
+  const scale = (SIZE * (role ? MARKED.scale : 1)) / Math.max(box[2], box[3]);
+  const center = SIZE / 2 - (role ? MARKED.shift : 0);
+  const icon = `<g id="${ID}i">${place(parts, box, scale, center, center)}</g>`;
+  const defs = [
+    maskFilter('w', 1),
+    maskFilter('n', 0),
+    `<mask id="${ID}s" ${MASK_AREA}><use href="#${ID}i" filter="url(#${ID}w)"/></mask>`,
+    `<mask id="${ID}e" ${MASK_AREA}><use href="#${ID}i" filter="url(#${ID}w)"/><use href="#${ID}i" y="${GLOSS.edge}" filter="url(#${ID}n)"/></mask>`,
+    `<linearGradient id="${ID}g" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff" stop-opacity="${GLOSS.top}"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-opacity="0"/><stop offset="1" stop-opacity="${GLOSS.bottom}"/></linearGradient>`,
+  ].join('');
+  const shading = [
+    `<rect width="${SIZE}" height="${SIZE}" fill="url(#${ID}g)" mask="url(#${ID}s)"/>`,
+    `<rect width="${SIZE}" height="${SIZE}" fill="#fff" fill-opacity="${GLOSS.highlight}" mask="url(#${ID}e)"/>`,
+  ].join('');
+  if (role) return withMark(parts.namespaces, defs, icon + shading, role, true);
+
+  return `${ROOT(parts.namespaces)}<defs>${defs}</defs>${icon}${shading}</svg>`;
+};
+
+// endregion
+
 /**
  * An icon in the glass style: a file icon on its tile, a bundled folder icon as a glass folder.
  * @param role for a file icon, the role to mark over its corner
@@ -551,6 +606,7 @@ export {
   glassFile,
   glassFolder,
   glassIcon,
+  glossyIcon,
   luminance,
   mainPaint,
   markedFile,

@@ -7,7 +7,7 @@ import { findCustomIcon, findCustomOpenFolderIcon, getCustomIconName, isCustomIc
 import { FileCopies } from 'src/helpers/fileCopies';
 import { writeFileAtomicAsync } from 'src/helpers/fsUtils';
 import { getFileConfigHash, withDefaults } from 'src/icons/configUtils';
-import { glassIcon, markedFile, toMetric } from 'src/icons/glass/glassIcons';
+import { glassIcon, glossyIcon, markedFile, toMetric } from 'src/icons/glass/glassIcons';
 import { ROLE_ICON_PREFIX } from 'src/icons/roles';
 import { IconConfiguration } from 'src/models/IconConfiguration';
 
@@ -28,7 +28,10 @@ import type { IconGroup, IconKind, IconMetric, IconMetrics, IconRole } from 'src
 /** The measures of the bundled icons the glass style places them with (`bun run sync:metrics`), in `assets/icons` */
 const METRICS_FILE = 'metrics.json';
 
-/** What an icon is drawn for in the glass style, and what was measured for it (nothing for an icon not bundled) */
+/**
+ * What an icon is drawn for in the glass and glossy styles, and what was measured for it (for the glass style, nothing for
+ * an icon not bundled)
+ */
 type Glass = { kind: IconKind; metric?: IconMetric };
 
 const KINDS: Record<IconGroup, IconKind> = { files: 'file', folders: 'folder', foldersOpen: 'folderOpen' };
@@ -317,9 +320,9 @@ export class IconThemeGenerator {
     this.glyphs = new Set(used ? readdirSync(this.glyphsPath) : []);
   }
 
-  /** How an icon is drawn in the glass style; nothing with the flat style */
+  /** How an icon is drawn in the glass and glossy styles; nothing with the flat style */
   private glass(group: keyof IconMetrics, iconFile: string, kind: IconKind): Glass | undefined {
-    if (this.atomConfig.iconStyle !== IconStyle.Glass) return undefined;
+    if (this.atomConfig.iconStyle === IconStyle.Flat) return undefined;
     return { kind, metric: toMetric(this.metrics?.[group]?.[iconFile.replace(/\.svg$/, '')]) };
   }
 
@@ -358,8 +361,8 @@ export class IconThemeGenerator {
       const source = findCustomIcon(value);
       if (!source) continue;
       const target = `${getCustomIconName(value)}${fileConfigHash}.svg`;
-      // a file icon of the user goes on a tile like the others; a folder icon is a whole drawing, kept as it is
-      const glass: Glass | undefined = this.atomConfig.iconStyle === IconStyle.Glass ? { kind: 'file' } : undefined;
+      // a file icon of the user is drawn in the style like the others (on a tile, or shaded); a folder icon is a whole drawing, kept as it is
+      const glass: Glass | undefined = this.atomConfig.iconStyle === IconStyle.Flat ? undefined : { kind: 'file' };
       this.writeIcon(getFilesPath(distributionPath), target, source, glass);
     }
 
@@ -422,9 +425,9 @@ export class IconThemeGenerator {
   }
 
   /**
-   * The filters of the icons (folder color, glass style, monochrome, opacity, saturation), for the content of an svg
-   * file. The glass style comes after the folder color, which it reads from the icon, and before the others, which
-   * work on any svg. The mark of a role is drawn with the glass style, or alone on a flat icon.
+   * The filters of the icons (folder color, glass or glossy style, monochrome, opacity, saturation), for the content of
+   * an svg file. The style comes after the folder color, which the glass style reads from the icon, and before the
+   * others, which work on any svg. The mark of a role is drawn with the style, or alone on a flat icon.
    */
   private filterSvg(content: string, glass?: Glass, role?: IconRole) {
     let svg = content;
@@ -432,8 +435,9 @@ export class IconThemeGenerator {
     // folder color
     svg = folderColorService.applyFolderColor(svg, this.atomConfig.folderColor);
 
-    // glass style
+    // glass or glossy style
     if (glass && this.atomConfig.iconStyle === IconStyle.Glass) svg = glassIcon(svg, glass.kind, glass.metric, role);
+    else if (glass && this.atomConfig.iconStyle === IconStyle.Glossy) svg = glossyIcon(svg, role);
     else if (role) svg = markedFile(svg, role);
 
     // Monochrome

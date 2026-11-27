@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os';
 import { basename, dirname, join } from 'node:path';
 import { EXTENSION_KEY, ICON_THEME_ID, JSON_FILE_NAME, JSON_PRODUCT_FILE_NAME } from 'src/helpers/constants';
 import { writeFileAtomic } from 'src/helpers/fsUtils';
-import { glassFile } from 'src/icons/glass/glassIcons';
+import { glassFile, glossyIcon } from 'src/icons/glass/glassIcons';
 import { configChangeDetector } from 'src/services/ConfigChangeDetector';
 import { configService } from 'src/services/ConfigService';
 
@@ -658,6 +658,15 @@ describe('ConfigChangeDetector', () => {
       const theme = readTheme();
 
       assert.equal(readIcon(theme, theme.fileNames?.['zz-unknown'] ?? ''), SVG('#123456'));
+      assert.equal(readIcon(theme, theme.folderNames?.['fb-folder'] ?? ''), SVG('#123456'));
+    });
+
+    it('shades the file icons of a layer with the glossy icon style, and keeps its folder icons', async () => {
+      installFallbackTheme();
+      await applySettings({ iconStyle: 'glossy' });
+      const theme = readTheme();
+
+      assert.equal(readIcon(theme, theme.fileNames?.['zz-unknown'] ?? ''), glossyIcon(SVG('#123456')));
       assert.equal(readIcon(theme, theme.folderNames?.['fb-folder'] ?? ''), SVG('#123456'));
     });
 

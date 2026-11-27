@@ -385,8 +385,10 @@ const capture = async () => {
     await shot('cool-islands-light.png');
     await useSettings('Cool Islands Dark');
 
-    // the two icon styles: the icons are generated again, under other names, and VS Code loads them
+    // the three icon styles: the icons are generated again, under other names, and VS Code loads them
     await explorerShot('icon-style-glass.png');
+    await useSettings('Cool Islands Dark', { 'a-file-icon-vscode.iconStyle': 'glossy' }, 12_000);
+    await explorerShot('icon-style-glossy.png');
     await useSettings('Cool Islands Dark', { 'a-file-icon-vscode.iconStyle': 'flat' }, 12_000);
     await explorerShot('icon-style-flat.png');
     await useSettings('Cool Islands Dark', {}, 12_000);

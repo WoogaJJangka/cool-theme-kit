@@ -32,11 +32,13 @@ export enum FolderTheme {
 /**
  * How the file and folder icons are drawn:
  * - glass: every file icon is a glyph on the same rounded tile, every folder the same rounded folder (the default)
+ * - glossy: the icons as the JetBrains plugin draws them, with the shading of the glass style over their own shape
  * - flat: the icons as the JetBrains plugin draws them (the look before the style existed)
  */
 export enum IconStyle {
   Flat = 'flat',
   Glass = 'glass',
+  Glossy = 'glossy',
 }
 
 export enum PredefinedOpacity {

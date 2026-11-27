@@ -24,7 +24,8 @@
   써서 반영하고, VS Code 가 다시 읽지 않는 것(색·제품 아이콘)은 창 다시 로드를 권한다.
 - **아이콘 모양은 유리 스타일이 기본(2026-11-25 사용자 결정)**: 어떤 이름에 어떤 아이콘이 붙는지는 계속 JetBrains(PyCharm + Atom
   Material Icons)를 따르고(`jetbrainsParity.test.ts`), 그리는 방식만 바꾼다. 파일 = 같은 둥근 타일 위의 글리프, 폴더 = 같은 둥근
-  폴더(종류별 색 유지) + 배지 글리프. 예전 평면 모양은 `iconStyle: "flat"` 로 남긴다.
+  폴더(종류별 색 유지) + 배지 글리프. 예전 평면 모양은 `iconStyle: "flat"` 로 남긴다. 타일·테두리 없이 플러그인 아이콘 모양 그대로에
+  유리 음영만 입힌 `iconStyle: "glossy"`(광택)도 고를 수 있다(2026-11-27 사용자 요청, 기본은 여전히 유리).
   **JetBrains 형태가 기본이라는 것을 잊지 않는다(사용자가 같은 날 다시 강조)**: 글리프를 새로 그리거나 다른 그림으로 바꾸지 않는다.
   글리프의 출처는 ① JetBrains 가 직접 그린 New UI 파일 아이콘이 있는 종류는 그 모양과 색(사용자 선택 "New UI 모양 우선"),
   ② 없는 종류는 JetBrains 아이콘 플러그인(Atom Material Icons) 모양. 다듬는다는 것은 이 둘 안에서 고르고 크기를 맞추는 일이다. 사용자 기준: 심플·모던 최우선, 16px 에서
@@ -81,7 +82,7 @@
 | 유리 스타일의 JetBrains New UI 글리프 받기 (`assets/icons/glass/files`, 대응표를 고치거나 고정 커밋이 바뀌면. 뒤에 `sync:metrics`) | `bun run sync:glyphs` |
 | 포크의 폴더 아이콘 다시 만들기 (`assets/icons/folders`·`foldersOpen`, `folderBadges.ts` 를 고치면. 뒤에 `sync:metrics`) | `bun run sync:folders` |
 | 유리 스타일용 아이콘 측정값 다시 쓰기 (`assets/icons/metrics.json`, 아이콘 SVG 가 바뀌면) | `bun run sync:metrics` |
-| 전체 아이콘을 16px·32px 시트로 그려 눈으로 검토 (무너지는 글리프 찾기) | `bun run sheet:icons` (`-- --flat` 평면, `--light`, `--only <이름,이름…>`, `--group files\|folders\|foldersOpen`. 그림은 `out/icon-sheets/<glass\|flat>-<dark\|light>/`) |
+| 전체 아이콘을 16px·32px 시트로 그려 눈으로 검토 (무너지는 글리프 찾기) | `bun run sheet:icons` (`-- --flat` 평면, `--glossy` 광택, `--light`, `--only <이름,이름…>`, `--group files\|folders\|foldersOpen`. 그림은 `out/icon-sheets/<glass\|glossy\|flat>-<dark\|light>/`) |
 | JetBrains 색 테마 동기화 (고정 커밋 / 최신) | `bun run sync:colors` / `bun run sync:colors -- --latest` |
 | 문법 색을 JetBrains 와 비교 (실제 VS Code 문법으로 `test/colors` 샘플을 토큰으로 나눔, `.vscode-test` 에 받음) | `bun run check:colors` (`-- --report` 토큰마다 scope·색·규칙, 색 없는 scope) |
 | 같은 비교를 VS Code 내장 TypeScript 서버의 의미 토큰까지 얹어서 (TS·JS 샘플, 실제 VS Code 를 띄움, Linux 는 `xvfb-run -a`) | `bun run check:semantic` (`-- --report` 의미 토큰마다 종류·수식어·스타일) |
@@ -273,6 +274,14 @@
     **폴더** 아이콘은 통째 그림이라 그대로 둔다(`ThemeLayerGenerator` 가 파일용·폴더용 정의를 따로 복사한다).
   - `iconStyle` 은 기본값(glass)이 아닐 때만 아이콘 파일 이름 해시에 들어간다(`getFileConfigHash`). 밝은·어두운 테마 변형(`_dark`)은
     그대로 두 벌이다(타일이라 둘 다 어느 배경에서나 보인다).
+- 광택 스타일(`iconStyle: "glossy"`, `glossyIcon`, 같은 파일): 평면처럼 플러그인 아이콘을 제 모양·색·크기 그대로(viewBox 를 16 단위에 맞춤) 두고
+  그린 곳에만 유리 음영을 얹는다. 아이콘 모양 마스크(`ctk-s`) 위에 세로 그라데이션(위는 흰색, 아래는 검정), 자기 모양에서 아래로 옮긴 자기
+  모양을 뺀 마스크(`ctk-e`) 위에 흰 하이라이트(위쪽 가장자리). 두 마스크는 아이콘을 `<use>` 로 다시 그려 `feColorMatrix` 로 흰색·검정으로
+  칠한다(`feFlood` 는 단색 설정이 색을 바꿔 마스크가 투명도가 된다). 마스크는 거의 불투명한 픽셀에만(알파 .5~1 → 0~1, `feFuncA` table):
+  반쯤 덮인 가장자리·가는 틈에 음영을 얹으면 그 틈이 메워진다(pointwise·gnuplot 의 그물이 희게 됨). 세기는 사용자가 시안 넷 중 고른 B
+  (위 흰색 .32·아래 검정 .24·하이라이트 .6, 2026-11-27). 필터로는 그라데이션을 못 그려서 마스크다. New UI 글리프와 측정값은
+  쓰지 않는다(유리 전용). 역할 표시는 평면처럼 줄인 아이콘 + 유리 원. 다른 테마·사용자의 파일 아이콘은 음영을 입히고 폴더 아이콘은 그대로
+  (유리와 같은 범위). 플러그인 SVG 를 그대로 쓰므로 모양이 어긋나는지는 평면과 그린 영역(알파)을 비교해서 본다.
 - 이름 규칙의 적용 순서(뒤가 이김): 손으로 쓴 것 → 그 팩 → `upstream.ts`(JetBrains) → **`common.ts` → `exceptions.ts`** → pycharm 팩
   → 사용자 `filesAssociations` → **역할 표시**(사용자가 정한 이름은 건너뜀). 폴더는 `folderIcons.ts` 의 나열 순서 그대로.
   - `sync:upstream` 은 플러그인의 **확장자 규칙**(`*.json` → JSON)도 "아는 이름"으로 보고 덮어쓴다. 그래서 `secrets.json` 같은 흔한

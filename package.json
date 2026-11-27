@@ -458,10 +458,12 @@
             "description": "%configuration.iconStyle%",
             "enum": [
               "glass",
+              "glossy",
               "flat"
             ],
             "enumDescriptions": [
               "%configuration.iconStyle.glass%",
+              "%configuration.iconStyle.glossy%",
               "%configuration.iconStyle.flat%"
             ],
             "type": "string"
