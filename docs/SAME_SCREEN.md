@@ -18,10 +18,12 @@ Cool Theme Kit 은 두 저장소로 만든다. **목표는 VS Code 와 PyCharm �
 | 이름 맞추기 | VS Code 아이콘 테마 규칙 | VS Code | `CoolIcons`(파일 이름 → 긴 확장자부터 → 언어 → 기본, NFC + 소문자. JetBrains 언어 id 는 VS Code id 로 옮기고 없으면 기반 언어로) | 규칙을 바꾸면 양쪽 코드와 테스트를 같이 |
 | 펼친 폴더 | VS Code `folderNamesExpanded` | VS Code | `CoolFolderIcon`(트리가 그리는 행이 펼쳐졌으면 열린 폴더) | `syncIcons` 가 함께 복사 |
 | 아이콘 연결(`filesAssociations` 등) | Cool Theme Kit 생성기(`FileJsonGenerator` 등) | 테마를 다시 만든다 | `CoolAssociations` | 규칙을 바꾸면 `export:jetbrains-icons` 의 예시와 `CoolAssociationsParityTest` 를 같이 |
+| 아이콘 색(`folderColor`·`monochrome`·`opacity`·`saturation`) | Cool Theme Kit `filterSvg`(`MonochromeService` 등) | 아이콘을 다시 쓴다 | `CoolIconFilters`(포팅, 시스템 폴더에 다시 쓴 아이콘) | 규칙을 바꾸면 `export:jetbrains-icons` 의 `filters.json` → `CoolIconFiltersTest` |
+| 모르는 이름(`iconThemeLayers`, 기본 Material Icon Theme) | **Material Icon Theme** + Cool Theme Kit `ThemeLayerGenerator`(fill) | 설치된 테마를 섞는다 | `export:jetbrains-icons` 가 이 PC VS Code 의 Material Icon Theme 으로 섞은 테마를 `syncIcons` 가 복사(`coolicons*/layers/`, 라이선스 포함), 설정에서 끌 수 있다 | Material Icon Theme 이 바뀌면 다시 내보내기 → `syncIcons` |
 | 색 테마(UI·문법) | **JetBrains** Islands Dark/Light (`intellij-community` 고정 커밋, `themes/jetbrains-source.json`) | Cool Islands Dark/Light (`sync:colors`) | IDE 내장 Islands 그대로 | 고정 커밋은 플러그인의 대상 PyCharm(`gradle.properties` `platformVersion`)과 같은 버전대로 올린다 |
 | UI(제품) 아이콘 | **JetBrains** New UI 아이콘 | Cool Islands Icons (`build:product-icons`) | IDE 내장 | 같은 고정 커밋 |
 | 강조색(`accentColor`·`accentTargets`, 프리셋) | **Cool Theme Kit** `src/themes/accent.ts`(Islands 파랑 → 고른 색: 그 색 그대로 / 밝기 유지한 색조 이동) | Cool Islands 색 테마를 다시 쓴다(창 다시 로드) | `CoolAccent`(포팅): Islands 의 이름 색(`UIThemeCustomizer`, IDE 다시 시작), 스크롤바·배지·편집기 선택·링크는 바로, 폴더 색 아이콘은 다시 그림 | 규칙을 바꾸면 `bun run export:jetbrains` → 플러그인 `syncIcons` → `CoolAccentTest`·`CoolFolderColorTest` |
-| 에디터 글꼴 | **JetBrains** 기본(JetBrains Mono) + 한글 대체 글꼴 | `useJetBrainsFonts` 로 고를 때만 | IDE 기본(JetBrains Mono) | 아래 "아직 다른 것" 3 |
+| 에디터 글꼴 | **JetBrains** 기본(JetBrains Mono) + 한글 대체 글꼴 | `useJetBrainsFonts` 로 고를 때만 | IDE 기본(JetBrains Mono) | 아래 "아직 다른 것" 2 |
 
 ## 일부러 다르게 둔 것
 
@@ -45,11 +47,11 @@ Cool Theme Kit 은 두 저장소로 만든다. **목표는 VS Code 와 PyCharm �
 
 1. **아이콘 설정**: `iconStyle`(유리/광택/평면)·`roleMarks`·`filesAssociations`·`foldersAssociations`·`languagesAssociations` 는
    플러그인에도 같은 이름으로 있다(2026-11-27. 평면 아이콘과 연결 검사용 테마는 `bun run export:jetbrains-icons` →
-   `out/jetbrains-icons/`, 플러그인 `syncIcons` 가 가져감). 남은 것은 폴더 색·채도·불투명도·단색, 그리고 연결로 생긴 역할 표시
-   아이콘 중 `dist/` 에 없는 것(VS Code 는 테마를 만들 때 그리고, 플러그인은 표시 없이 준다).
-2. **모르는 이름**: VS Code 는 기본 섞기 층(`iconThemeLayers` = Material Icon Theme)이 Cool Icons 가 모르는 이름을 채우고,
-   플러그인은 기본 파일 아이콘을 준다.
-3. **한글 대체 글꼴**: VS Code 는 고르면 `JetBrains Mono` 다음에 `D2Coding` 등을 쓰고, PyCharm 은 사용자가
+   `out/jetbrains-icons/`, 플러그인 `syncIcons` 가 가져감). 아이콘 색과 Material Icon Theme 층도 위 표로 옮겼다. 남은 것은
+   `folderTheme`·`hideFileIcons`·`activeIconPacks`, 층의 세부(`iconThemeByName`, override 모드, 다른 테마), 연결로 생긴 역할 표시
+   아이콘 중 `dist/` 에 없는 것(VS Code 는 테마를 만들 때 그리고, 플러그인은 표시 없이 준다), 그리고 VS Code 사용자 설정을
+   그대로 읽는 것(지금은 플러그인 설정 화면에 같은 값을 넣는다).
+2. **한글 대체 글꼴**: VS Code 는 고르면 `JetBrains Mono` 다음에 `D2Coding` 등을 쓰고, PyCharm 은 사용자가
    Settings > Editor > Font > Fallback font 에서 직접 정한다.
 
 ## 고칠 때 규칙
