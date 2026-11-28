@@ -52,6 +52,8 @@ Cool Theme Kit 은 두 저장소로 만든다. **목표는 VS Code 와 PyCharm �
    가져온다. 남은 것은 `activeIconPacks`, 층의 세부(`iconThemeByName`, override 모드, 다른 테마), 연결로 생긴 역할 표시 아이콘 중
    `dist/` 에 없는 것(VS Code 는 테마를 만들 때 그리고, 플러그인은 표시 없이 준다), 그리고 VS Code 설정을 바뀔 때마다 따라가는 것
    (지금은 버튼을 눌러 가져온다).
+   광택 아이콘의 크기 맞춤과, viewBox 밖 도형을 그리지 않는 유리·광택 아이콘(2026-11-27)은 플러그인에서 `syncIcons` 를 다시
+   돌려야 들어간다(플러그인이 안쪽 `<svg>` 를 잘라 그리는지도 그때 PyCharm 에서 avro·factor 로 본다).
 2. **한글 대체 글꼴**: VS Code 는 고르면 `JetBrains Mono` 다음에 `D2Coding` 등을 쓰고, PyCharm 은 사용자가
    Settings > Editor > Font > Fallback font 에서 직접 정한다.
 

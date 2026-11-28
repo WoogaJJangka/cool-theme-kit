@@ -108,9 +108,18 @@ describe('glass icons', () => {
 
   describe('metrics', () => {
     it('reads and writes an entry of metrics.json', () => {
-      const entries: MetricEntry[] = [[1, 2, 3, 4], [1, 2, 3, 4, 'h'], [1, 2, 3, 4, 'l'], [1, 2, 3, 4, '#aabbcc'], [1, 2, 3, 4, 'h', '#aabbcc']];
+      const entries: MetricEntry[] = [
+        [1, 2, 3, 4],
+        [1, 2, 3, 4, 'h'],
+        [1, 2, 3, 4, 'l'],
+        [1, 2, 3, 4, '#aabbcc'],
+        [1, 2, 3, 4, 'h', '#aabbcc'],
+        [1, 2, 3, 4, 'h', 0, 0, 24, 24],
+        [1, 2, 3, 4, 'h', 0, 0, 24, 24, '#aabbcc'],
+      ];
       for (const entry of entries) assert.deepEqual(toEntry(toMetric(entry)!), entry);
       assert.deepEqual(toMetric([1, 2, 3, 4, 'h', '#aabbcc']), { box: [1, 2, 3, 4], color: '#aabbcc', holes: true });
+      assert.deepEqual(toMetric([1, 2, 3, 4, 'h', 0, 0, 24, 24]), { badge: [0, 0, 24, 24], box: [1, 2, 3, 4], holes: true });
       assert.equal(toMetric(undefined), undefined);
     });
   });
@@ -133,7 +142,7 @@ describe('glass icons', () => {
     it('centers the box of the glyph on the tile, with the size of a square glyph', () => {
       // 18 units wide in a viewBox of 24: 10.2 wide on the tile, 24 units are 13.6
       const glass = glassFile(SQUARE, { box: [3, 3, 18, 18] });
-      assert.ok(glass.includes('<svg x="1.2" y="1.2" width="13.6" height="13.6" viewBox="0 0 24 24" overflow="visible">'), glass);
+      assert.ok(glass.includes('<svg x="1.2" y="1.2" width="13.6" height="13.6" viewBox="0 0 24 24">'), glass);
     });
 
     it('draws a glyph made of lines larger: its lines are made for 16 pixels', () => {
@@ -169,7 +178,7 @@ describe('glass icons', () => {
 
     it('places an icon that was not measured by its viewBox', () => {
       const glass = glassFile(SQUARE);
-      assert.ok(glass.includes('<svg x="2.1" y="2.1" width="11.8" height="11.8" viewBox="0 0 24 24" overflow="visible">'), glass);
+      assert.ok(glass.includes('<svg x="2.1" y="2.1" width="11.8" height="11.8" viewBox="0 0 24 24">'), glass);
     });
 
     it('keeps the namespaces of the icon and what its content inherits from its root', () => {
@@ -318,23 +327,57 @@ describe('glass icons', () => {
   });
 
   describe('glossyIcon', () => {
-    it('keeps the shape and the colors of the icon, placed as VS Code shows it, without a tile', () => {
-      const glossy = glossyIcon(TWO_COLORS);
+    it('keeps the shape and the colors of the icon, placed as VS Code shows it when it was not measured, without a tile', () => {
+      const glossy = glossyIcon(TWO_COLORS, 'file');
       assert.match(glossy, /^<svg xmlns="http:\/\/www\.w3\.org\/2000\/svg" viewBox="0 0 16 16" width="16px" height="16px">/);
       assert.ok(
-        glossy.includes('<g id="ctk-i"><svg x="0" y="0" width="16" height="16" viewBox="0 0 24 24" overflow="visible"><g ><path fill="#1565C0" d="M3 3h18v18H3z"/><path fill="#ffca28" d="M8 8h8v8H8z"/></g></svg></g>'),
+        glossy.includes('<g id="ctk-i"><svg x="0" y="0" width="16" height="16" viewBox="0 0 24 24"><g ><path fill="#1565C0" d="M3 3h18v18H3z"/><path fill="#ffca28" d="M8 8h8v8H8z"/></g></svg></g>'),
         'the icon as it is drawn, its viewBox on the 16 units',
       );
       assert.ok(!glossy.includes('ctk-t') && !glossy.includes('ctk-k') && !glossy.includes('<rect width="16" height="16" rx='), 'no tile, no glyph color');
     });
 
     it('places an icon that is not square in the middle, by its longest side', () => {
-      const wide = glossyIcon(svg('<path fill="#1565C0" d="M0 0h32v16H0z"/>', 'viewBox="0 0 32 16"'));
-      assert.ok(wide.includes('<svg x="0" y="4" width="16" height="8" viewBox="0 0 32 16" overflow="visible">'));
+      const wide = glossyIcon(svg('<path fill="#1565C0" d="M0 0h32v16H0z"/>', 'viewBox="0 0 32 16"'), 'file');
+      // the square of what it shows on its own, its viewBox in the middle of it
+      assert.ok(wide.includes('<svg x="0" y="0" width="16" height="16" viewBox="0 0 32 16">'), wide);
+    });
+
+    it('shows what the icon shows on its own, not its shapes outside its square', () => {
+      // an svg element clips what it draws outside it, unlike its overflow="visible" before
+      const outside = glossyIcon(svg('<path fill="#1565C0" d="M-24 6h72v12h-72z"/>'), 'file', { box: [0, 6, 24, 12] });
+      assert.ok(!outside.includes('overflow'), outside);
+      assert.match(outside, /<svg x="[\d.-]+" y="[\d.-]+" width="14\.6" height="14\.6" viewBox="0 0 24 24">/);
+    });
+
+    it('places a measured file icon by what it draws: every icon as large, whatever the margin of its file', () => {
+      // a square of 18 units in 24, and one of 12: both 13 units, in the middle
+      const small = svg('<path fill="#1565C0" d="M6 6h12v12H6z"/>');
+      for (const [icon, box] of [[SQUARE, [3, 3, 18, 18]], [small, [6, 6, 12, 12]]] as const) {
+        const glossy = glossyIcon(icon, 'file', { box: [...box] });
+        const scale = 13 / box[2];
+        assert.ok(glossy.includes(`<svg x="${Number((8 - scale * 12).toFixed(4))}" y="${Number((8 - scale * 12).toFixed(4))}" width="${Number((24 * scale).toFixed(4))}"`), glossy);
+        // the gradient from the top to the bottom of what it draws
+        assert.ok(glossy.includes('<rect x="1.5" y="1.5" width="13" height="13" fill="url(#ctk-g)" mask="url(#ctk-s)"/>'));
+      }
+      // a long icon by its longest side
+      const wide = glossyIcon(svg('<path fill="#1565C0" d="M0 0h32v16H0z"/>', 'viewBox="0 0 32 16"'), 'file', { box: [0, 0, 32, 16] });
+      assert.ok(wide.includes('<rect x="0.7" y="4.35" width="14.6" height="7.3" fill="url(#ctk-g)"'), wide);
+    });
+
+    it('places the whole badge of an icon with holes, not its holes', () => {
+      const glossy = glossyIcon(BADGE, 'file', { badge: [2, 2, 20, 20], box: [8, 8, 8, 8], holes: true });
+      assert.ok(glossy.includes('<rect x="1.5" y="1.5" width="13" height="13" fill="url(#ctk-g)"'), glossy);
+    });
+
+    it('places a folder icon by its viewBox, like every folder: its measure is the box of its badge', () => {
+      const glossy = glossyIcon(FOLDER, 'folder', { box: [12, 12, 8, 8] });
+      assert.ok(glossy.includes('<svg x="0" y="0" width="16" height="16" viewBox="0 0 24 24">'));
+      assert.ok(glossy.includes('<rect x="0" y="0" width="16" height="16" fill="url(#ctk-g)"'));
     });
 
     it('shades what the icon draws: a gradient over its shape, a highlight over its top edges', () => {
-      const glossy = glossyIcon(SQUARE);
+      const glossy = glossyIcon(SQUARE, 'file');
       // the shape of the icon: what it draws, in white; its top edges: the same without the icon moved down
       assert.ok(glossy.includes('<mask id="ctk-s" maskUnits="userSpaceOnUse" x="0" y="0" width="16" height="16"><use href="#ctk-i" filter="url(#ctk-w)"/></mask>'));
       assert.match(glossy, /<mask id="ctk-e"[^>]*><use href="#ctk-i" filter="url\(#ctk-w\)"\/><use href="#ctk-i" y="[\d.]+" filter="url\(#ctk-n\)"\/><\/mask>/);
@@ -343,24 +386,24 @@ describe('glass icons', () => {
       assert.ok(/<filter id="ctk-w"[^>]*><feColorMatrix values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"\/>(.*?)<\/filter>/.exec(glossy)![0].endsWith(opaque));
       assert.ok(/<filter id="ctk-n"[^>]*><feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0"\/>(.*?)<\/filter>/.exec(glossy)![0].endsWith(opaque));
       // lighter at the top and darker at the bottom, over the icon
-      assert.match(glossy, /<\/g><rect width="16" height="16" fill="url\(#ctk-g\)" mask="url\(#ctk-s\)"\/><rect width="16" height="16" fill="#fff" fill-opacity="[\d.]+" mask="url\(#ctk-e\)"\/><\/svg>$/);
+      assert.match(glossy, /<\/g><rect x="0" y="0" width="16" height="16" fill="url\(#ctk-g\)" mask="url\(#ctk-s\)"\/><rect width="16" height="16" fill="#fff" fill-opacity="[\d.]+" mask="url\(#ctk-e\)"\/><\/svg>$/);
       assert.match(glossy, /<linearGradient id="ctk-g" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff" stop-opacity="[\d.]+"\/>.*<stop offset="1" stop-opacity="[\d.]+"\/><\/linearGradient>/);
     });
 
     it('keeps the namespaces of the icon and what its content inherits from its root', () => {
-      const glossy = glossyIcon(svg('<use xlink:href="#a"/>', 'xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" fill="#1565C0"'));
+      const glossy = glossyIcon(svg('<use xlink:href="#a"/>', 'xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" fill="#1565C0"'), 'file');
       assert.ok(glossy.startsWith('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 16 16"'));
       assert.ok(glossy.includes('<g fill="#1565C0"><use xlink:href="#a"/></g>'));
     });
 
     it('uses ids no icon would use', () => {
-      const ids = [...glossyIcon(SQUARE, 'run').matchAll(/\sid="([^"]+)"/g)].map((match) => match[1]);
+      const ids = [...glossyIcon(SQUARE, 'file', undefined, 'run').matchAll(/\sid="([^"]+)"/g)].map((match) => match[1]);
       assert.ok(ids.length > 0 && ids.every((id) => id.startsWith('ctk-')), ids.join());
       assert.equal(new Set(ids).size, ids.length, 'an id twice');
     });
 
     it('marks a role like a flat icon, with the disc of the glass style, and shades the icon under it', () => {
-      const marked = glossyIcon(SQUARE, 'run');
+      const marked = glossyIcon(SQUARE, 'file', undefined, 'run');
       assert.match(marked, /<g clip-path="url\(#ctk-m\)"><g id="ctk-i"><svg x="0\.18" y="0\.18" width="13\.44" height="13\.44" viewBox="0 0 24 24"/);
       assert.match(marked, /mask="url\(#ctk-e\)"\/><\/g><circle cx="12\.3" cy="12\.3" r="3\.7" fill="url\(#ctk-d\)"\/>/, 'the shading is cut with the icon');
       assert.ok(!marked.includes('ctk-t'));
@@ -368,13 +411,13 @@ describe('glass icons', () => {
 
     it('leaves what is not an svg, or has no size, as it is', () => {
       const icon = '<svg xmlns="http://www.w3.org/2000/svg"><path d="M0 0h4v4H0z"/></svg>';
-      assert.equal(glossyIcon(icon), icon);
-      assert.equal(glossyIcon(icon, 'run'), icon);
-      assert.equal(glossyIcon('not an svg'), 'not an svg');
+      assert.equal(glossyIcon(icon, 'file'), icon);
+      assert.equal(glossyIcon(icon, 'file', undefined, 'run'), icon);
+      assert.equal(glossyIcon('not an svg', 'file'), 'not an svg');
     });
 
     it('takes the monochrome color on the icon and the shading, and keeps its masks white and black', () => {
-      const monochrome = monochromeService.applyMonochrome(glossyIcon(SQUARE), true, '#546E7A');
+      const monochrome = monochromeService.applyMonochrome(glossyIcon(SQUARE, 'file'), true, '#546E7A');
       assert.ok(!monochrome.includes('#1565C0'), 'the icon is recolored');
       // the masks are made with a color matrix, which the monochrome setting does not touch: a recolored mask would be a transparency
       assert.ok(!monochrome.includes('flood-color'));
@@ -382,7 +425,7 @@ describe('glass icons', () => {
     });
 
     it('takes the opacity and the saturation on its root', () => {
-      const filtered = saturationService.applySaturation(opacityService.applyOpacity(glossyIcon(SQUARE), 0.5), 0.3);
+      const filtered = saturationService.applySaturation(opacityService.applyOpacity(glossyIcon(SQUARE, 'file'), 0.5), 0.3);
       assert.match(filtered, /^<svg filter="url\(#saturation\)" opacity="0.5" xmlns=/);
     });
   });
@@ -420,6 +463,27 @@ describe('glass icons', () => {
       const [x, y, width, height] = metric!.box!;
       // the hole is 8..16, measured on a picture: within a pixel of it
       for (const [value, expected] of [[x, 8], [y, 8], [width, 8], [height, 8]]) assert.ok(Math.abs(value - expected) < 0.7, `${value} ~ ${expected}`);
+      // and the whole badge, which the glossy style places
+      assert.deepEqual(metric?.badge, [2, 2, 20, 20]);
+    });
+
+    it('finds the holes of a badge whose viewBox does not start at 0 0', () => {
+      const moved = svg('<path fill="#1565C0" fill-rule="evenodd" d="M102 102h20v20h-20zM108 108v8h8v-8z"/>', 'viewBox="100 100 24 24"');
+      const metric = measureFile(moved);
+      assert.equal(metric?.holes, true);
+      assert.ok(Math.abs(metric!.box![0] - 108) < 0.7 && Math.abs(metric!.box![1] - 108) < 0.7, JSON.stringify(metric));
+      assert.deepEqual(metric?.badge, [102, 102, 20, 20]);
+    });
+
+    it('measures only what the icon shows: not its shapes outside its square, nor the shapes it hides', () => {
+      // outside: neither VS Code nor the JetBrains IDEs show more than the square around its viewBox
+      assert.deepEqual(measureFile(svg('<path fill="#1565C0" d="M-24 6h72v12h-72z"/>')), { box: [0, 6, 24, 12] });
+      assert.deepEqual(measureFile(svg('<path fill="#1565C0" d="M-24 6h72v12h-72z"/>', 'viewBox="0 0 24 12"')), { box: [0, 6, 24, 12] });
+      // hidden: transparent, under a mask; the box of what it shows, within a pixel of the picture
+      for (const hidden of ['<rect width="24" height="24" opacity="0"/>', '<mask id="m"><path fill="#fff" d="M6 6h12v12H6z"/></mask><g mask="url(#m)"><rect width="24" height="24" fill="#1565C0"/></g>']) {
+        const box = measureFile(svg(`${hidden}<path fill="#1565C0" d="M6 6h12v12H6z"/>`))!.box!;
+        for (const [value, expected] of box.map((value, index) => [value, [6, 6, 12, 12][index]])) assert.ok(Math.abs(value - expected) < 0.3, `${hidden}: ${box.join()}`);
+      }
     });
 
     it('does not take a ring, or a shape with a dent, for a badge', () => {
@@ -452,11 +516,12 @@ describe('glass icons', () => {
         assert.deepEqual(Object.keys(metrics[group]), Object.keys(measured[group]), `${group}: icons added or removed`);
         for (const [name, entry] of Object.entries(measured[group])) {
           const stored = metrics[group][name];
-          assert.deepEqual(stored.slice(4), entry.slice(4), `${group}/${name}: holes or color`);
-          // the same up to the rounding of another machine
-          for (const index of [0, 1, 2, 3]) {
-            const [a, b] = [Number(stored[index]), Number(entry[index])];
-            assert.ok(Math.abs(a - b) <= Math.max(Math.abs(b), 1) * 0.005, `${group}/${name}: ${JSON.stringify(stored)} is not ${JSON.stringify(entry)}`);
+          const differs = `${group}/${name}: ${JSON.stringify(stored)} is not ${JSON.stringify(entry)}`;
+          assert.deepEqual(stored.map((value) => typeof value), entry.map((value) => typeof value), differs);
+          for (const [index, value] of entry.entries()) {
+            // the boxes the same up to the rounding of another machine; the flags and the color the same
+            if (typeof value === 'number') assert.ok(Math.abs(Number(stored[index]) - value) <= Math.max(Math.abs(value), 1) * 0.005, differs);
+            else assert.equal(stored[index], value, differs);
           }
         }
       }
@@ -749,7 +814,10 @@ describe('glass icons', () => {
       assert.notEqual(getFileConfigHash(config), getFileConfigHash({ ...config, iconStyle: IconStyle.Flat }), 'not the names of the flat icons');
       const ts = icon(theme.fileExtensions!.ts);
       assert.ok(ts.includes('mask="url(#ctk-s)"') && !ts.includes('ctk-t'), 'shaded, no tile');
-      assert.ok(icon(theme.fileExtensions!.json).includes('data-iconColor="JSON"'), 'the icon of the icon plugin, not the New UI glyph');
+      const json = icon(theme.fileExtensions!.json);
+      assert.ok(json.includes('data-iconColor="JSON"'), 'the icon of the icon plugin, not the New UI glyph');
+      // placed by what it draws (0 3 24 18 of 24 units), not by its viewBox: 14.6 units wide, shaded from its top to its bottom
+      assert.ok(json.includes('<rect x="0.7" y="2.525" width="14.6" height="10.95" fill="url(#ctk-g)"'), json);
       // the folder of the plugin as it is drawn, shaded: not a glass folder
       const src = icon(theme.folderNames!.src);
       assert.ok(src.includes('data-folderColor') && src.includes('mask="url(#ctk-s)"') && !src.includes('ctk-f'));

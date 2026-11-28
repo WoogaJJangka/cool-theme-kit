@@ -666,7 +666,7 @@ describe('ConfigChangeDetector', () => {
       await applySettings({ iconStyle: 'glossy' });
       const theme = readTheme();
 
-      assert.equal(readIcon(theme, theme.fileNames?.['zz-unknown'] ?? ''), glossyIcon(SVG('#123456')));
+      assert.equal(readIcon(theme, theme.fileNames?.['zz-unknown'] ?? ''), glossyIcon(SVG('#123456'), 'file'));
       assert.equal(readIcon(theme, theme.folderNames?.['fb-folder'] ?? ''), SVG('#123456'));
     });
 

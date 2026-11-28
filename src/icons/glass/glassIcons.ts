@@ -32,6 +32,8 @@ type GlyphBox = [x: number, y: number, width: number, height: number];
 type IconMetric = {
   /** the box its glyph fills (for a folder, the box of its badge); with `holes`, the box of the holes */
   box?: GlyphBox;
+  /** with `holes`, the box of the whole badge: what the icon draws, which the glossy style places */
+  badge?: GlyphBox;
   /** the color of its tile, for an icon of several colors drawn as one glyph all the same */
   color?: string;
   /**
@@ -46,7 +48,10 @@ type IconMetric = {
   lines?: boolean;
 };
 
-/** An entry of `metrics.json`: the box, then `"h"` for holes, `"l"` for lines and/or the `#rrggbb` color */
+/**
+ * An entry of `metrics.json`: the box, then `"h"` for holes followed by the box of the badge, `"l"` for lines and/or
+ * the `#rrggbb` color
+ */
 type MetricEntry = Array<number | string>;
 
 /** The icons of this theme: file icons, folder icons, expanded folder icons */
@@ -61,20 +66,25 @@ type IconMetrics = Record<IconGroup | 'glyphs', Record<string, MetricEntry>>;
 const toMetric = (entry: MetricEntry | undefined): IconMetric | undefined => {
   if (!entry) return undefined;
 
+  const isBox = (values: MetricEntry): values is GlyphBox => values.length === 4 && values.every((value) => typeof value === 'number');
   const box = entry.slice(0, 4);
   const metric: IconMetric = {};
-  if (box.length === 4 && box.every((value) => typeof value === 'number')) metric.box = box as GlyphBox;
-  for (const flag of entry.slice(4)) {
-    if (flag === 'h') metric.holes = true;
-    else if (flag === 'l') metric.lines = true;
+  if (isBox(box)) metric.box = box;
+  const flags = entry.slice(4);
+  for (const [index, flag] of flags.entries()) {
+    if (flag === 'h') {
+      metric.holes = true;
+      const badge = flags.slice(index + 1, index + 5);
+      if (isBox(badge)) metric.badge = badge;
+    } else if (flag === 'l') metric.lines = true;
     else if (typeof flag === 'string' && flag.startsWith('#')) metric.color = flag;
   }
   return metric;
 };
 
-const toEntry = ({ box, color, holes, lines }: IconMetric): MetricEntry => [
+const toEntry = ({ badge, box, color, holes, lines }: IconMetric): MetricEntry => [
   ...(box ?? []),
-  ...(holes ? ['h'] : []),
+  ...(holes ? ['h', ...(badge ?? [])] : []),
   ...(lines ? ['l'] : []),
   ...(color ? [color] : []),
 ];
@@ -250,9 +260,18 @@ const parseSvg = (svg: string): SvgParts | undefined => {
 const round = (value: number): string => String(Number(value.toFixed(4)));
 
 /**
+ * What an icon shows of its viewBox, in its units: drawn on a square of 16 pixels, a square around the middle of its
+ * viewBox, as long as its longest side. Its shapes outside are not seen, in VS Code as in the JetBrains IDEs.
+ */
+const shownSquare = ([left, top, width, height]: GlyphBox): GlyphBox => {
+  const side = Math.max(width, height);
+  return [left + (width - side) / 2, top + (height - side) / 2, side, side];
+};
+
+/**
  * The content of an icon, its `box` scaled by `scale` and centered on a point of the 16 unit canvas.
  * In an svg element with the viewBox of the icon when it has one: the lengths in percent of its content (a mask over
- * "100%") keep meaning what they meant.
+ * "100%") keep meaning what they meant, and the element shows what the icon shows on its own (`shownSquare`).
  */
 const place = (parts: Pick<SvgParts, 'attributes' | 'content' | 'viewBox'>, box: GlyphBox, scale: number, centerX: number, centerY: number): string => {
   const [x, y, width, height] = box;
@@ -262,10 +281,9 @@ const place = (parts: Pick<SvgParts, 'attributes' | 'content' | 'viewBox'>, box:
     return `<g transform="${transform}">${content}</g>`;
   }
 
-  const [left, top, viewWidth, viewHeight] = parts.viewBox;
+  const [left, top, side] = shownSquare(parts.viewBox);
   const position = `x="${round(centerX - scale * (x + width / 2 - left))}" y="${round(centerY - scale * (y + height / 2 - top))}"`;
-  const size = `width="${round(viewWidth * scale)}" height="${round(viewHeight * scale)}"`;
-  return `<svg ${position} ${size} viewBox="${parts.viewBox.join(' ')}" overflow="visible">${content}</svg>`;
+  return `<svg ${position} width="${round(side * scale)}" height="${round(side * scale)}" viewBox="${parts.viewBox.join(' ')}">${content}</svg>`;
 };
 
 const SIZE = 16;
@@ -563,20 +581,43 @@ const maskFilter = (id: string, value: 0 | 1) =>
 const MASK_AREA = `maskUnits="userSpaceOnUse" x="0" y="0" width="${SIZE}" height="${SIZE}"`;
 
 /**
+ * The size of a file icon of the glossy style, as of a glyph on its tile: the longest side of what it draws, and the
+ * side of what draws a square (a long icon is not as tall as a square one). Placed by their viewBox, the icons of the
+ * plugin are anywhere from 6 to 16 pixels, half of them to the edges; placed by what they draw, they are all as large:
+ * about the JetBrains New UI icons and the Material icons of a layer (13 to 14 pixels). The middle of three sizes drawn
+ * side by side (14/12.4 and 15.2/13.6), 2026-11-27.
+ */
+const GLOSSY_LONGEST = 14.6;
+const GLOSSY_SQUARE = 13;
+
+/**
  * An icon in the glossy style: its own shape and colors, as in the flat style, with the shading of the glass style over
  * what it draws. Two masks of the icon: its shape for the gradient, and its shape without itself moved down for the
  * highlight of its top edges. Masks and not filters: a filter cannot draw a gradient.
+ * A file icon is placed by what it draws (`metric`), the size of every other one; a folder (the same folder shape for
+ * all), or an icon that was not measured (of the user, of another theme), by its viewBox.
+ * @param metric what was measured for the icon: for a badge with holes, the glossy style places the whole badge
  * @param role the role to mark over its corner, for a file whose name gives it one
  * @returns the icon unchanged when it has no viewBox to place it by
  */
-const glossyIcon = (svg: string, role?: IconRole): string => {
+const glossyIcon = (svg: string, kind: IconKind, metric?: IconMetric, role?: IconRole): string => {
   const parts = parseSvg(svg);
-  const box = parts?.viewBox;
-  if (!parts || !box) return svg;
+  if (!parts?.viewBox) return svg;
 
-  const scale = (SIZE * (role ? MARKED.scale : 1)) / Math.max(box[2], box[3]);
+  const drawn = kind === 'file' ? (metric?.badge ?? metric?.box) : undefined;
+  const box = drawn ?? parts.viewBox;
+  const [width, height] = [box[2], box[3]];
+  if (width <= 0 || height <= 0) return svg;
+
+  const fitted = drawn
+    ? Math.min(GLOSSY_LONGEST / Math.max(width, height), GLOSSY_SQUARE / Math.sqrt(width * height))
+    : SIZE / Math.max(width, height);
+  const scale = role ? fitted * MARKED.scale : fitted;
   const center = SIZE / 2 - (role ? MARKED.shift : 0);
   const icon = `<g id="${ID}i">${place(parts, box, scale, center, center)}</g>`;
+  // the gradient from the top to the bottom of what the icon draws: as much light and shade on a small icon as on a large one
+  const [shadedWidth, shadedHeight] = [width * scale, height * scale];
+  const shaded = `x="${round(center - shadedWidth / 2)}" y="${round(center - shadedHeight / 2)}" width="${round(shadedWidth)}" height="${round(shadedHeight)}"`;
   const defs = [
     maskFilter('w', 1),
     maskFilter('n', 0),
@@ -585,7 +626,7 @@ const glossyIcon = (svg: string, role?: IconRole): string => {
     `<linearGradient id="${ID}g" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff" stop-opacity="${GLOSS.top}"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-opacity="0"/><stop offset="1" stop-opacity="${GLOSS.bottom}"/></linearGradient>`,
   ].join('');
   const shading = [
-    `<rect width="${SIZE}" height="${SIZE}" fill="url(#${ID}g)" mask="url(#${ID}s)"/>`,
+    `<rect ${shaded} fill="url(#${ID}g)" mask="url(#${ID}s)"/>`,
     `<rect width="${SIZE}" height="${SIZE}" fill="#fff" fill-opacity="${GLOSS.highlight}" mask="url(#${ID}e)"/>`,
   ].join('');
   if (role) return withMark(parts.namespaces, defs, icon + shading, role, true);
@@ -614,6 +655,7 @@ export {
   paintCount,
   parseFolder,
   parseSvg,
+  shownSquare,
   toEntry,
   toMetric,
 };

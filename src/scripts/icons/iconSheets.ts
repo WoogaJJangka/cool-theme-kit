@@ -28,6 +28,10 @@ const FONT = existsSync(LABEL_FONT) ? { defaultFontFamily: 'Segoe UI', fontFiles
 const escapeXml = (text: string) => text.replaceAll('&', '&amp;').replaceAll('<', '&lt;');
 const option = (name: string) => (process.argv.includes(name) ? process.argv[process.argv.indexOf(name) + 1] : undefined);
 
+/** An icon in an svg element, which clips what it draws outside its square as VS Code does: an image does not in resvg */
+const image = (href: string, left: number, top: number, side: number) =>
+  `<svg x="${left}" y="${top}" width="${side}" height="${side}"><image width="${side}" height="${side}" href="${href}"/></svg>`;
+
 /** Where the sheets go: a folder of the repository that git ignores, never a path of the command line */
 const OUTPUT = join(root, 'out', 'icon-sheets');
 
@@ -73,11 +77,10 @@ const sheets = () => {
         const glyph = name === 'files' && style === 'glass' ? glyphOf(icon) : undefined;
         const source = readFileSync(glyph ?? icons.get(icon)!, 'utf8');
         let svg = source;
-        if (glossy) svg = glossyIcon(source);
+        if (glossy) svg = glossyIcon(source, KINDS[name], toMetric(metrics[name][icon]));
         else if (!flat) svg = glassIcon(source, KINDS[name], toMetric(metrics[glyph ? 'glyphs' : name][icon]));
         const href = `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`;
-        body += `<image x="${x + 4}" y="${y + 1}" width="32" height="32" href="${href}"/>`;
-        body += `<image x="${x + 44}" y="${y + 9}" width="16" height="16" href="${href}"/>`;
+        body += image(href, x + 4, y + 1, 32) + image(href, x + 44, y + 9, 16);
         body += `<text x="${x + 4}" y="${y + 43}" font-family="Segoe UI, Arial, sans-serif" font-size="9.5" fill="${light ? '#444' : '#aaa'}">${escapeXml(icon.slice(0, 22))}</text>`;
       }
 
