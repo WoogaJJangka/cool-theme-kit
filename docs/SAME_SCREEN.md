@@ -47,6 +47,8 @@ Cool Theme Kit 은 두 저장소로 만든다. **목표는 VS Code 와 PyCharm �
    플러그인에도 같은 이름으로 있다(2026-11-27. 평면 아이콘과 연결 검사용 테마는 `bun run export:jetbrains-icons` →
    `out/jetbrains-icons/`, 플러그인 `syncIcons` 가 가져감). 남은 것은 폴더 색·채도·불투명도·단색, 그리고 연결로 생긴 역할 표시
    아이콘 중 `dist/` 에 없는 것(VS Code 는 테마를 만들 때 그리고, 플러그인은 표시 없이 준다).
+   광택 아이콘의 크기 맞춤과, viewBox 밖 도형을 그리지 않는 유리·광택 아이콘(2026-11-27)은 플러그인에서 `syncIcons` 를 다시
+   돌려야 들어간다(플러그인이 안쪽 `<svg>` 를 잘라 그리는지도 그때 PyCharm 에서 avro·factor 로 본다).
 2. **모르는 이름**: VS Code 는 기본 섞기 층(`iconThemeLayers` = Material Icon Theme)이 Cool Icons 가 모르는 이름을 채우고,
    플러그인은 기본 파일 아이콘을 준다.
 3. **한글 대체 글꼴**: VS Code 는 고르면 `JetBrains Mono` 다음에 `D2Coding` 등을 쓰고, PyCharm 은 사용자가

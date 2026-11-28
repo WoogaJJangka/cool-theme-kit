@@ -5,11 +5,16 @@ All notable changes to this project will be documented in this file. Dates are d
 #### Unreleased
 
 - feat: a third icon style, **glossy** (`"a-file-icon-vscode.iconStyle": "glossy"`): the glass without the tile. Every
-  icon keeps the shape, the colors and the size the JetBrains icon plugin draws it with, as in the flat style, and gets
-  only the shading of the glass style over what it draws: a gradient, lighter at the top and darker at the bottom, and
-  a highlight along its top edges. Folders keep their own shape and badge, shaded the same way. The marks of the names
-  with a role go over the corner on the disc of the glass style, and the file icons of the other themes mixed in and
-  your custom SVG icons are shaded too. Glass stays the default.
+  icon keeps the shape and the colors the JetBrains icon plugin draws it with, as in the flat style, and gets only the
+  shading of the glass style over what it draws: a gradient, lighter at the top and darker at the bottom of each icon,
+  and a highlight along its top edges. The file icons all get about the same size, as the glyphs on the tiles: in the
+  plugin some fill their 16 pixels to the edges and others half of it. Folders keep their own shape and badge, shaded
+  the same way. The marks of the names with a role go over the corner on the disc of the glass style, and the file
+  icons of the other themes mixed in and your custom SVG icons are shaded too. Glass stays the default.
+- fix: in the glass style, about twenty icons that draw shapes outside their own square (Avro, AngelScript, Factor,
+  markuplint, Rspack, Self…) showed those shapes, which VS Code and the JetBrains IDEs leave out, and got a smaller
+  glyph for them; a few (Rspack, Jakt, Visual Basic) were measured with shapes they hide. They now show what the icon
+  shows, as large as the others, and the Kustomize badge is a tile with its glyph cut out like the other badges.
 
 #### 1.8.1 (2026-11-27)
 

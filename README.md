@@ -354,9 +354,11 @@ To get the icons as the JetBrains icon plugin draws them, for every file type:
 }
 ```
 
-**Glossy** is the glass without the tile: every icon is the one of the JetBrains icon plugin, with its own shape, colors
-and size as in flat, and only the shading of the glass style goes over what it draws: the same gradient, lighter at the
-top and darker at the bottom, and a highlight along its top edges. No tile, no border. The marks of the
+**Glossy** is the glass without the tile: every icon is the one of the JetBrains icon plugin, with its own shape and
+colors as in flat, and only the shading of the glass style goes over what it draws: the same gradient, lighter at the
+top and darker at the bottom of each icon, and a highlight along its top edges. No tile, no border. The icons all get
+about the same size, as the glyphs on the tiles: in the plugin some fill their 16 pixels to the edges and others half
+of it. The marks of the
 [names with a role](#names-with-a-role) go over its corner as in flat, on the disc of the glass style. The file icons of
 the other themes and your custom SVG icons are shaded too; their folder icons are kept as they are.
 

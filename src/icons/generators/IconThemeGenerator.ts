@@ -298,12 +298,12 @@ export class IconThemeGenerator {
   }
 
   /**
-   * The measures of the bundled icons, for the glass style. Without them (a package without the file) the file icons
-   * are placed by their viewBox and the folders stay as they are drawn: a worse look, not a failure.
+   * The measures of the bundled icons, for the glass and glossy styles. Without them (a package without the file) the
+   * file icons are placed by their viewBox and the glass folders stay as they are drawn: a worse look, not a failure.
    * @private
    */
   private readMetrics(): IconMetrics | undefined {
-    if (this.atomConfig.iconStyle !== IconStyle.Glass) return undefined;
+    if (this.atomConfig.iconStyle === IconStyle.Flat) return undefined;
 
     try {
       const file = join(this.iconGeneratorPath(), '..', 'assets', 'icons', METRICS_FILE);
@@ -437,7 +437,7 @@ export class IconThemeGenerator {
 
     // glass or glossy style
     if (glass && this.atomConfig.iconStyle === IconStyle.Glass) svg = glassIcon(svg, glass.kind, glass.metric, role);
-    else if (glass && this.atomConfig.iconStyle === IconStyle.Glossy) svg = glossyIcon(svg, role);
+    else if (glass && this.atomConfig.iconStyle === IconStyle.Glossy) svg = glossyIcon(svg, glass.kind, glass.metric, role);
     else if (role) svg = markedFile(svg, role);
 
     // Monochrome
